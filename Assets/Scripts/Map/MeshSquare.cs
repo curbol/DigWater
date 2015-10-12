@@ -1,4 +1,6 @@
-﻿public class MeshSquare
+﻿using UnityEngine;
+
+public class MeshSquare
 {
     public MeshControlNode TopLeft { get; set; }
     public MeshControlNode TopRight { get; set; }
@@ -19,10 +21,10 @@
         BottomRight = bottomRight;
         BottomLeft = bottomLeft;
 
-        CenterTop = TopLeft.RightNode;
-        CenterRight = BottomRight.AboveNode;
-        CenterBottom = BottomLeft.RightNode;
-        CenterLeft = BottomLeft.AboveNode;
+        CenterTop = new MeshNode(TopLeft.Position + Vector3.right * 1 / 2f);
+        CenterRight = new MeshNode(BottomRight.Position + Vector3.up * 1 / 2f);
+        CenterBottom = new MeshNode(BottomLeft.Position + Vector3.right * 1 / 2f);
+        CenterLeft = new MeshNode(BottomLeft.Position + Vector3.up * 1 / 2f);
 
         Configuration += topLeft.Active ? 8 : 0;
         Configuration += topRight.Active ? 4 : 0;

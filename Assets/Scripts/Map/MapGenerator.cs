@@ -1,6 +1,8 @@
 ﻿using System.Linq;
 using UnityEngine;
 
+[DisallowMultipleComponent]
+[RequireComponent(typeof(MeshGenerator))]
 public class MapGenerator : MonoBehaviour
 {
     public int seed;
