@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 
-public class MeshNode
+public class MeshVertex
 {
     public Vector3 Position { get; set; }
     public int? VertexIndex { get; set; }
 
-    public MeshNode(Vector3 position)
+    public MeshVertex(Vector3 position)
     {
         Position = position;
     }

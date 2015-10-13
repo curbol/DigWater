@@ -2,7 +2,7 @@
 using UnityEngine;
 
 [DisallowMultipleComponent]
-[RequireComponent(typeof(MeshGenerator))]
+[RequireComponent(typeof(MeshFilter))]
 public class MapGenerator : MonoBehaviour
 {
     public int seed;
@@ -39,8 +39,7 @@ public class MapGenerator : MonoBehaviour
             SmoothMap();
         }
 
-        MeshGenerator meshGenerator = GetComponent<MeshGenerator>();
-        meshGenerator.GenerateMesh(map, 1);
+        GetComponent<MeshFilter>().mesh = MeshGenerator.GenerateMesh(map, 1);
     }
 
     private void RandomFillMap()
@@ -68,6 +67,7 @@ public class MapGenerator : MonoBehaviour
         }
     }
 
+    // TODO try reversing loop to avoid patterns
     private void SmoothMap()
     {
         for (int x = 0; x < width; x++)
