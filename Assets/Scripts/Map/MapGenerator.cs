@@ -11,7 +11,7 @@ public class MapGenerator : MonoBehaviour
     public int width;
     public int height;
 
-    [Range(0,100)]
+    [Range(25,75)]
     public int randomFillPercent;
 
     int[,] map;
@@ -29,7 +29,7 @@ public class MapGenerator : MonoBehaviour
         }
     }
 
-    private void GenerateMap()
+    public void GenerateMap()
     {
         map = new int[width, height];
         RandomFillMap();

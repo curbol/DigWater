@@ -38,15 +38,13 @@ public static class MeshGenerator
         {
             for (int y = 0; y < nodeCountY - 1; y++)
             {
-                bool[] isActive = new bool[4];
-                isActive[(int)SquareVertex.TopLeft] = map[x, y + 1] == isActiveKey;
-                isActive[(int)SquareVertex.TopRight] = map[x + 1, y + 1] == isActiveKey;
-                isActive[(int)SquareVertex.BottomRight] = map[x + 1, y] == isActiveKey;
-                isActive[(int)SquareVertex.BottomLeft] = map[x, y] == isActiveKey;
-
+                bool topLeftIsActive = map[x, y + 1] == isActiveKey;
+                bool topRightIsActive = map[x + 1, y + 1] == isActiveKey;
+                bool bottomRightIsActive = map[x + 1, y] == isActiveKey;
+                bool bottomLeftIsActive = map[x, y] == isActiveKey;
                 Vector2 squarePosition = new Vector2(-mapWidth / 2f + x * nodeSize + nodeSize, -mapHeight / 2f + y * nodeSize + nodeSize);
 
-                squares[x, y] = new MarchingSquare(squarePosition, nodeSize, isActive);
+                squares[x, y] = new MarchingSquare(squarePosition, nodeSize, topLeftIsActive, topRightIsActive, bottomRightIsActive, bottomLeftIsActive);
             }
         }
 
