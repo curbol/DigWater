@@ -5,16 +5,72 @@ using UnityEngine;
 [RequireComponent(typeof(MeshFilter))]
 public class MapGenerator : MonoBehaviour
 {
-    public int seed;
-    public bool useRandomSeed;
+    [SerializeField]
+    private int seed;
+    public int Seed
+    {
+        get
+        {
+            return seed;
+        }
 
-    public int width;
-    public int height;
+        set
+        {
+            seed = value;
+        }
+    }
 
-    [Range(25,75)]
-    public int randomFillPercent;
+    [SerializeField]
+    private int width;
+    public int Width
+    {
+        get
+        {
+            return width;
+        }
+    }
 
-    int[,] map;
+    [SerializeField]
+    private int height;
+    public int Height
+    {
+        get
+        {
+            return height;
+        }
+    }
+
+    [SerializeField]
+    [Range(.1f, 2f)]
+    private float nodeSize = 1;
+    public float NodeSize
+    {
+        get
+        {
+            return nodeSize;
+        }
+    }
+
+    [SerializeField]
+    [Range(25, 75)]
+    private int randomFillPercent;
+    public int RandomFillPercent
+    {
+        get
+        {
+            return randomFillPercent;
+        }
+    }
+
+    public void GenerateMap()
+    {
+        bool[,] map = new bool[Width, Height];
+
+        RandomFillMap(map, Seed, RandomFillPercent);
+        SmoothMap(map);
+
+        GetComponent<MeshFilter>().mesh = MeshGenerator.GenerateMarchingSquaresMesh(map, NodeSize);
+    }
 
     private void Start()
     {
@@ -29,26 +85,10 @@ public class MapGenerator : MonoBehaviour
         }
     }
 
-    public void GenerateMap()
+    private static void RandomFillMap(bool[,] map, int seed, int randomFillPercent)
     {
-        map = new int[width, height];
-        RandomFillMap();
-
-        for (int i = 0; i < 5; i++)
-        {
-            SmoothMap();
-        }
-
-        GetComponent<MeshFilter>().mesh = MeshGenerator.GenerateMesh(map, 1);
-    }
-
-    private void RandomFillMap()
-    {
-        if (useRandomSeed)
-        {
-            seed = (int)Time.time;
-        }
-
+        int width = map.GetLength(0);
+        int height = map.GetLength(1);
         System.Random random = new System.Random(seed);
 
         for (int x = 0; x < width; x++)
@@ -57,55 +97,75 @@ public class MapGenerator : MonoBehaviour
             {
                 if (x == 0 || x == width - 1 || y == 0 || y == height - 1)
                 {
-                    map[x, y] = 1;
+                    map[x, y] = true;
                 }
                 else
                 {
-                    map[x, y] = random.Next(0, 100) < randomFillPercent ? 1 : 0;
+                    map[x, y] = random.Next(0, 100) < randomFillPercent;
                 }
             }
         }
     }
 
-    // TODO try reversing loop to avoid patterns
-    private void SmoothMap()
+    private static void SmoothMap(bool[,] map)
     {
+        bool smoothForward = true;
+        for (int i = 0; i < 5; i++)
+        {
+            if (smoothForward)
+            {
+                SmoothMapForward(map);
+            }
+            else
+            {
+                SmoothMapBackwards(map);
+            }
+
+            smoothForward = !smoothForward;
+        }
+    }
+
+    private static void SmoothMapForward(bool[,] map)
+    {
+        int width = map.GetLength(0);
+        int height = map.GetLength(1);
+
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
-                int neighborWallTilesCount = GetSurroundingWallCount(x, y);
-
-                if (x == 0 || x == width - 1 || y == 0 || y == height - 1 || neighborWallTilesCount > 4)
-                {
-                    map[x, y] = 1;
-                }
-                else if (neighborWallTilesCount < 4)
-                {
-                    map[x, y] = 0;
-                }
+                SmoothCoordinate(map, x, y);
             }
         }
     }
 
-    private int GetSurroundingWallCount(int gridX, int gridY)
+    private static void SmoothMapBackwards(bool[,] map)
     {
-        return map.GetNeighbors(gridX, gridY).Count(a => a == 1);
+        int width = map.GetLength(0);
+        int height = map.GetLength(1);
+
+        for (int x = width - 1; x >= 0; x--)
+        {
+            for (int y = height - 1; y >= 0; y--)
+            {
+                SmoothCoordinate(map, x, y);
+            }
+        }
     }
 
-    private void OnDrawGizmos()
+    private static void SmoothCoordinate(bool[,] map, int x, int y)
     {
-        //if (map != null)
-        //{
-        //    for (int x = 0; x < width; x++)
-        //    {
-        //        for (int y = 0; y < height; y++)
-        //        {
-        //            Gizmos.color = map[x, y] == 1 ? Color.black : Color.white;
-        //            Vector2 pos = new Vector2(-width / 2 + x + 0.5f, -height / 2 + y + 0.5f);
-        //            Gizmos.DrawCube(pos, Vector2.one);
-        //        }
-        //    }
-        //}
+        int width = map.GetLength(0);
+        int height = map.GetLength(1);
+        int neighborWallsCount = map.GetNeighbors(x, y).Count(a => a);
+
+        if (x == 0 || x == width - 1 || y == 0 || y == height - 1 || neighborWallsCount > 4)
+        {
+            map[x, y] = true;
+        }
+        else if (neighborWallsCount < 4)
+        {
+            map[x, y] = false;
+        }
     }
 }

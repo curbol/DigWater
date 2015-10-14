@@ -2,11 +2,11 @@
 
 public static class MeshGenerator
 {
-    public static Mesh GenerateMesh(int[,] map, float nodeSize, int isActiveKey = 1)
+    public static Mesh GenerateMarchingSquaresMesh(bool[,] map, float nodeSize)
     {
         Mesh mesh = new Mesh();
         MeshInfo meshInfo = new MeshInfo();
-        MarchingSquare[,] marchingSquares = CreateMarchingSquareGrid(map, nodeSize, isActiveKey);
+        MarchingSquare[,] marchingSquares = CreateMarchingSquareGrid(map, nodeSize);
 
         for (int x = 0; x < marchingSquares.GetLength(0); x++)
         {
@@ -23,7 +23,7 @@ public static class MeshGenerator
         return mesh;
     }
 
-    private static MarchingSquare[,] CreateMarchingSquareGrid(int[,] map, float nodeSize, int isActiveKey)
+    private static MarchingSquare[,] CreateMarchingSquareGrid(bool[,] map, float nodeSize)
     {
         MarchingSquare[,] squares;
 
@@ -38,10 +38,10 @@ public static class MeshGenerator
         {
             for (int y = 0; y < nodeCountY - 1; y++)
             {
-                bool topLeftIsActive = map[x, y + 1] == isActiveKey;
-                bool topRightIsActive = map[x + 1, y + 1] == isActiveKey;
-                bool bottomRightIsActive = map[x + 1, y] == isActiveKey;
-                bool bottomLeftIsActive = map[x, y] == isActiveKey;
+                bool topLeftIsActive = map[x, y + 1];
+                bool topRightIsActive = map[x + 1, y + 1];
+                bool bottomRightIsActive = map[x + 1, y];
+                bool bottomLeftIsActive = map[x, y];
                 Vector2 squarePosition = new Vector2(-mapWidth / 2f + x * nodeSize + nodeSize, -mapHeight / 2f + y * nodeSize + nodeSize);
 
                 squares[x, y] = new MarchingSquare(squarePosition, nodeSize, topLeftIsActive, topRightIsActive, bottomRightIsActive, bottomLeftIsActive);
