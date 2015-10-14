@@ -69,7 +69,25 @@ public class MapGenerator : MonoBehaviour
         RandomFillMap(map, Seed, RandomFillPercent);
         SmoothMap(map);
 
-        GetComponent<MeshFilter>().mesh = MeshGenerator.GenerateMarchingSquaresMesh(map, NodeSize);
+        int borderSize = 5;
+        bool[,] borderedMap = new bool[width + borderSize * 2, height + borderSize * 2];
+
+        for (int x = 0; x < borderedMap.GetLength(0); x++)
+        {
+            for (int y = 0; y < borderedMap.GetLength(1); y++)
+            {
+                if (x >= borderSize && x < width + borderSize && y >= borderSize && y < height + borderSize)
+                {
+                    borderedMap[x,y] = map[x - borderSize, y - borderSize];
+                }
+                else
+                {
+                    borderedMap[x, y] = true;
+                }
+            }
+        }
+
+        GetComponent<MeshFilter>().mesh = MeshGenerator.GenerateMarchingSquaresMesh(borderedMap, NodeSize);
     }
 
     private void Start()
@@ -87,22 +105,13 @@ public class MapGenerator : MonoBehaviour
 
     private static void RandomFillMap(bool[,] map, int seed, int randomFillPercent)
     {
-        int width = map.GetLength(0);
-        int height = map.GetLength(1);
         System.Random random = new System.Random(seed);
 
-        for (int x = 0; x < width; x++)
+        for (int x = 0; x < map.GetLength(0); x++)
         {
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < map.GetLength(1); y++)
             {
-                if (x == 0 || x == width - 1 || y == 0 || y == height - 1)
-                {
-                    map[x, y] = true;
-                }
-                else
-                {
-                    map[x, y] = random.Next(0, 100) < randomFillPercent;
-                }
+                map[x, y] = random.Next(0, 100) < randomFillPercent;
             }
         }
     }
@@ -127,12 +136,9 @@ public class MapGenerator : MonoBehaviour
 
     private static void SmoothMapForward(bool[,] map)
     {
-        int width = map.GetLength(0);
-        int height = map.GetLength(1);
-
-        for (int x = 0; x < width; x++)
+        for (int x = 0; x < map.GetLength(0); x++)
         {
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < map.GetLength(1); y++)
             {
                 SmoothCoordinate(map, x, y);
             }
@@ -141,12 +147,9 @@ public class MapGenerator : MonoBehaviour
 
     private static void SmoothMapBackwards(bool[,] map)
     {
-        int width = map.GetLength(0);
-        int height = map.GetLength(1);
-
-        for (int x = width - 1; x >= 0; x--)
+        for (int x = map.GetLength(0) - 1; x >= 0; x--)
         {
-            for (int y = height - 1; y >= 0; y--)
+            for (int y = map.GetLength(1) - 1; y >= 0; y--)
             {
                 SmoothCoordinate(map, x, y);
             }

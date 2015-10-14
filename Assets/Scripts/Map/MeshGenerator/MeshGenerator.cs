@@ -5,19 +5,19 @@ public static class MeshGenerator
     public static Mesh GenerateMarchingSquaresMesh(bool[,] map, float nodeSize)
     {
         Mesh mesh = new Mesh();
-        MeshInfo meshInfo = new MeshInfo();
+        MeshData meshData = new MeshData();
         MarchingSquare[,] marchingSquares = CreateMarchingSquareGrid(map, nodeSize);
 
         for (int x = 0; x < marchingSquares.GetLength(0); x++)
         {
             for (int y = 0; y < marchingSquares.GetLength(1); y++)
             {
-                meshInfo.AddMarchingSquare(marchingSquares[x, y]);
+                meshData.AddMarchingSquare(marchingSquares[x, y]);
             }
         }
 
-        mesh.vertices = meshInfo.Vertices.ToArray();
-        mesh.triangles = meshInfo.Triangles.ToArray();
+        mesh.vertices = meshData.Vertices.ToArray();
+        mesh.triangles = meshData.Triangles.ToArray();
         mesh.RecalculateNormals();
 
         return mesh;
@@ -25,15 +25,13 @@ public static class MeshGenerator
 
     private static MarchingSquare[,] CreateMarchingSquareGrid(bool[,] map, float nodeSize)
     {
-        MarchingSquare[,] squares;
-
         int nodeCountX = map.GetLength(0);
         int nodeCountY = map.GetLength(1);
-
         float mapWidth = nodeCountX * nodeSize;
         float mapHeight = nodeCountY * nodeSize;
 
-        squares = new MarchingSquare[nodeCountX - 1, nodeCountY - 1];
+        MarchingSquare[,] squares = new MarchingSquare[nodeCountX - 1, nodeCountY - 1];
+
         for (int x = 0; x < nodeCountX - 1; x++)
         {
             for (int y = 0; y < nodeCountY - 1; y++)
@@ -51,94 +49,87 @@ public static class MeshGenerator
         return squares;
     }
 
-    private static void AddMarchingSquare(this MeshInfo meshInfo, MarchingSquare square)
+    private static void AddMarchingSquare(this MeshData meshData, MarchingSquare square)
     {
         switch (square.Configuration)
         {
-            // 0 points
             case 0:
                 break;
-
-            // 1 point
             case 1:
-                meshInfo.AddPoints(square.CenterLeft, square.CenterBottom, square.BottomLeft);
+                meshData.AddPoints(square.CenterLeft, square.CenterBottom, square.BottomLeft);
                 break;
             case 2:
-                meshInfo.AddPoints(square.BottomRight, square.CenterBottom, square.CenterRight);
+                meshData.AddPoints(square.BottomRight, square.CenterBottom, square.CenterRight);
+                break;
+            case 3:
+                meshData.AddPoints(square.CenterRight, square.BottomRight, square.BottomLeft, square.CenterLeft);
                 break;
             case 4:
-                meshInfo.AddPoints(square.TopRight, square.CenterRight, square.CenterTop);
-                break;
-            case 8:
-                meshInfo.AddPoints(square.TopLeft, square.CenterTop, square.CenterLeft);
-                break;
-
-            // 2 points
-            case 3:
-                meshInfo.AddPoints(square.CenterRight, square.BottomRight, square.BottomLeft, square.CenterLeft);
+                meshData.AddPoints(square.TopRight, square.CenterRight, square.CenterTop);
                 break;
             case 5:
-                meshInfo.AddPoints(square.CenterTop, square.TopRight, square.CenterRight, square.CenterBottom, square.BottomLeft, square.CenterLeft);
+                meshData.AddPoints(square.CenterTop, square.TopRight, square.CenterRight, square.CenterBottom, square.BottomLeft, square.CenterLeft);
                 break;
             case 6:
-                meshInfo.AddPoints(square.CenterTop, square.TopRight, square.BottomRight, square.CenterBottom);
+                meshData.AddPoints(square.CenterTop, square.TopRight, square.BottomRight, square.CenterBottom);
+                break;
+            case 7:
+                meshData.AddPoints(square.CenterTop, square.TopRight, square.BottomRight, square.BottomLeft, square.CenterLeft);
+                break;
+            case 8:
+                meshData.AddPoints(square.TopLeft, square.CenterTop, square.CenterLeft);
                 break;
             case 9:
-                meshInfo.AddPoints(square.TopLeft, square.CenterTop, square.CenterBottom, square.BottomLeft);
+                meshData.AddPoints(square.TopLeft, square.CenterTop, square.CenterBottom, square.BottomLeft);
                 break;
             case 10:
-                meshInfo.AddPoints(square.TopLeft, square.CenterTop, square.CenterRight, square.BottomRight, square.CenterBottom, square.CenterLeft);
-                break;
-            case 12:
-                meshInfo.AddPoints(square.TopLeft, square.TopRight, square.CenterRight, square.CenterLeft);
-                break;
-
-            // 3 points
-            case 7:
-                meshInfo.AddPoints(square.CenterTop, square.TopRight, square.BottomRight, square.BottomLeft, square.CenterLeft);
+                meshData.AddPoints(square.TopLeft, square.CenterTop, square.CenterRight, square.BottomRight, square.CenterBottom, square.CenterLeft);
                 break;
             case 11:
-                meshInfo.AddPoints(square.TopLeft, square.CenterTop, square.CenterRight, square.BottomRight, square.BottomLeft);
+                meshData.AddPoints(square.TopLeft, square.CenterTop, square.CenterRight, square.BottomRight, square.BottomLeft);
+                break;
+            case 12:
+                meshData.AddPoints(square.TopLeft, square.TopRight, square.CenterRight, square.CenterLeft);
                 break;
             case 13:
-                meshInfo.AddPoints(square.TopLeft, square.TopRight, square.CenterRight, square.CenterBottom, square.BottomLeft);
+                meshData.AddPoints(square.TopLeft, square.TopRight, square.CenterRight, square.CenterBottom, square.BottomLeft);
                 break;
             case 14:
-                meshInfo.AddPoints(square.TopLeft, square.TopRight, square.BottomRight, square.CenterBottom, square.CenterLeft);
+                meshData.AddPoints(square.TopLeft, square.TopRight, square.BottomRight, square.CenterBottom, square.CenterLeft);
                 break;
-
-            // 4 points
             case 15:
-                meshInfo.AddPoints(square.TopLeft, square.TopRight, square.BottomRight, square.BottomLeft);
+                meshData.AddPoints(square.TopLeft, square.TopRight, square.BottomRight, square.BottomLeft);
                 break;
         }
     }
 
-    private static void AddPoints(this MeshInfo meshInfo, params MeshVertex[] points)
+    private static void AddPoints(this MeshData meshData, params MeshVertex[] points)
     {
-        meshInfo.AssignVertices(points);
-        meshInfo.AddTriangles(points);
+        meshData.AssignVertices(points);
+        meshData.AddTriangles(points);
     }
 
-    private static void AssignVertices(this MeshInfo meshInfo, params MeshVertex[] points)
+    private static void AssignVertices(this MeshData meshData, params MeshVertex[] points)
     {
         for (int i = 0; i < points.Length; i++)
         {
             if (points[i].VertexIndex == null)
             {
-                points[i].VertexIndex = meshInfo.Vertices.Count;
-                meshInfo.Vertices.Add(points[i].Position);
+                points[i].VertexIndex = meshData.Vertices.Count;
+                meshData.Vertices.Add(points[i].Position);
             }
         }
     }
 
-    private static void AddTriangles(this MeshInfo meshInfo, params MeshVertex[] points)
+    private static void AddTriangles(this MeshData meshData, params MeshVertex[] points)
     {
         for (int i = 3; i <= points.Length; i++)
         {
-            meshInfo.Triangles.Add((int)points[0].VertexIndex);
-            meshInfo.Triangles.Add((int)points[i - 2].VertexIndex);
-            meshInfo.Triangles.Add((int)points[i - 1].VertexIndex);
+            int vertexIndexA = (int)points[0].VertexIndex;
+            int vertexIndexB = (int)points[i - 2].VertexIndex;
+            int vertexIndexC = (int)points[i - 1].VertexIndex;
+
+            meshData.AddTriangle(vertexIndexA, vertexIndexB, vertexIndexC);
         }
     }
 }

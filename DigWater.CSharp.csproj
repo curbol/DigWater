@@ -72,8 +72,8 @@
     <Compile Include="Assets\Scripts\Enum\SquareVertex.cs" />
     <Compile Include="Assets\Scripts\Map\MapGenerator.cs" />
     <Compile Include="Assets\Scripts\Map\MeshGenerator\MarchingSquare.cs" />
+    <Compile Include="Assets\Scripts\Map\MeshGenerator\MeshData.cs" />
     <Compile Include="Assets\Scripts\Map\MeshGenerator\MeshGenerator.cs" />
-    <Compile Include="Assets\Scripts\Map\MeshGenerator\MeshInfo.cs" />
     <Compile Include="Assets\Scripts\Map\MeshGenerator\MeshVertex.cs" />
     <Compile Include="Assets\Scripts\Utility\GridArrayExtensions.cs" />
   </ItemGroup>
