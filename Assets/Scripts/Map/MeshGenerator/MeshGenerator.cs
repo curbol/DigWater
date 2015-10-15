@@ -2,47 +2,53 @@
 
 public static class MeshGenerator
 {
-    public static Mesh GenerateMarchingSquaresMesh(bool[,] map, float nodeSize)
+    public static Mesh GenerateMarchingSquaresMesh(bool[,] map)
     {
         Mesh mesh = new Mesh();
         MeshData meshData = new MeshData();
-        MarchingSquare[,] marchingSquares = CreateMarchingSquareGrid(map, nodeSize);
+        MarchingSquare[,] marchingSquares = CreateMarchingSquareGrid(map);
 
-        for (int x = 0; x < marchingSquares.GetLength(0); x++)
+        if (marchingSquares != null)
         {
-            for (int y = 0; y < marchingSquares.GetLength(1); y++)
+            for (int x = 0; x < marchingSquares.GetLength(0); x++)
             {
-                meshData.AddMarchingSquare(marchingSquares[x, y]);
+                for (int y = 0; y < marchingSquares.GetLength(1); y++)
+                {
+                    meshData.AddMarchingSquare(marchingSquares[x, y]);
+                }
             }
-        }
 
-        mesh.vertices = meshData.Vertices.ToArray();
-        mesh.triangles = meshData.Triangles.ToArray();
-        mesh.RecalculateNormals();
+            mesh.vertices = meshData.Vertices.ToArray();
+            mesh.triangles = meshData.Triangles.ToArray();
+            mesh.RecalculateNormals();
+        }
 
         return mesh;
     }
 
-    private static MarchingSquare[,] CreateMarchingSquareGrid(bool[,] map, float nodeSize)
+    private static MarchingSquare[,] CreateMarchingSquareGrid(bool[,] map)
     {
-        int nodeCountX = map.GetLength(0);
-        int nodeCountY = map.GetLength(1);
-        float mapWidth = nodeCountX * nodeSize;
-        float mapHeight = nodeCountY * nodeSize;
+        MarchingSquare[,] squares = null;
 
-        MarchingSquare[,] squares = new MarchingSquare[nodeCountX - 1, nodeCountY - 1];
+        int mapWidth = map.GetLength(0);
+        int mapHeight = map.GetLength(1);
 
-        for (int x = 0; x < nodeCountX - 1; x++)
+        if (mapWidth > 0 && mapHeight > 0)
         {
-            for (int y = 0; y < nodeCountY - 1; y++)
-            {
-                bool topLeftIsActive = map[x, y + 1];
-                bool topRightIsActive = map[x + 1, y + 1];
-                bool bottomRightIsActive = map[x + 1, y];
-                bool bottomLeftIsActive = map[x, y];
-                Vector2 squarePosition = new Vector2(-mapWidth / 2f + x * nodeSize + nodeSize, -mapHeight / 2f + y * nodeSize + nodeSize);
+            squares = new MarchingSquare[mapWidth - 1, mapHeight - 1];
 
-                squares[x, y] = new MarchingSquare(squarePosition, nodeSize, topLeftIsActive, topRightIsActive, bottomRightIsActive, bottomLeftIsActive);
+            for (int x = 0; x < mapWidth - 1; x++)
+            {
+                for (int y = 0; y < mapHeight - 1; y++)
+                {
+                    bool topLeftIsActive = map[x, y + 1];
+                    bool topRightIsActive = map[x + 1, y + 1];
+                    bool bottomRightIsActive = map[x + 1, y];
+                    bool bottomLeftIsActive = map[x, y];
+                    Vector2 squarePosition = new Vector2(-mapWidth / 2f + x + 1, -mapHeight / 2f + y + 1);
+
+                    squares[x, y] = new MarchingSquare(squarePosition, topLeftIsActive, topRightIsActive, bottomRightIsActive, bottomLeftIsActive);
+                }
             }
         }
 
@@ -129,7 +135,7 @@ public static class MeshGenerator
             int vertexIndexB = (int)points[i - 2].VertexIndex;
             int vertexIndexC = (int)points[i - 1].VertexIndex;
 
-            meshData.AddTriangle(vertexIndexA, vertexIndexB, vertexIndexC);
+            meshData.Triangles.AddRange(new int[] { vertexIndexA, vertexIndexB, vertexIndexC });
         }
     }
 }

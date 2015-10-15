@@ -1,106 +1,39 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(MeshFilter))]
 public class MapGenerator : MonoBehaviour
 {
-    [SerializeField]
-    private int seed;
-    public int Seed
-    {
-        get
-        {
-            return seed;
-        }
+    public int seed;
+    public int mapWidth;
+    public int mapHeight;
 
-        set
-        {
-            seed = value;
-        }
-    }
-
-    [SerializeField]
-    private int width;
-    public int Width
-    {
-        get
-        {
-            return width;
-        }
-    }
-
-    [SerializeField]
-    private int height;
-    public int Height
-    {
-        get
-        {
-            return height;
-        }
-    }
-
-    [SerializeField]
     [Range(.1f, 2f)]
-    private float nodeSize = 1;
-    public float NodeSize
-    {
-        get
-        {
-            return nodeSize;
-        }
-    }
+    public float mapScale = 1;
 
-    [SerializeField]
     [Range(25, 75)]
-    private int randomFillPercent;
-    public int RandomFillPercent
-    {
-        get
-        {
-            return randomFillPercent;
-        }
-    }
+    public int randomFillPercent;
+
+    [Range(0, 10)]
+    public int borderThickness;
 
     public void GenerateMap()
     {
-        bool[,] map = new bool[Width, Height];
+        bool[,] map = new bool[mapWidth, mapHeight];
 
-        RandomFillMap(map, Seed, RandomFillPercent);
-        SmoothMap(map);
+        transform.localScale = Vector3.one * mapScale;
+        RandomFillMap(map, seed, randomFillPercent);
+        SetMapBorder(map, borderThickness);
+        SmoothMap(map, seed);
 
-        int borderSize = 5;
-        bool[,] borderedMap = new bool[width + borderSize * 2, height + borderSize * 2];
-
-        for (int x = 0; x < borderedMap.GetLength(0); x++)
-        {
-            for (int y = 0; y < borderedMap.GetLength(1); y++)
-            {
-                if (x >= borderSize && x < width + borderSize && y >= borderSize && y < height + borderSize)
-                {
-                    borderedMap[x,y] = map[x - borderSize, y - borderSize];
-                }
-                else
-                {
-                    borderedMap[x, y] = true;
-                }
-            }
-        }
-
-        GetComponent<MeshFilter>().mesh = MeshGenerator.GenerateMarchingSquaresMesh(borderedMap, NodeSize);
+        GetComponent<MeshFilter>().mesh = MeshGenerator.GenerateMarchingSquaresMesh(map);
     }
 
     private void Start()
     {
         GenerateMap();
-    }
-
-    private void Update()
-    {
-        if (Input.GetMouseButtonDown((int)MouseButton.Left))
-        {
-            GenerateMap();
-        }
     }
 
     private static void RandomFillMap(bool[,] map, int seed, int randomFillPercent)
@@ -116,40 +49,69 @@ public class MapGenerator : MonoBehaviour
         }
     }
 
-    private static void SmoothMap(bool[,] map)
+    private static void SetMapBorder(bool[,] map, int borderThickness)
     {
-        bool smoothForward = true;
-        for (int i = 0; i < 5; i++)
-        {
-            if (smoothForward)
-            {
-                SmoothMapForward(map);
-            }
-            else
-            {
-                SmoothMapBackwards(map);
-            }
+        int mapWidth = map.GetLength(0);
+        int mapHeight = map.GetLength(1);
 
-            smoothForward = !smoothForward;
+        if (borderThickness  > 0 && mapWidth > borderThickness * 2 && mapHeight > borderThickness * 2)
+        {
+            for (int x = 0; x < mapWidth; x++)
+            {
+                for (int y = 0; y < mapHeight; y++)
+                {
+                    map[x, y] = true;
+
+                    if (x > borderThickness - 1 && x < mapWidth - borderThickness && y == borderThickness - 1)
+                    {
+                        y = mapHeight - borderThickness;
+                    }
+                }
+            }
         }
     }
 
-    private static void SmoothMapForward(bool[,] map)
+    private static void SmoothMap(bool[,] map, int seed)
     {
-        for (int x = 0; x < map.GetLength(0); x++)
+        RandomSmooth(map, seed);
+        SmoothMapFromCorner(map, SquareVertex.TopLeft);
+        SmoothMapFromCorner(map, SquareVertex.BottomRight);
+        SmoothMapFromCorner(map, SquareVertex.TopRight);
+        SmoothMapFromCorner(map, SquareVertex.BottomLeft);
+    }
+
+    private static void RandomSmooth(bool[,] map, int seed)
+    {
+        int[] rangeX = Enumerable.Range(0, map.GetLength(0) - 1).ToArray().Shuffle(seed);
+        int[] rangeY = Enumerable.Range(0, map.GetLength(1) - 1).ToArray().Shuffle(seed);
+
+        foreach (int x in rangeX)
         {
-            for (int y = 0; y < map.GetLength(1); y++)
+            foreach (int y in rangeY)
             {
                 SmoothCoordinate(map, x, y);
             }
         }
     }
 
-    private static void SmoothMapBackwards(bool[,] map)
+    private static void SmoothMapFromCorner(bool[,] map, SquareVertex corner)
     {
-        for (int x = map.GetLength(0) - 1; x >= 0; x--)
+        IEnumerable<int> rangeX = Enumerable.Range(0, map.GetLength(0) - 1);
+        IEnumerable<int> rangeY = Enumerable.Range(0, map.GetLength(1) - 1);
+
+        if (corner == SquareVertex.TopRight || corner == SquareVertex.BottomRight)
         {
-            for (int y = map.GetLength(1) - 1; y >= 0; y--)
+            rangeX = rangeX.Reverse();
+        }
+
+        if (corner == SquareVertex.BottomLeft || corner == SquareVertex.BottomRight)
+        {
+            rangeY = rangeY.Reverse();
+        }
+
+        foreach (int x in rangeX)
+        {
+            foreach (int y in rangeY)
             {
                 SmoothCoordinate(map, x, y);
             }
@@ -158,11 +120,11 @@ public class MapGenerator : MonoBehaviour
 
     private static void SmoothCoordinate(bool[,] map, int x, int y)
     {
-        int width = map.GetLength(0);
-        int height = map.GetLength(1);
+        int mapWidth = map.GetLength(0);
+        int mapHeight = map.GetLength(1);
         int neighborWallsCount = map.GetNeighbors(x, y).Count(a => a);
 
-        if (x == 0 || x == width - 1 || y == 0 || y == height - 1 || neighborWallsCount > 4)
+        if (x == 0 || x == mapWidth - 1 || y == 0 || y == mapHeight - 1 || neighborWallsCount > 4)
         {
             map[x, y] = true;
         }

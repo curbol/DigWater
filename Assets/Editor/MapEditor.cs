@@ -15,7 +15,7 @@ public class MapEditor : Editor
 
         if (randomSeed)
         {
-            map.Seed = new System.Random().Next(0, 1000);
+            map.seed = new System.Random().Next(0, 1000);
             map.GenerateMap();
         }
 

@@ -14,17 +14,17 @@ public class MarchingSquare
 
     public int Configuration { get; set; }
 
-    public MarchingSquare(Vector2 squarePosition, float nodeSize, bool topLeftIsActive = false, bool topRightIsActive = false, bool bottomRightIsActive = false, bool bottomLeftIsActive = false)
+    public MarchingSquare(Vector2 squarePosition, bool topLeftIsActive = false, bool topRightIsActive = false, bool bottomRightIsActive = false, bool bottomLeftIsActive = false)
     {
-        TopLeft = new MeshVertex(squarePosition + new Vector2(-nodeSize / 2f, nodeSize / 2f));
-        TopRight = new MeshVertex(squarePosition + new Vector2(nodeSize / 2f, nodeSize / 2f));
-        BottomRight = new MeshVertex(squarePosition + new Vector2(nodeSize / 2f, -nodeSize / 2f));
-        BottomLeft = new MeshVertex(squarePosition + new Vector2(-nodeSize / 2f, -nodeSize / 2f));
+        TopLeft = new MeshVertex(squarePosition + new Vector2(-0.5f, 0.5f));
+        TopRight = new MeshVertex(squarePosition + new Vector2(0.5f, 0.5f));
+        BottomRight = new MeshVertex(squarePosition + new Vector2(0.5f, -0.5f));
+        BottomLeft = new MeshVertex(squarePosition + new Vector2(-0.5f, -0.5f));
 
-        CenterTop = new MeshVertex(squarePosition + Vector2.up * nodeSize / 2f);
-        CenterRight = new MeshVertex(squarePosition + Vector2.right * nodeSize / 2f);
-        CenterBottom = new MeshVertex(squarePosition + Vector2.down * nodeSize / 2f);
-        CenterLeft = new MeshVertex(squarePosition + Vector2.left * nodeSize / 2f);
+        CenterTop = new MeshVertex(squarePosition + Vector2.up * 0.5f);
+        CenterRight = new MeshVertex(squarePosition + Vector2.right * 0.5f);
+        CenterBottom = new MeshVertex(squarePosition + Vector2.down * 0.5f);
+        CenterLeft = new MeshVertex(squarePosition + Vector2.left * 0.5f);
 
         SetConfiguration(topLeftIsActive, topRightIsActive, bottomRightIsActive, bottomLeftIsActive);
     }
