@@ -2231,6 +2231,12 @@
       </summary>
       <param name="start"></param>
     </member>
+    <member name="M:UnityEngine.Networking.NetworkManager.UseExternalClient(UnityEngine.Networking.NetworkClient)">
+      <summary>
+        <para>This allows the NetworkManager to use a client object created externally to the NetworkManager instead of using StartClient().</para>
+      </summary>
+      <param name="externalClient">The NetworkClient object to use.</param>
+    </member>
     <member name="T:UnityEngine.Networking.NetworkManagerHUD">
       <summary>
         <para>An extension for the NetworkManager that displays a default HUD for controlling the network state of the game.</para>

@@ -4660,6 +4660,16 @@ Characters 0-9, . (dot), and - (dash / minus sign) are allowed. The dash is only
         <para>The amount of elasticity to use when the content moves beyond the scroll rect.</para>
       </summary>
     </member>
+    <member name="P:UnityEngine.UI.ScrollRect.flexibleHeight">
+      <summary>
+        <para>Called by the layout system.</para>
+      </summary>
+    </member>
+    <member name="P:UnityEngine.UI.ScrollRect.flexibleWidth">
+      <summary>
+        <para>Called by the layout system.</para>
+      </summary>
+    </member>
     <member name="P:UnityEngine.UI.ScrollRect.horizontal">
       <summary>
         <para>Should horizontal scrolling be enabled?</para>
@@ -4690,6 +4700,21 @@ Characters 0-9, . (dot), and - (dash / minus sign) are allowed. The dash is only
         <para>Should movement inertia be enabled?</para>
       </summary>
     </member>
+    <member name="P:UnityEngine.UI.ScrollRect.layoutPriority">
+      <summary>
+        <para>Called by the layout system.</para>
+      </summary>
+    </member>
+    <member name="P:UnityEngine.UI.ScrollRect.minHeight">
+      <summary>
+        <para>Called by the layout system.</para>
+      </summary>
+    </member>
+    <member name="P:UnityEngine.UI.ScrollRect.minWidth">
+      <summary>
+        <para>Called by the layout system.</para>
+      </summary>
+    </member>
     <member name="P:UnityEngine.UI.ScrollRect.movementType">
       <summary>
         <para>The behavior to use when the content moves beyond the scroll rect.</para>
@@ -4703,6 +4728,16 @@ Characters 0-9, . (dot), and - (dash / minus sign) are allowed. The dash is only
     <member name="P:UnityEngine.UI.ScrollRect.onValueChanged">
       <summary>
         <para>Callback executed when the scroll position of the slider is changed.</para>
+      </summary>
+    </member>
+    <member name="P:UnityEngine.UI.ScrollRect.preferredHeight">
+      <summary>
+        <para>Called by the layout system.</para>
+      </summary>
+    </member>
+    <member name="P:UnityEngine.UI.ScrollRect.preferredWidth">
+      <summary>
+        <para>Called by the layout system.</para>
       </summary>
     </member>
     <member name="P:UnityEngine.UI.ScrollRect.scrollSensitivity">
@@ -4743,6 +4778,16 @@ Characters 0-9, . (dot), and - (dash / minus sign) are allowed. The dash is only
     <member name="P:UnityEngine.UI.ScrollRect.viewport">
       <summary>
         <para>Reference to the viewport RectTransform that is the parent of the content RectTransform.</para>
+      </summary>
+    </member>
+    <member name="M:UnityEngine.UI.ScrollRect.CalculateLayoutInputHorizontal">
+      <summary>
+        <para>Called by the layout system.</para>
+      </summary>
+    </member>
+    <member name="M:UnityEngine.UI.ScrollRect.CalculateLayoutInputVertical">
+      <summary>
+        <para>Called by the layout system.</para>
       </summary>
     </member>
     <member name="M:UnityEngine.UI.ScrollRect.IsActive">
