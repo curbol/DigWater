@@ -1,17 +1,33 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
+﻿using UnityEngine;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(MeshFilter))]
 public class MapGenerator : MonoBehaviour
 {
+    private SoilNode[,] map;
+
     public int seed;
-    public int mapWidth;
-    public int mapHeight;
+    public int sizeX;
+    public int sizeY;
 
     [Range(.1f, 2f)]
     public float mapScale = 1;
+
+    private float Width
+    {
+        get
+        {
+            return sizeX * mapScale;
+        }
+    }
+
+    private float Height
+    {
+        get
+        {
+            return sizeY * mapScale;
+        }
+    }
 
     [Range(25, 75)]
     public int randomFillPercent;
@@ -21,14 +37,10 @@ public class MapGenerator : MonoBehaviour
 
     public void GenerateMap()
     {
-        bool[,] map = new bool[mapWidth, mapHeight];
-
         transform.localScale = Vector3.one * mapScale;
-        RandomFillMap(map, seed, randomFillPercent);
-        SetMapBorder(map, borderThickness);
-        SmoothMap(map, seed);
 
-        GetComponent<MeshFilter>().mesh = MeshGenerator.GenerateMarchingSquaresMesh(map);
+        map = BuildMap();
+        DrawMesh();
     }
 
     private void Start()
@@ -36,101 +48,71 @@ public class MapGenerator : MonoBehaviour
         GenerateMap();
     }
 
-    private static void RandomFillMap(bool[,] map, int seed, int randomFillPercent)
+    private void Update()
     {
-        System.Random random = new System.Random(seed);
-
-        for (int x = 0; x < map.GetLength(0); x++)
+        if (Input.GetMouseButton((int)MouseButton.Left))
         {
-            for (int y = 0; y < map.GetLength(1); y++)
+            Dig();
+            DrawMesh();
+        }
+    }
+
+    private SoilNode[,] BuildMap()
+    {
+        SoilNode[,] map = new SoilNode[sizeX, sizeY];
+        SoilType[,] soilTypeMap = new SoilType[sizeX, sizeY];
+
+        soilTypeMap.RandomFill(SoilType.Dirt, randomFillPercent, seed);
+        soilTypeMap.SetBorder(SoilType.Dirt, borderThickness);
+        soilTypeMap.Smooth(SoilType.Dirt, SoilType.Default, seed);
+
+        for (int x = 0; x < sizeX; x++)
+        {
+            for (int y = 0; y < sizeY; y++)
             {
-                map[x, y] = random.Next(0, 100) < randomFillPercent;
+                map[x, y] = new SoilNode(x, y, soilTypeMap[x, y]);
             }
         }
+
+        return map;
     }
 
-    private static void SetMapBorder(bool[,] map, int borderThickness)
+    private void DrawMesh()
     {
-        int mapWidth = map.GetLength(0);
-        int mapHeight = map.GetLength(1);
+        bool[,] bitMap = new bool[sizeX, sizeY];
 
-        if (borderThickness  > 0 && mapWidth > borderThickness * 2 && mapHeight > borderThickness * 2)
+        for (int x = 0; x < sizeX; x++)
         {
-            for (int x = 0; x < mapWidth; x++)
+            for (int y = 0; y < sizeY; y++)
             {
-                for (int y = 0; y < mapHeight; y++)
-                {
-                    map[x, y] = true;
-
-                    if (x > borderThickness - 1 && x < mapWidth - borderThickness && y == borderThickness - 1)
-                    {
-                        y = mapHeight - borderThickness;
-                    }
-                }
+                bitMap[x, y] = map[x, y].SoilType == SoilType.Dirt;
             }
         }
+
+        GetComponent<MeshFilter>().mesh = MeshGenerator.GenerateMarchingSquaresMesh(bitMap);
     }
 
-    private static void SmoothMap(bool[,] map, int seed)
+    private void Dig()
     {
-        RandomSmooth(map, seed);
-        SmoothMapFromCorner(map, SquareVertex.TopLeft);
-        SmoothMapFromCorner(map, SquareVertex.BottomRight);
-        SmoothMapFromCorner(map, SquareVertex.TopRight);
-        SmoothMapFromCorner(map, SquareVertex.BottomLeft);
-    }
+        Vector2 positionToDig = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        SoilNode nodeToDig = GetNodeFromPosition(positionToDig);
 
-    private static void RandomSmooth(bool[,] map, int seed)
-    {
-        int[] rangeX = Enumerable.Range(0, map.GetLength(0) - 1).ToArray().Shuffle(seed);
-        int[] rangeY = Enumerable.Range(0, map.GetLength(1) - 1).ToArray().Shuffle(seed);
+        nodeToDig.SoilType = SoilType.Default;
 
-        foreach (int x in rangeX)
+        foreach (SoilNode neighbor in map.GetNeighbors(nodeToDig.X, nodeToDig.Y))
         {
-            foreach (int y in rangeY)
-            {
-                SmoothCoordinate(map, x, y);
-            }
+            neighbor.SoilType = SoilType.Default;
         }
     }
 
-    private static void SmoothMapFromCorner(bool[,] map, SquareVertex corner)
+    // TODO: Get rid of SoilNode, keep SoilType, create Coordinate class?
+    private SoilNode GetNodeFromPosition(Vector2 position)
     {
-        IEnumerable<int> rangeX = Enumerable.Range(0, map.GetLength(0) - 1);
-        IEnumerable<int> rangeY = Enumerable.Range(0, map.GetLength(1) - 1);
+        int x = Mathf.RoundToInt((sizeX - 1) / 2f + position.x);
+        int y = Mathf.RoundToInt((sizeY - 1) / 2f + position.y);
+        x = Mathf.Clamp(x, 0, sizeX - 1);
+        y = Mathf.Clamp(y, 0, sizeY - 1);
 
-        if (corner == SquareVertex.TopRight || corner == SquareVertex.BottomRight)
-        {
-            rangeX = rangeX.Reverse();
-        }
-
-        if (corner == SquareVertex.BottomLeft || corner == SquareVertex.BottomRight)
-        {
-            rangeY = rangeY.Reverse();
-        }
-
-        foreach (int x in rangeX)
-        {
-            foreach (int y in rangeY)
-            {
-                SmoothCoordinate(map, x, y);
-            }
-        }
-    }
-
-    private static void SmoothCoordinate(bool[,] map, int x, int y)
-    {
-        int mapWidth = map.GetLength(0);
-        int mapHeight = map.GetLength(1);
-        int neighborWallsCount = map.GetNeighbors(x, y).Count(a => a);
-
-        if (x == 0 || x == mapWidth - 1 || y == 0 || y == mapHeight - 1 || neighborWallsCount > 4)
-        {
-            map[x, y] = true;
-        }
-        else if (neighborWallsCount < 4)
-        {
-            map[x, y] = false;
-        }
+        return map[x, y];
     }
 }

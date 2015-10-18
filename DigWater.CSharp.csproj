@@ -57,12 +57,6 @@
     <Reference Include="UnityEngine.Networking">
       <HintPath>Library\UnityAssemblies\UnityEngine.Networking.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.Networking">
-      <HintPath>Library\UnityAssemblies\UnityEngine.Networking.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>Library\UnityAssemblies\UnityEngine.UI.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEditor">
       <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
     </Reference>
@@ -74,13 +68,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\Enum\MouseButton.cs" />
-    <Compile Include="Assets\Scripts\Enum\SquareVertex.cs" />
+    <Compile Include="Assets\Scripts\Enums\MouseButton.cs" />
+    <Compile Include="Assets\Scripts\Enums\SoilType.cs" />
+    <Compile Include="Assets\Scripts\Enums\SquareVertex.cs" />
+    <Compile Include="Assets\Scripts\Map\MapGeneration.cs" />
     <Compile Include="Assets\Scripts\Map\MapGenerator.cs" />
-    <Compile Include="Assets\Scripts\Map\MeshGenerator\MarchingSquare.cs" />
-    <Compile Include="Assets\Scripts\Map\MeshGenerator\MeshData.cs" />
-    <Compile Include="Assets\Scripts\Map\MeshGenerator\MeshGenerator.cs" />
-    <Compile Include="Assets\Scripts\Map\MeshGenerator\MeshVertex.cs" />
+    <Compile Include="Assets\Scripts\Map\MeshGeneration\MarchingSquare.cs" />
+    <Compile Include="Assets\Scripts\Map\MeshGeneration\MeshData.cs" />
+    <Compile Include="Assets\Scripts\Map\MeshGeneration\MeshGenerator.cs" />
+    <Compile Include="Assets\Scripts\Map\MeshGeneration\MeshVertex.cs" />
+    <Compile Include="Assets\Scripts\Map\SoilNode.cs" />
     <Compile Include="Assets\Scripts\Utility\GridArrayExtensions.cs" />
     <Compile Include="Assets\Scripts\Utility\Shuffler.cs" />
   </ItemGroup>
