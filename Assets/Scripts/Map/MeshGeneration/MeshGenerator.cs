@@ -2,11 +2,11 @@
 
 public static class MeshGenerator
 {
-    public static Mesh GenerateMarchingSquaresMesh(bool[,] map)
+    public static Mesh GenerateMarchingSquaresMesh(this bool[,] map)
     {
         Mesh mesh = new Mesh();
         MeshData meshData = new MeshData();
-        MarchingSquare[,] marchingSquares = CreateMarchingSquareGrid(map);
+        MarchingSquare[,] marchingSquares = map.CreateMarchingSquareGrid();
 
         if (marchingSquares != null)
         {
@@ -26,28 +26,31 @@ public static class MeshGenerator
         return mesh;
     }
 
-    private static MarchingSquare[,] CreateMarchingSquareGrid(bool[,] map)
+    private static MarchingSquare[,] CreateMarchingSquareGrid(this bool[,] map)
     {
         MarchingSquare[,] squares = null;
 
-        int mapWidth = map.GetLength(0);
-        int mapHeight = map.GetLength(1);
-
-        if (mapWidth > 0 && mapHeight > 0)
+        if (map != null)
         {
-            squares = new MarchingSquare[mapWidth - 1, mapHeight - 1];
+            int mapWidth = map.GetLength(0);
+            int mapHeight = map.GetLength(1);
 
-            for (int x = 0; x < mapWidth - 1; x++)
+            if (mapWidth > 0 && mapHeight > 0)
             {
-                for (int y = 0; y < mapHeight - 1; y++)
-                {
-                    bool topLeftIsActive = map[x, y + 1];
-                    bool topRightIsActive = map[x + 1, y + 1];
-                    bool bottomRightIsActive = map[x + 1, y];
-                    bool bottomLeftIsActive = map[x, y];
-                    Vector2 squarePosition = new Vector2(-mapWidth / 2f + x + 1, -mapHeight / 2f + y + 1);
+                squares = new MarchingSquare[mapWidth - 1, mapHeight - 1];
 
-                    squares[x, y] = new MarchingSquare(squarePosition, topLeftIsActive, topRightIsActive, bottomRightIsActive, bottomLeftIsActive);
+                for (int x = 0; x < mapWidth - 1; x++)
+                {
+                    for (int y = 0; y < mapHeight - 1; y++)
+                    {
+                        bool topLeftIsActive = map[x, y + 1];
+                        bool topRightIsActive = map[x + 1, y + 1];
+                        bool bottomRightIsActive = map[x + 1, y];
+                        bool bottomLeftIsActive = map[x, y];
+                        Vector2 squarePosition = new Vector2(-mapWidth / 2f + x + 1, -mapHeight / 2f + y + 1);
+
+                        squares[x, y] = new MarchingSquare(squarePosition, topLeftIsActive, topRightIsActive, bottomRightIsActive, bottomLeftIsActive);
+                    }
                 }
             }
         }

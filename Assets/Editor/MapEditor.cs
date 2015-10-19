@@ -8,20 +8,20 @@ public class MapEditor : Editor
 
     public override void OnInspectorGUI()
     {
-        MapGenerator map = target as MapGenerator;
+        MapGenerator mapGenerator = target as MapGenerator;
         buttonClickRequired = GUILayout.Toggle(buttonClickRequired, "Require Button Click to Generate Map");
         bool buttonClicked = GUILayout.Button("Generate Map");
         bool randomSeed = GUILayout.Button("Random Seed");
 
-        if (randomSeed)
+        if (randomSeed && mapGenerator.CurrentMap != null)
         {
-            map.seed = new System.Random().Next(0, 1000);
-            map.GenerateMap();
+            mapGenerator.CurrentMap.Seed = new System.Random().Next(0, 1000);
+            mapGenerator.GenerateMap();
         }
 
         if (DrawDefaultInspector() && !buttonClickRequired || buttonClicked)
         {
-            map.GenerateMap();
+            mapGenerator.GenerateMap();
         }
     }
 }
