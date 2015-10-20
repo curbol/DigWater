@@ -55,8 +55,9 @@ public class SoilMapController : MonoBehaviour
         }
     }
 
-    private void Start()
+    private void Awake()
     {
         GenerateSoil();
+        DrawSoil();
     }
 }

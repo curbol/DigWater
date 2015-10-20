@@ -25,15 +25,18 @@ public static class GridArrayExtensions
 
     public static IEnumerable<Coordinate> GetNeighborCoordinates<T>(this T[,] grid, int gridX, int gridY, bool allowDiagonals = true)
     {
+        int sizeX = grid.GetLength(0);
+        int sizeY = grid.GetLength(1);
+
         for (int neightborX = gridX - 1; neightborX <= gridX + 1; neightborX++)
         {
             for (int neighborY = gridY - 1; neighborY <= gridY + 1; neighborY++)
             {
-                bool coordinateInRange = neightborX >= 0 && neightborX < grid.GetLength(0) && neighborY >= 0 && neighborY < grid.GetLength(1);
+                bool coordinateInBounds = neightborX >= 0 && neightborX < sizeX && neighborY >= 0 && neighborY < sizeY;
                 bool validDirection = allowDiagonals || neightborX == gridX || neighborY == gridY;
                 bool currentNode = neightborX == gridX && neighborY == gridY;
 
-                if (coordinateInRange && validDirection && !currentNode)
+                if (coordinateInBounds && validDirection && !currentNode)
                 {
                     yield return new Coordinate(neightborX, neighborY);
                 }
@@ -41,43 +44,52 @@ public static class GridArrayExtensions
         }
     }
 
-    public static IEnumerable<Coordinate> GetNeighborCoordinatesInRadius<T>(this T[,] grid, int gridX, int gridY, float radius, bool allowDiagonals = true)
+    public static IEnumerable<Coordinate> GetNeighborCoordinatesInRadius<T>(this T[,] grid, int gridX, int gridY, float radius)
     {
-        Queue<Coordinate> coordinatesToCheck = new Queue<Coordinate>();
-        HashSet<Coordinate> checkedCoordinates = new HashSet<Coordinate>();
-        Coordinate startCoordinate = new Coordinate(gridX, gridY);
+        int sizeX = grid.GetLength(0);
+        int sizeY = grid.GetLength(1);
 
-        coordinatesToCheck.Enqueue(startCoordinate);
-        while (coordinatesToCheck.Count() > 0)
+        for (int neightborX = gridX - (int)Mathf.Ceil(radius); neightborX <= gridX + (int)Mathf.Ceil(radius); neightborX++)
         {
-            Coordinate coordinateToCheck = coordinatesToCheck.Dequeue();
-            checkedCoordinates.Add(coordinateToCheck);
-
-            if (startCoordinate.EuclidianDistance(coordinateToCheck) <= radius)
+            for (int neighborY = gridY - (int)Mathf.Ceil(radius); neighborY <= gridY + (int)Mathf.Ceil(radius); neighborY++)
             {
-                if (coordinateToCheck != startCoordinate)
-                {
-                    yield return coordinateToCheck;
-                }
+                bool coordinateInBounds = neightborX >= 0 && neightborX < sizeX && neighborY >= 0 && neighborY < sizeY;
+                bool inRadius = Mathf.Pow(neightborX - gridX, 2) + Mathf.Pow(neighborY - gridY, 2) <= Mathf.Pow(radius, 2);
+                bool currentNode = neightborX == gridX && neighborY == gridY;
 
-                foreach (Coordinate neighborCoordinate in grid.GetNeighborCoordinates(coordinateToCheck.X, coordinateToCheck.Y))
+                if (coordinateInBounds && inRadius && !currentNode)
                 {
-                    if (!checkedCoordinates.Contains(neighborCoordinate) && !coordinatesToCheck.Contains(neighborCoordinate))
-                    {
-                        coordinatesToCheck.Enqueue(neighborCoordinate);
-                    }
+                    yield return new Coordinate(neightborX, neighborY);
                 }
             }
         }
     }
 
-    public static float ManhattanDistance(this Coordinate c1, Coordinate c2)
+    public static IEnumerable<Coordinate> GetFloodFillCoordinates<T>(this T[,] grid, int startX, int startY)
     {
-        return Mathf.Abs(c1.X - c2.X) + Mathf.Abs(c1.Y - c2.Y);
-    }
+        int sizeX = grid.GetLength(0);
+        int sizeY = grid.GetLength(1);
+        bool[,] gridFlags = new bool[sizeX, sizeY];
+        T targetValue = grid[startX, startY];
+        Queue<Coordinate> queue = new Queue<Coordinate>();
 
-    public static float EuclidianDistance(this Coordinate c1, Coordinate c2)
-    {
-        return Mathf.Sqrt(Mathf.Pow(c1.X - c2.X, 2) + Mathf.Pow(c1.Y - c2.Y, 2));
+        queue.Enqueue(new Coordinate(startX, startY));
+        gridFlags[startX, startY] = true;
+
+        while(queue.Count > 0)
+        {
+            Coordinate coordinate = queue.Dequeue();
+
+            yield return coordinate;
+
+            foreach(Coordinate neighbor in grid.GetNeighborCoordinates(coordinate.X, coordinate.Y, false))
+            {
+                if (!gridFlags[neighbor.X, neighbor.Y] && grid[neighbor.X, neighbor.Y].Equals(targetValue))
+                {
+                    queue.Enqueue(neighbor);
+                    gridFlags[neighbor.X, neighbor.Y] = true;
+                }
+            }
+        }
     }
 }

@@ -31,7 +31,7 @@ public class MapGenerator : MonoBehaviour
             mapHolder.transform.parent = transform;
             mapHolder.transform.localScale = Vector3.one * CurrentMap.Scale;
 
-            MeshFilter meshFilter = mapHolder.AddComponent<MeshFilter>();
+            mapHolder.AddComponent<MeshFilter>();
             MeshRenderer meshRenderer = mapHolder.AddComponent<MeshRenderer>();
             SoilMapController soilMapController = mapHolder.AddComponent<SoilMapController>();
             DigController digController = mapHolder.AddComponent<DigController>();

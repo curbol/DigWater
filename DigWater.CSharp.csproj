@@ -71,17 +71,18 @@
     <Compile Include="Assets\Scripts\Enums\MouseButton.cs" />
     <Compile Include="Assets\Scripts\Enums\SoilType.cs" />
     <Compile Include="Assets\Scripts\Enums\SquareVertex.cs" />
+    <Compile Include="Assets\Scripts\Map\Digging\DigController.cs" />
     <Compile Include="Assets\Scripts\Map\MapGeneration\MapGenerationExtentions.cs" />
     <Compile Include="Assets\Scripts\Map\MapGeneration\MapGenerator.cs" />
     <Compile Include="Assets\Scripts\Map\MeshGeneration\MarchingSquare.cs" />
     <Compile Include="Assets\Scripts\Map\MeshGeneration\MeshData.cs" />
     <Compile Include="Assets\Scripts\Map\MeshGeneration\MeshGenerator.cs" />
     <Compile Include="Assets\Scripts\Map\MeshGeneration\MeshVertex.cs" />
-    <Compile Include="Assets\Scripts\Map\SoilMap\DigController.cs" />
     <Compile Include="Assets\Scripts\Map\SoilMap\SoilMap.cs" />
     <Compile Include="Assets\Scripts\Map\SoilMap\SoilMapController.cs" />
     <Compile Include="Assets\Scripts\Map\SoilMap\SoilMapExtensions.cs" />
     <Compile Include="Assets\Scripts\Utility\Coordinate.cs" />
+    <Compile Include="Assets\Scripts\Utility\CoordinateExtenstions.cs" />
     <Compile Include="Assets\Scripts\Utility\GridArrayExtensions.cs" />
     <Compile Include="Assets\Scripts\Utility\Shuffler.cs" />
   </ItemGroup>
