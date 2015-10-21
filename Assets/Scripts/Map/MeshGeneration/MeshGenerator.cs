@@ -1,10 +1,11 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 public static class MeshGenerator
 {
-    public static Mesh GenerateMarchingSquaresMesh(this bool[,] map)
+    public static MeshData GenerateMarchingSquaresMesh(this bool[,] map)
     {
-        Mesh mesh = new Mesh();
         MeshData meshData = new MeshData();
         MarchingSquare[,] marchingSquares = map.CreateMarchingSquareGrid();
 
@@ -17,13 +18,31 @@ public static class MeshGenerator
                     meshData.AddMarchingSquare(marchingSquares[x, y]);
                 }
             }
-
-            mesh.vertices = meshData.Vertices.ToArray();
-            mesh.triangles = meshData.Triangles.ToArray();
-            mesh.RecalculateNormals();
         }
 
-        return mesh;
+        return meshData;
+    }
+
+    public static IEnumerable<Vector2[]> GetEdges(this MeshData meshData)
+    {
+        foreach (List<int> outline in meshData.GetOutlines().Select(o => o.ToList()))
+        {
+            Vector2[] edgePoints = new Vector2[outline.Count];
+
+            for (int i = 0; i < outline.Count; i++)
+            {
+                edgePoints[i] = meshData.Vertices[outline[i]];
+
+                if (i < outline.Count - 1)
+                {
+                    Vector3 start = meshData.Vertices[outline[i]] + Vector3.back * 0.5f;
+                    Vector3 end = meshData.Vertices[outline[i + 1]] + Vector3.back * 0.5f;
+                    Debug.DrawLine(start, end, Color.green, 10);
+                } 
+            }
+
+            yield return edgePoints;
+        }
     }
 
     private static MarchingSquare[,] CreateMarchingSquareGrid(this bool[,] map)
@@ -32,22 +51,22 @@ public static class MeshGenerator
 
         if (map != null)
         {
-            int mapWidth = map.GetLength(0);
-            int mapHeight = map.GetLength(1);
+            int sizeX = map.GetLength(0);
+            int sizeY = map.GetLength(1);
 
-            if (mapWidth > 0 && mapHeight > 0)
+            if (sizeX > 0 && sizeY > 0)
             {
-                squares = new MarchingSquare[mapWidth - 1, mapHeight - 1];
+                squares = new MarchingSquare[sizeX - 1, sizeY - 1];
 
-                for (int x = 0; x < mapWidth - 1; x++)
+                for (int x = 0; x < sizeX - 1; x++)
                 {
-                    for (int y = 0; y < mapHeight - 1; y++)
+                    for (int y = 0; y < sizeY - 1; y++)
                     {
                         bool topLeftIsActive = map[x, y + 1];
                         bool topRightIsActive = map[x + 1, y + 1];
                         bool bottomRightIsActive = map[x + 1, y];
                         bool bottomLeftIsActive = map[x, y];
-                        Vector2 squarePosition = new Vector2(-mapWidth / 2f + x + 1, -mapHeight / 2f + y + 1);
+                        Vector2 squarePosition = new Vector2(-sizeX / 2f + x + 1, -sizeY / 2f + y + 1);
 
                         squares[x, y] = new MarchingSquare(squarePosition, topLeftIsActive, topRightIsActive, bottomRightIsActive, bottomLeftIsActive);
                     }
@@ -108,6 +127,10 @@ public static class MeshGenerator
                 break;
             case 15:
                 meshData.AddPoints(square.TopLeft, square.TopRight, square.BottomRight, square.BottomLeft);
+                meshData.checkedVertices.Add((int)square.TopLeft.VertexIndex);
+                meshData.checkedVertices.Add((int)square.TopRight.VertexIndex);
+                meshData.checkedVertices.Add((int)square.BottomRight.VertexIndex);
+                meshData.checkedVertices.Add((int)square.BottomLeft.VertexIndex);
                 break;
         }
     }
@@ -138,7 +161,7 @@ public static class MeshGenerator
             int vertexIndexB = (int)points[i - 2].VertexIndex;
             int vertexIndexC = (int)points[i - 1].VertexIndex;
 
-            meshData.Triangles.AddRange(new int[] { vertexIndexA, vertexIndexB, vertexIndexC });
+            meshData.AddTriangle(vertexIndexA, vertexIndexB, vertexIndexC);
         }
     }
 }

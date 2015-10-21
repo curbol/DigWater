@@ -51,7 +51,13 @@ public class SoilMapController : MonoBehaviour
         if (SoilMap != null && SoilMap.SoilGrid != null && MeshFilter != null)
         {
             bool[,] dirtMap = SoilMap.SoilGrid.GetSoilBitMap(SoilType.Dirt);
-            MeshFilter.mesh = dirtMap.GenerateMarchingSquaresMesh();
+            MeshData meshData = dirtMap.GenerateMarchingSquaresMesh();
+            MeshFilter.mesh = meshData.Mesh;
+
+            foreach (Vector2[] edgePoints in meshData.GetEdges())
+            {
+                gameObject.AddComponent<EdgeCollider2D>().points = edgePoints;
+            }
         }
     }
 
