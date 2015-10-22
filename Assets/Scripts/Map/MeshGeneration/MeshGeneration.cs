@@ -2,9 +2,9 @@
 using System.Linq;
 using UnityEngine;
 
-public static class MeshGenerator
+public static class MeshGeneration
 {
-    public static MeshData GenerateMarchingSquaresMesh(this bool[,] map)
+    public static MeshData GetMarchingSquaresMesh(this bool[,] map)
     {
         MeshData meshData = new MeshData();
         MarchingSquare[,] marchingSquares = map.CreateMarchingSquareGrid();
@@ -32,13 +32,6 @@ public static class MeshGenerator
             for (int i = 0; i < outline.Count; i++)
             {
                 edgePoints[i] = meshData.Vertices[outline[i]];
-
-                if (i < outline.Count - 1)
-                {
-                    Vector3 start = meshData.Vertices[outline[i]] + Vector3.back * 0.5f;
-                    Vector3 end = meshData.Vertices[outline[i + 1]] + Vector3.back * 0.5f;
-                    Debug.DrawLine(start, end, Color.green, 10);
-                } 
             }
 
             yield return edgePoints;
@@ -58,17 +51,25 @@ public static class MeshGenerator
             {
                 squares = new MarchingSquare[sizeX - 1, sizeY - 1];
 
+                ControlMeshVertex[,] controlMeshVertices = new ControlMeshVertex[sizeX, sizeY];
+                for (int x = 0; x < sizeX; x++)
+                {
+                    for (int y = 0; y < sizeY; y++)
+                    {
+                        Vector2 position = new Vector2(-sizeX / 2f + x + 0.5f, -sizeY / 2f + y + 0.5f);
+                        controlMeshVertices[x, y] = new ControlMeshVertex(position, map[x, y]);
+                    }
+                }
+
                 for (int x = 0; x < sizeX - 1; x++)
                 {
                     for (int y = 0; y < sizeY - 1; y++)
                     {
-                        bool topLeftIsActive = map[x, y + 1];
-                        bool topRightIsActive = map[x + 1, y + 1];
-                        bool bottomRightIsActive = map[x + 1, y];
-                        bool bottomLeftIsActive = map[x, y];
-                        Vector2 squarePosition = new Vector2(-sizeX / 2f + x + 1, -sizeY / 2f + y + 1);
-
-                        squares[x, y] = new MarchingSquare(squarePosition, topLeftIsActive, topRightIsActive, bottomRightIsActive, bottomLeftIsActive);
+                        ControlMeshVertex topLeft = controlMeshVertices[x, y + 1];
+                        ControlMeshVertex topRight = controlMeshVertices[x + 1, y + 1];
+                        ControlMeshVertex bottomRight = controlMeshVertices[x + 1, y];
+                        ControlMeshVertex bottomLeft = controlMeshVertices[x, y];
+                        squares[x, y] = new MarchingSquare(topLeft, topRight, bottomRight, bottomLeft);
                     }
                 }
             }
@@ -127,12 +128,20 @@ public static class MeshGenerator
                 break;
             case 15:
                 meshData.AddPoints(square.TopLeft, square.TopRight, square.BottomRight, square.BottomLeft);
-                meshData.checkedVertices.Add((int)square.TopLeft.VertexIndex);
-                meshData.checkedVertices.Add((int)square.TopRight.VertexIndex);
-                meshData.checkedVertices.Add((int)square.BottomRight.VertexIndex);
-                meshData.checkedVertices.Add((int)square.BottomLeft.VertexIndex);
                 break;
         }
+
+        if (square.TopLeft.VertexIndex != null)
+            meshData.NonEdgeVertexIndices.Add((int)square.TopLeft.VertexIndex);
+
+        if (square.TopRight.VertexIndex != null)
+            meshData.NonEdgeVertexIndices.Add((int)square.TopRight.VertexIndex);
+
+        if (square.BottomRight.VertexIndex != null)
+            meshData.NonEdgeVertexIndices.Add((int)square.BottomRight.VertexIndex);
+
+        if (square.BottomLeft.VertexIndex != null)
+            meshData.NonEdgeVertexIndices.Add((int)square.BottomLeft.VertexIndex);
     }
 
     private static void AddPoints(this MeshData meshData, params MeshVertex[] points)
@@ -155,11 +164,11 @@ public static class MeshGenerator
 
     private static void AddTriangles(this MeshData meshData, params MeshVertex[] points)
     {
-        for (int i = 3; i <= points.Length; i++)
+        for (int i = 2; i < points.Length; i++)
         {
             int vertexIndexA = (int)points[0].VertexIndex;
-            int vertexIndexB = (int)points[i - 2].VertexIndex;
-            int vertexIndexC = (int)points[i - 1].VertexIndex;
+            int vertexIndexB = (int)points[i - 1].VertexIndex;
+            int vertexIndexC = (int)points[i].VertexIndex;
 
             meshData.AddTriangle(vertexIndexA, vertexIndexB, vertexIndexC);
         }

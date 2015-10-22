@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-public static class MapGenerationExtentions
+public static class MapCreationExtensions
 {
     public static T[,] RandomFill<T>(this T[,] map, T value, int randomFillPercent, int seed = 0)
     {

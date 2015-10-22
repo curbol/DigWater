@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class MeshData
 {
-    public HashSet<int> checkedVertices;
     private Dictionary<int, List<int[]>> trianglesDictionary;
+    private HashSet<int> checkedEdgeVertexIndices;
 
     public Mesh Mesh
     {
@@ -25,14 +25,16 @@ public class MeshData
         }
     }
 
+    public HashSet<int> NonEdgeVertexIndices { get; set; }
     public List<Vector3> Vertices { get; private set; }
     public List<int> Triangles { get; private set; }
 
     public MeshData()
     {
-        checkedVertices = new HashSet<int>();
         trianglesDictionary = new Dictionary<int, List<int[]>>();
+        checkedEdgeVertexIndices = new HashSet<int>();
 
+        NonEdgeVertexIndices = new HashSet<int>();
         Vertices = new List<Vector3>();
         Triangles = new List<int>();
     }
@@ -54,7 +56,7 @@ public class MeshData
             }
             else
             {
-                trianglesDictionary.Add(vertexIndex, new List<int[]>() { triangle });
+                trianglesDictionary.Add(vertexIndex, new List<int[]> { triangle });
             }
         }
     }
@@ -63,9 +65,9 @@ public class MeshData
     {
         for (int vertexIndex = 0; vertexIndex < Vertices.Count; vertexIndex++)
         {
-            if (!checkedVertices.Contains(vertexIndex))
+            if (!NonEdgeVertexIndices.Contains(vertexIndex) && !checkedEdgeVertexIndices.Contains(vertexIndex))
             {
-                checkedVertices.Add(vertexIndex);
+                checkedEdgeVertexIndices.Add(vertexIndex);
 
                 int? nextOutlineVertexIndex = GetConnectedOutlineVertex(vertexIndex);
                 if (nextOutlineVertexIndex != null)
@@ -83,7 +85,7 @@ public class MeshData
         int? nextOutlineVertexIndex = GetConnectedOutlineVertex(vertexIndex);
         while (nextOutlineVertexIndex != null && nextOutlineVertexIndex != vertexIndex)
         {
-            checkedVertices.Add((int)nextOutlineVertexIndex);
+            checkedEdgeVertexIndices.Add((int)nextOutlineVertexIndex);
             yield return (int)nextOutlineVertexIndex;
             nextOutlineVertexIndex = GetConnectedOutlineVertex((int)nextOutlineVertexIndex);
         }
@@ -101,7 +103,11 @@ public class MeshData
             {
                 foreach (int vertexIndexB in triangle)
                 {
-                    if (vertexIndexA != vertexIndexB && !checkedVertices.Contains(vertexIndexB) && IsOutlineEdge(vertexIndexA, vertexIndexB))
+                    bool sameVertexIndex = vertexIndexA == vertexIndexB;
+                    bool alreadyChecked = checkedEdgeVertexIndices.Contains(vertexIndexB);
+                    bool isOutlineEdge = IsOutlineEdge(vertexIndexA, vertexIndexB);
+
+                    if (!sameVertexIndex && !alreadyChecked && isOutlineEdge)
                     {
                         vertexIndex = vertexIndexB;
                     }

@@ -51,13 +51,10 @@ public class SoilMapController : MonoBehaviour
         if (SoilMap != null && SoilMap.SoilGrid != null && MeshFilter != null)
         {
             bool[,] dirtMap = SoilMap.SoilGrid.GetSoilBitMap(SoilType.Dirt);
-            MeshData meshData = dirtMap.GenerateMarchingSquaresMesh();
+            MeshData meshData = dirtMap.GetMarchingSquaresMesh();
             MeshFilter.mesh = meshData.Mesh;
 
-            foreach (Vector2[] edgePoints in meshData.GetEdges())
-            {
-                gameObject.AddComponent<EdgeCollider2D>().points = edgePoints;
-            }
+            CreateEdgeColliders(meshData);
         }
     }
 
@@ -65,5 +62,22 @@ public class SoilMapController : MonoBehaviour
     {
         GenerateSoil();
         DrawSoil();
+    }
+
+    private void CreateEdgeColliders(MeshData meshData)
+    {
+        string edgeColliderHolderName = "Edge Colliders";
+        if (transform.FindChild(edgeColliderHolderName))
+        {
+            DestroyImmediate(transform.FindChild(edgeColliderHolderName).gameObject);
+        }
+
+        GameObject edgeColliderHolder = new GameObject(edgeColliderHolderName);
+        edgeColliderHolder.transform.parent = transform;
+
+        foreach (Vector2[] edgePoints in meshData.GetEdges())
+        {
+            edgeColliderHolder.AddComponent<EdgeCollider2D>().points = edgePoints;
+        }
     }
 }

@@ -2,10 +2,10 @@
 
 public class MarchingSquare
 {
-    public MeshVertex TopLeft { get; set; }
-    public MeshVertex TopRight { get; set; }
-    public MeshVertex BottomLeft { get; set; }
-    public MeshVertex BottomRight { get; set; }
+    public ControlMeshVertex TopLeft { get; set; }
+    public ControlMeshVertex TopRight { get; set; }
+    public ControlMeshVertex BottomRight { get; set; }
+    public ControlMeshVertex BottomLeft { get; set; }
 
     public MeshVertex CenterTop { get; set; }
     public MeshVertex CenterLeft { get; set; }
@@ -14,19 +14,19 @@ public class MarchingSquare
 
     public int Configuration { get; set; }
 
-    public MarchingSquare(Vector2 squarePosition, bool topLeftIsActive = false, bool topRightIsActive = false, bool bottomRightIsActive = false, bool bottomLeftIsActive = false)
+    public MarchingSquare(ControlMeshVertex topLeft, ControlMeshVertex topRight, ControlMeshVertex bottomRight, ControlMeshVertex bottomLeft)
     {
-        TopLeft = new MeshVertex(squarePosition + new Vector2(-0.5f, 0.5f));
-        TopRight = new MeshVertex(squarePosition + new Vector2(0.5f, 0.5f));
-        BottomRight = new MeshVertex(squarePosition + new Vector2(0.5f, -0.5f));
-        BottomLeft = new MeshVertex(squarePosition + new Vector2(-0.5f, -0.5f));
+        TopLeft = topLeft;
+        TopRight = topRight;
+        BottomRight = bottomRight;
+        BottomLeft = bottomLeft;
 
-        CenterTop = new MeshVertex(squarePosition + Vector2.up * 0.5f);
-        CenterRight = new MeshVertex(squarePosition + Vector2.right * 0.5f);
-        CenterBottom = new MeshVertex(squarePosition + Vector2.down * 0.5f);
-        CenterLeft = new MeshVertex(squarePosition + Vector2.left * 0.5f);
+        CenterTop = topLeft.RightVertex;
+        CenterRight = bottomRight.UpVertex;
+        CenterBottom = bottomLeft.RightVertex;
+        CenterLeft = bottomLeft.UpVertex;
 
-        SetConfiguration(topLeftIsActive, topRightIsActive, bottomRightIsActive, bottomLeftIsActive);
+        SetConfiguration(topLeft.IsActive, topRight.IsActive, bottomRight.IsActive, bottomLeft.IsActive);
     }
 
     public void SetConfiguration(bool topLeftIsActive, bool topRightIsActive, bool bottomRightIsActive, bool bottomLeftIsActive)

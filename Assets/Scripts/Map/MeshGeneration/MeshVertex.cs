@@ -2,10 +2,10 @@
 
 public class MeshVertex
 {
-    public Vector3 Position { get; set; }
+    public Vector3 Position { get; private set; }
     public int? VertexIndex { get; set; }
 
-    public MeshVertex(Vector3 position)
+    public MeshVertex(Vector2 position)
     {
         Position = position;
     }
