@@ -58,18 +58,15 @@ public static class MeshGeneration
                     {
                         Vector2 position = new Vector2(-sizeX / 2f + x + 0.5f, -sizeY / 2f + y + 0.5f);
                         controlMeshVertices[x, y] = new ControlMeshVertex(position, map[x, y]);
-                    }
-                }
 
-                for (int x = 0; x < sizeX - 1; x++)
-                {
-                    for (int y = 0; y < sizeY - 1; y++)
-                    {
-                        ControlMeshVertex topLeft = controlMeshVertices[x, y + 1];
-                        ControlMeshVertex topRight = controlMeshVertices[x + 1, y + 1];
-                        ControlMeshVertex bottomRight = controlMeshVertices[x + 1, y];
-                        ControlMeshVertex bottomLeft = controlMeshVertices[x, y];
-                        squares[x, y] = new MarchingSquare(topLeft, topRight, bottomRight, bottomLeft);
+                        if (x > 0 && y > 0)
+                        {
+                            ControlMeshVertex topLeft = controlMeshVertices[x - 1, y];
+                            ControlMeshVertex topRight = controlMeshVertices[x, y];
+                            ControlMeshVertex bottomRight = controlMeshVertices[x, y - 1];
+                            ControlMeshVertex bottomLeft = controlMeshVertices[x - 1, y - 1];
+                            squares[x - 1, y - 1] = new MarchingSquare(topLeft, topRight, bottomRight, bottomLeft);
+                        }
                     }
                 }
             }
@@ -80,68 +77,16 @@ public static class MeshGeneration
 
     private static void AddMarchingSquare(this MeshData meshData, MarchingSquare square)
     {
-        switch (square.Configuration)
+        MeshVertex[] points = square.GetPoints();
+        if (points != null)
         {
-            case 0:
-                break;
-            case 1:
-                meshData.AddPoints(square.CenterLeft, square.CenterBottom, square.BottomLeft);
-                break;
-            case 2:
-                meshData.AddPoints(square.BottomRight, square.CenterBottom, square.CenterRight);
-                break;
-            case 3:
-                meshData.AddPoints(square.CenterRight, square.BottomRight, square.BottomLeft, square.CenterLeft);
-                break;
-            case 4:
-                meshData.AddPoints(square.TopRight, square.CenterRight, square.CenterTop);
-                break;
-            case 5:
-                meshData.AddPoints(square.CenterTop, square.TopRight, square.CenterRight, square.CenterBottom, square.BottomLeft, square.CenterLeft);
-                break;
-            case 6:
-                meshData.AddPoints(square.CenterTop, square.TopRight, square.BottomRight, square.CenterBottom);
-                break;
-            case 7:
-                meshData.AddPoints(square.CenterTop, square.TopRight, square.BottomRight, square.BottomLeft, square.CenterLeft);
-                break;
-            case 8:
-                meshData.AddPoints(square.TopLeft, square.CenterTop, square.CenterLeft);
-                break;
-            case 9:
-                meshData.AddPoints(square.TopLeft, square.CenterTop, square.CenterBottom, square.BottomLeft);
-                break;
-            case 10:
-                meshData.AddPoints(square.TopLeft, square.CenterTop, square.CenterRight, square.BottomRight, square.CenterBottom, square.CenterLeft);
-                break;
-            case 11:
-                meshData.AddPoints(square.TopLeft, square.CenterTop, square.CenterRight, square.BottomRight, square.BottomLeft);
-                break;
-            case 12:
-                meshData.AddPoints(square.TopLeft, square.TopRight, square.CenterRight, square.CenterLeft);
-                break;
-            case 13:
-                meshData.AddPoints(square.TopLeft, square.TopRight, square.CenterRight, square.CenterBottom, square.BottomLeft);
-                break;
-            case 14:
-                meshData.AddPoints(square.TopLeft, square.TopRight, square.BottomRight, square.CenterBottom, square.CenterLeft);
-                break;
-            case 15:
-                meshData.AddPoints(square.TopLeft, square.TopRight, square.BottomRight, square.BottomLeft);
-                break;
+            meshData.AddPoints(square.GetPoints());
+
+            foreach (MeshVertex meshVertex in points.OfType<ControlMeshVertex>().Where(p => p.VertexIndex != null))
+            {
+                meshData.NonEdgeVertexIndices.Add((int)meshVertex.VertexIndex);
+            }
         }
-
-        if (square.TopLeft.VertexIndex != null)
-            meshData.NonEdgeVertexIndices.Add((int)square.TopLeft.VertexIndex);
-
-        if (square.TopRight.VertexIndex != null)
-            meshData.NonEdgeVertexIndices.Add((int)square.TopRight.VertexIndex);
-
-        if (square.BottomRight.VertexIndex != null)
-            meshData.NonEdgeVertexIndices.Add((int)square.BottomRight.VertexIndex);
-
-        if (square.BottomLeft.VertexIndex != null)
-            meshData.NonEdgeVertexIndices.Add((int)square.BottomLeft.VertexIndex);
     }
 
     private static void AddPoints(this MeshData meshData, params MeshVertex[] points)
