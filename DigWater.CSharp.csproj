@@ -72,6 +72,7 @@
     <Compile Include="Assets\Scripts\Enums\SoilType.cs" />
     <Compile Include="Assets\Scripts\Enums\SquareVertex.cs" />
     <Compile Include="Assets\Scripts\Map\Digging\DigController.cs" />
+    <Compile Include="Assets\Scripts\Map\Digging\DigRequest.cs" />
     <Compile Include="Assets\Scripts\Map\MapGeneration\MapCreationExtensions.cs" />
     <Compile Include="Assets\Scripts\Map\MapGeneration\MapGenerator.cs" />
     <Compile Include="Assets\Scripts\Map\MapGeneration\SoilMap.cs" />

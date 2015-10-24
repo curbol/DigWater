@@ -52,16 +52,16 @@ public class DigController : MonoBehaviour
 
     private static void Dig(SoilMap soilMap, Vector2 digPosition, float digRadius)
     {
-        if (soilMap != null && soilMap.SoilGrid != null)
-        {
-            Vector2 positionToDig = Camera.main.ScreenToWorldPoint(digPosition);
-            Coordinate coordinateToDig = soilMap.GetCoordinateFromPosition(positionToDig);
+        if (soilMap == null || soilMap.SoilGrid == null)
+            return;
 
-            soilMap.SoilGrid[coordinateToDig.X, coordinateToDig.Y] = SoilType.Default;
-            foreach (Coordinate neighborCoordinate in soilMap.SoilGrid.GetNeighborCoordinatesInRadius(coordinateToDig.X, coordinateToDig.Y, digRadius))
-            {
-                soilMap.SoilGrid[neighborCoordinate.X, neighborCoordinate.Y] = SoilType.Default;
-            }
+        Vector2 positionToDig = Camera.main.ScreenToWorldPoint(digPosition);
+        Coordinate coordinateToDig = soilMap.GetCoordinateFromPosition(positionToDig);
+
+        soilMap.SoilGrid[coordinateToDig.X, coordinateToDig.Y] = SoilType.Default;
+        foreach (Coordinate neighborCoordinate in soilMap.SoilGrid.GetNeighborCoordinatesInRadius(coordinateToDig.X, coordinateToDig.Y, digRadius))
+        {
+            soilMap.SoilGrid[neighborCoordinate.X, neighborCoordinate.Y] = SoilType.Default;
         }
     }
 }

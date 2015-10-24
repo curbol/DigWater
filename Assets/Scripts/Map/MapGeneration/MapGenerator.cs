@@ -20,28 +20,28 @@ public class MapGenerator : MonoBehaviour
 
     public void GenerateMap()
     {
-        if (CurrentMap != null)
+        if (CurrentMap == null)
+            return;
+
+        if (transform.FindChild(mapHolderName))
         {
-            if (transform.FindChild(mapHolderName))
-            {
-                DestroyImmediate(transform.FindChild(mapHolderName).gameObject);
-            }
-
-            GameObject mapHolder = new GameObject(mapHolderName);
-            mapHolder.transform.parent = transform;
-            mapHolder.transform.localScale = Vector3.one * CurrentMap.Scale;
-
-            mapHolder.AddComponent<MeshFilter>();
-            MeshRenderer meshRenderer = mapHolder.AddComponent<MeshRenderer>();
-            SoilMapController soilMapController = mapHolder.AddComponent<SoilMapController>();
-            DigController digController = mapHolder.AddComponent<DigController>();
-
-            meshRenderer.materials = new Material[] { dirtMaterial };
-            soilMapController.SoilMap = CurrentMap;
-            digController.DigRadius = digRadius;
-
-            soilMapController.GenerateSoil();
-            soilMapController.RedrawSoil();
+            DestroyImmediate(transform.FindChild(mapHolderName).gameObject);
         }
+
+        GameObject mapHolder = new GameObject(mapHolderName);
+        mapHolder.transform.parent = transform;
+        mapHolder.transform.localScale = Vector3.one * CurrentMap.Scale;
+
+        mapHolder.AddComponent<MeshFilter>();
+        MeshRenderer meshRenderer = mapHolder.AddComponent<MeshRenderer>();
+        SoilMapController soilMapController = mapHolder.AddComponent<SoilMapController>();
+        DigController digController = mapHolder.AddComponent<DigController>();
+
+        meshRenderer.materials = new Material[] { dirtMaterial };
+        soilMapController.SoilMap = CurrentMap;
+        digController.DigRadius = digRadius;
+
+        soilMapController.GenerateSoil();
+        soilMapController.RedrawSoil();
     }
 }

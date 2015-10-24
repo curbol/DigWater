@@ -35,26 +35,24 @@ public class SoilMapController : MonoBehaviour
 
     public void GenerateSoil()
     {
-        if (SoilMap != null)
-        {
-            SoilMap.SoilGrid = new SoilType[SoilMap.SizeX, SoilMap.SizeY];
-            SoilMap.SoilGrid.RandomFill(SoilType.Dirt, SoilMap.PercentDirt, SoilMap.Seed);
-            SoilMap.SoilGrid.SetBorder(SoilType.Dirt, SoilMap.BorderThickness);
+        if (SoilMap == null)
+            return;
 
-            Smooth(SoilMap.SoilGrid, SoilType.Dirt, SoilType.Default, SoilMap.Seed);
-        }
+        SoilMap.SoilGrid = new SoilType[SoilMap.SizeX, SoilMap.SizeY];
+        SoilMap.SoilGrid.RandomFill(SoilType.Dirt, SoilMap.PercentDirt, SoilMap.Seed);
+        SoilMap.SoilGrid.SetBorder(SoilType.Dirt, SoilMap.BorderThickness);
+        Smooth(SoilMap.SoilGrid, SoilType.Dirt, SoilType.Default, SoilMap.Seed);
     }
 
     public void RedrawSoil()
     {
-        if (SoilMap != null && SoilMap.SoilGrid != null && MeshFilter != null)
-        {
-            bool[,] dirtMap = SoilMap.SoilGrid.GetSoilBitMap(SoilType.Dirt);
-            MeshData meshData = dirtMap.GetMarchingSquaresMeshData(SoilMap.Width, SoilMap.Height);
-            MeshFilter.mesh = meshData.GetMesh();
+        if (SoilMap == null || SoilMap.SoilGrid == null || MeshFilter == null)
+            return;
 
-            CreateEdgeColliders(meshData);
-        }
+        bool[,] dirtMap = SoilMap.SoilGrid.GetSoilBitMap(SoilType.Dirt);
+        MeshData meshData = dirtMap.GetMarchingSquaresMeshData(SoilMap.Width, SoilMap.Height);
+        MeshFilter.mesh = meshData.GetMesh();
+        CreateEdgeColliders(meshData);
     }
 
     private void Awake()
