@@ -4,9 +4,9 @@ using UnityEngine;
 
 public static class MeshGeneration
 {
-    public static MeshData GetMarchingSquaresMesh(this bool[,] map)
+    public static MeshData GetMarchingSquaresMeshData(this bool[,] map, float width, float height)
     {
-        MeshData meshData = new MeshData();
+        MeshData meshData = new MeshData(width, height);
         MarchingSquare[,] marchingSquares = map.CreateMarchingSquareGrid();
 
         if (marchingSquares != null)
@@ -23,7 +23,21 @@ public static class MeshGeneration
         return meshData;
     }
 
-    public static IEnumerable<Vector2[]> GetEdges(this MeshData meshData)
+    public static Mesh GetMesh(this MeshData meshData)
+    {
+        Mesh mesh = null;
+
+        mesh = new Mesh();
+        mesh.vertices = meshData.GetVertices();
+        mesh.triangles = meshData.GetTriangles();
+        mesh.tangents = meshData.GetTangents();
+        mesh.uv = meshData.GetUV();
+        mesh.RecalculateNormals();
+
+        return mesh;
+    }
+
+    public static IEnumerable<Vector2[]> GetMeshEdges(this MeshData meshData)
     {
         foreach (List<int> outline in meshData.GetOutlines().Select(o => o.ToList()))
         {
@@ -102,7 +116,7 @@ public static class MeshGeneration
             if (points[i].VertexIndex == null)
             {
                 points[i].VertexIndex = meshData.Vertices.Count;
-                meshData.Vertices.Add(points[i].Position);
+                meshData.AddVertex(points[i].Position);
             }
         }
     }

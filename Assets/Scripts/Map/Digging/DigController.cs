@@ -46,7 +46,7 @@ public class DigController : MonoBehaviour
         if (SoilMap != null && Input.GetMouseButton((int)MouseButton.Left))
         {
             Dig(SoilMap, Input.mousePosition, DigRadius);
-            SoilMapController.DrawSoil();
+            SoilMapController.RedrawSoil();
         }
     }
 

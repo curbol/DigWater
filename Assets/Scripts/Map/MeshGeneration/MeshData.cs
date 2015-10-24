@@ -4,39 +4,49 @@ using UnityEngine;
 
 public class MeshData
 {
+    private List<Vector4> tangents;
+    private List<Vector2> uv;
     private Dictionary<int, List<int[]>> trianglesDictionary;
     private HashSet<int> checkedEdgeVertexIndices;
+    private float width;
+    private float height;
 
-    public Mesh Mesh
-    {
-        get
-        {
-            Mesh mesh = null;
-
-            if (Vertices != null && Triangles != null)
-            {
-                mesh = new Mesh();
-                mesh.vertices = Vertices.ToArray();
-                mesh.triangles = Triangles.ToArray();
-                mesh.RecalculateNormals();
-            }
-
-            return mesh;
-        }
-    }
-
+    public List<Vector3> Vertices { get; set; }
+    public List<int> Triangles { get; set; }
     public HashSet<int> NonEdgeVertexIndices { get; set; }
-    public List<Vector3> Vertices { get; private set; }
-    public List<int> Triangles { get; private set; }
 
-    public MeshData()
+    public MeshData(float width, float height)
     {
+        tangents = new List<Vector4>();
+        uv = new List<Vector2>();
         trianglesDictionary = new Dictionary<int, List<int[]>>();
         checkedEdgeVertexIndices = new HashSet<int>();
+        this.width = width;
+        this.height = height;
 
-        NonEdgeVertexIndices = new HashSet<int>();
         Vertices = new List<Vector3>();
         Triangles = new List<int>();
+        NonEdgeVertexIndices = new HashSet<int>();
+    }
+
+    public Vector3[] GetVertices()
+    {
+        return Vertices.ToArray();
+    }
+
+    public void AddVertex(Vector3 vertex)
+    {
+        Vertices.Add(vertex);
+        tangents.Add(new Vector4(1f, 0f, 0f, -1f));
+
+        float percentX = Mathf.InverseLerp(-width / 2f, width / 2f, vertex.x);
+        float percentY = Mathf.InverseLerp(-height / 2f, height / 2f, vertex.y);
+        uv.Add(new Vector2(percentX, percentY));
+    }
+
+    public int[] GetTriangles()
+    {
+        return Triangles.ToArray();
     }
 
     public void AddTriangle(int vertexIndexA, int vertexIndexB, int vertexIndexC)
@@ -61,11 +71,21 @@ public class MeshData
         }
     }
 
+    public Vector4[] GetTangents()
+    {
+        return tangents.ToArray();
+    }
+
+    public Vector2[] GetUV()
+    {
+        return uv.ToArray();
+    }
+
     public IEnumerable<IEnumerable<int>> GetOutlines()
     {
         for (int vertexIndex = 0; vertexIndex < Vertices.Count; vertexIndex++)
         {
-            if (!NonEdgeVertexIndices.Contains(vertexIndex) && !checkedEdgeVertexIndices.Contains(vertexIndex))
+            if (!checkedEdgeVertexIndices.Contains(vertexIndex) && !NonEdgeVertexIndices.Contains(vertexIndex))
             {
                 checkedEdgeVertexIndices.Add(vertexIndex);
 

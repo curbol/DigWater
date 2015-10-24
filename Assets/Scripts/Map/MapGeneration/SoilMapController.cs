@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
 
 [DisallowMultipleComponent]
-[RequireComponent(typeof(MeshFilter))]
-[RequireComponent(typeof(MeshRenderer))]
+[RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class SoilMapController : MonoBehaviour
 {
     private MeshFilter meshFilter;
@@ -39,20 +38,20 @@ public class SoilMapController : MonoBehaviour
         if (SoilMap != null)
         {
             SoilMap.SoilGrid = new SoilType[SoilMap.SizeX, SoilMap.SizeY];
-
             SoilMap.SoilGrid.RandomFill(SoilType.Dirt, SoilMap.PercentDirt, SoilMap.Seed);
             SoilMap.SoilGrid.SetBorder(SoilType.Dirt, SoilMap.BorderThickness);
-            SoilMap.SoilGrid.Smooth(SoilType.Dirt, SoilType.Default, SoilMap.Seed);
+
+            Smooth(SoilMap.SoilGrid, SoilType.Dirt, SoilType.Default, SoilMap.Seed);
         }
     }
 
-    public void DrawSoil()
+    public void RedrawSoil()
     {
         if (SoilMap != null && SoilMap.SoilGrid != null && MeshFilter != null)
         {
             bool[,] dirtMap = SoilMap.SoilGrid.GetSoilBitMap(SoilType.Dirt);
-            MeshData meshData = dirtMap.GetMarchingSquaresMesh();
-            MeshFilter.mesh = meshData.Mesh;
+            MeshData meshData = dirtMap.GetMarchingSquaresMeshData(SoilMap.Width, SoilMap.Height);
+            MeshFilter.mesh = meshData.GetMesh();
 
             CreateEdgeColliders(meshData);
         }
@@ -61,7 +60,18 @@ public class SoilMapController : MonoBehaviour
     private void Awake()
     {
         GenerateSoil();
-        DrawSoil();
+        RedrawSoil();
+    }
+
+    private static T[,] Smooth<T>(T[,] map, T positiveValue, T negativeValue, int seed = 0)
+    {
+        map.RandomSmoothPass(positiveValue, negativeValue, seed);
+        map.CornerSmoothPass(positiveValue, negativeValue, SquareVertex.TopLeft);
+        map.CornerSmoothPass(positiveValue, negativeValue, SquareVertex.BottomRight);
+        map.CornerSmoothPass(positiveValue, negativeValue, SquareVertex.TopRight);
+        map.CornerSmoothPass(positiveValue, negativeValue, SquareVertex.BottomLeft);
+
+        return map;
     }
 
     private void CreateEdgeColliders(MeshData meshData)
@@ -75,7 +85,7 @@ public class SoilMapController : MonoBehaviour
         GameObject edgeColliderHolder = new GameObject(edgeColliderHolderName);
         edgeColliderHolder.transform.parent = transform;
 
-        foreach (Vector2[] edgePoints in meshData.GetEdges())
+        foreach (Vector2[] edgePoints in meshData.GetMeshEdges())
         {
             edgeColliderHolder.AddComponent<EdgeCollider2D>().points = edgePoints;
         }

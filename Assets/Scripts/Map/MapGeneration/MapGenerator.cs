@@ -41,7 +41,7 @@ public class MapGenerator : MonoBehaviour
             digController.DigRadius = digRadius;
 
             soilMapController.GenerateSoil();
-            soilMapController.DrawSoil();
+            soilMapController.RedrawSoil();
         }
     }
 }

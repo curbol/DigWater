@@ -45,17 +45,6 @@ public static class MapCreationExtensions
         return map;
     }
 
-    public static T[,] Smooth<T>(this T[,] map, T positiveValue, T negativeValue, int seed = 0)
-    {
-        map.RandomSmoothPass(positiveValue, negativeValue, seed);
-        map.CornerSmoothPass(positiveValue, negativeValue, SquareVertex.TopLeft);
-        map.CornerSmoothPass(positiveValue, negativeValue, SquareVertex.BottomRight);
-        map.CornerSmoothPass(positiveValue, negativeValue, SquareVertex.TopRight);
-        map.CornerSmoothPass(positiveValue, negativeValue, SquareVertex.BottomLeft);
-
-        return map;
-    }
-
     public static T[,] RandomSmoothPass<T>(this T[,] map, T positiveValue, T negativeValue, int seed = 0)
     {
         int[] rangeX = Enumerable.Range(0, map.GetLength(0) - 1).ToArray().Shuffle(seed);
