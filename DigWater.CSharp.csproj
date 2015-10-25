@@ -68,10 +68,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Digging\DigController.cs" />
     <Compile Include="Assets\Scripts\Enums\MouseButton.cs" />
     <Compile Include="Assets\Scripts\Enums\SoilType.cs" />
     <Compile Include="Assets\Scripts\Enums\SquareVertex.cs" />
-    <Compile Include="Assets\Scripts\Map\Digging\DigController.cs" />
     <Compile Include="Assets\Scripts\Map\MapGeneration\MapCreationExtensions.cs" />
     <Compile Include="Assets\Scripts\Map\MapGeneration\MapGenerator.cs" />
     <Compile Include="Assets\Scripts\Map\MapGeneration\SoilMap.cs" />
@@ -86,6 +86,8 @@
     <Compile Include="Assets\Scripts\Utility\CoordinateExtenstions.cs" />
     <Compile Include="Assets\Scripts\Utility\GridArrayExtensions.cs" />
     <Compile Include="Assets\Scripts\Utility\Shuffler.cs" />
+    <Compile Include="Assets\Scripts\Water\WaterParticle.cs" />
+    <Compile Include="Assets\Scripts\Water\WaterSpawner.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\Metaball.shader" />
