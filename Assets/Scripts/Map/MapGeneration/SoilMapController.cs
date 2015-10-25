@@ -51,7 +51,7 @@ public class SoilMapController : MonoBehaviour
 
         bool[,] dirtMap = SoilMap.SoilGrid.GetSoilBitMap(SoilType.Dirt);
         MeshData meshData = dirtMap.GetMarchingSquaresMeshData(SoilMap.Width, SoilMap.Height);
-        MeshFilter.mesh = meshData.GetMesh();
+        MeshFilter.sharedMesh = meshData.GetMesh();
         CreateEdgeColliders(meshData);
     }
 

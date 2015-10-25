@@ -17,6 +17,7 @@ public static class MeshGeneration
                 {
                     meshData.AddMarchingSquare(marchingSquares[x, y]);
                 }
+
             }
         }
 
