@@ -7,7 +7,6 @@ public class MapGenerator : MonoBehaviour
 
     public SoilMap[] maps;
     public int mapIndex;
-    public Material dirtMaterial;
     public float digRadius;
 
     public SoilMap CurrentMap
@@ -37,11 +36,10 @@ public class MapGenerator : MonoBehaviour
         SoilMapController soilMapController = mapHolder.AddComponent<SoilMapController>();
         DigController digController = mapHolder.AddComponent<DigController>();
 
-        meshRenderer.materials = new Material[] { dirtMaterial };
         soilMapController.SoilMap = CurrentMap;
         digController.DigRadius = digRadius;
 
-        soilMapController.GenerateSoil();
-        soilMapController.RedrawSoil();
+        soilMapController.GenerateSoilMap();
+        soilMapController.RedrawSoilMesh();
     }
 }

@@ -46,12 +46,12 @@ public class DigController : MonoBehaviour
         if (SoilMap != null && Input.GetMouseButton((int)MouseButton.Right))
         {
             DrawDirt(SoilMap, Input.mousePosition, SoilType.Dirt, DigRadius);
-            SoilMapController.RedrawSoil();
+            SoilMapController.RedrawSoilMesh();
         }
         else if (SoilMap != null && Input.GetMouseButton((int)MouseButton.Left))
         {
             DrawDirt(SoilMap, Input.mousePosition, SoilType.Default, DigRadius);
-            SoilMapController.RedrawSoil();
+            SoilMapController.RedrawSoilMesh();
         }
     }
 

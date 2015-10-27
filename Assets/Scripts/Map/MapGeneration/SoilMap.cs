@@ -114,4 +114,34 @@ public class SoilMap
             borderThickness = value;
         }
     }
+
+    [SerializeField]
+    private Material dirtMaterial;
+    public Material DirtMaterial
+    {
+        get
+        {
+            return dirtMaterial;
+        }
+
+        set
+        {
+            dirtMaterial = value;
+        }
+    }
+
+    [SerializeField]
+    private PhysicsMaterial2D dirtPhysics;
+    public PhysicsMaterial2D DirtPhysics
+    {
+        get
+        {
+            return dirtPhysics;
+        }
+
+        set
+        {
+            dirtPhysics = value;
+        }
+    }
 }

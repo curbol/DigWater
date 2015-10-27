@@ -18,6 +18,20 @@ public class SoilMapController : MonoBehaviour
         }
     }
 
+    private MeshRenderer meshRenderer;
+    private MeshRenderer MeshRenderer
+    {
+        get
+        {
+            if (meshRenderer == null)
+            {
+                meshRenderer = GetComponent<MeshRenderer>();
+            }
+
+            return meshRenderer;
+        }
+    }
+
     [SerializeField]
     private SoilMap soilMap;
     public SoilMap SoilMap
@@ -33,7 +47,7 @@ public class SoilMapController : MonoBehaviour
         }
     }
 
-    public void GenerateSoil()
+    public void GenerateSoilMap()
     {
         if (SoilMap == null)
             return;
@@ -44,7 +58,7 @@ public class SoilMapController : MonoBehaviour
         Smooth(SoilMap.SoilGrid, SoilType.Dirt, SoilType.Default, SoilMap.Seed);
     }
 
-    public void RedrawSoil()
+    public void RedrawSoilMesh()
     {
         if (SoilMap == null || SoilMap.SoilGrid == null || MeshFilter == null)
             return;
@@ -52,13 +66,14 @@ public class SoilMapController : MonoBehaviour
         bool[,] dirtMap = SoilMap.SoilGrid.GetSoilBitMap(SoilType.Dirt);
         MeshData meshData = dirtMap.GetMarchingSquaresMeshData(SoilMap.Width, SoilMap.Height);
         MeshFilter.sharedMesh = meshData.GetMesh();
+        MeshRenderer.materials = new Material[] { SoilMap.DirtMaterial };
         CreateEdgeColliders(meshData);
     }
 
     private void Awake()
     {
-        GenerateSoil();
-        RedrawSoil();
+        GenerateSoilMap();
+        RedrawSoilMesh();
     }
 
     private static T[,] Smooth<T>(T[,] map, T positiveValue, T negativeValue, int seed = 0)
@@ -85,7 +100,9 @@ public class SoilMapController : MonoBehaviour
 
         foreach (Vector2[] edgePoints in meshData.GetMeshEdges())
         {
-            edgeColliderHolder.AddComponent<EdgeCollider2D>().points = edgePoints;
+            EdgeCollider2D edgeCollider = edgeColliderHolder.AddComponent<EdgeCollider2D>();
+            edgeCollider.sharedMaterial = SoilMap.DirtPhysics;
+            edgeCollider.points = edgePoints;
         }
     }
 }
