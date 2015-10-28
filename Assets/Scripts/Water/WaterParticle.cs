@@ -47,26 +47,35 @@ public class WaterParticle : MonoBehaviour
 
 	private void Update()
 	{
-        SetVelocityScale();
-        //SetDeathScale();
         SetDeath();
+    }
+
+    private void FixedUpdate()
+    {
+        SetDirection();
+        SetVelocityScale();
     }
 
     private void SetVelocityScale()
     {
+        if (RigidBody.velocity.magnitude < 1)
+        {
+            transform.localScale = Vector2.one;
+            return;
+        }
+
         Vector2 scale = Vector2.one;
-        scale.x += Mathf.Abs(RigidBody.velocity.x) * (deformability / 100);
         scale.y += Mathf.Abs(RigidBody.velocity.y) * (deformability / 100);
+
         transform.localScale = scale;
     }
 
-    private void SetDeathScale()
+    private void SetDirection()
     {
-        float scaleFactor = 1.0f - (Age / maximumAge);
-        Vector2 scale = transform.localScale;
-        scale.x *= scaleFactor;
-        scale.y *= scaleFactor;
-        transform.localScale = scale;
+        if (RigidBody.velocity != Vector2.zero)
+        {
+            transform.rotation = Quaternion.LookRotation(Vector3.forward, RigidBody.velocity);
+        }
     }
 
     private void SetDeath()
@@ -78,7 +87,7 @@ public class WaterParticle : MonoBehaviour
                 OnDeath();
             }
 
-            //Destroy(gameObject);
+            Destroy(gameObject);
         }
     }
 }
