@@ -43,25 +43,30 @@ public class DigController : MonoBehaviour
 
 	private void Update()
 	{
-        if (SoilMap != null && Input.GetMouseButton((int)MouseButton.Right))
+        if (SoilMap != null && Input.GetMouseButton((int)MouseButton.Left))
         {
-            DrawDirt(SoilMap, Input.mousePosition, SoilType.Dirt, DigRadius);
+            DrawDirt(SoilMap, GetCoordinateToDig(SoilMap, Input.mousePosition), SoilType.Default, DigRadius);
             SoilMapController.RedrawSoilMesh();
         }
-        else if (SoilMap != null && Input.GetMouseButton((int)MouseButton.Left))
+        else if (SoilMap != null && Input.GetMouseButton((int)MouseButton.Right))
         {
-            DrawDirt(SoilMap, Input.mousePosition, SoilType.Default, DigRadius);
+            DrawDirt(SoilMap, GetCoordinateToDig(SoilMap, Input.mousePosition), SoilType.Dirt, DigRadius);
             SoilMapController.RedrawSoilMesh();
         }
     }
 
-    private static void DrawDirt(SoilMap soilMap, Vector2 digPosition, SoilType soilType, float digRadius)
+    private static Coordinate GetCoordinateToDig(SoilMap soilMap, Vector2 digPosition)
     {
-        if (soilMap == null || soilMap.SoilGrid == null)
-            return;
-
         Vector2 positionToDig = Camera.main.ScreenToWorldPoint(digPosition);
         Coordinate coordinateToDig = soilMap.GetCoordinateFromPosition(positionToDig);
+
+        return coordinateToDig;
+    }
+
+    private static void DrawDirt(SoilMap soilMap, Coordinate coordinateToDig, SoilType soilType, float digRadius)
+    {
+        if (soilMap == null || soilMap.SoilGrid == null || soilMap.SoilGrid[coordinateToDig.X, coordinateToDig.Y] == soilType)
+            return;
 
         soilMap.SoilGrid[coordinateToDig.X, coordinateToDig.Y] = soilType;
         foreach (Coordinate neighborCoordinate in soilMap.SoilGrid.GetNeighborCoordinatesInRadius(coordinateToDig.X, coordinateToDig.Y, digRadius))
