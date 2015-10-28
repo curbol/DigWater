@@ -46,10 +46,6 @@ Shader "Custom/Metaball"
 				if(texcol.r > threshold || texcol.g > threshold || texcol.b > threshold)
 				{
 					finalColor = floor(finalColor * 6);
-					//finalColor.r = finalColor.r * 0.1f;
-					//finalColor.g = finalColor.g * 0.9f;
-					//finalColor.b = finalColor.b;
-
 					finalColor.a = 0.5f;
 				}
 

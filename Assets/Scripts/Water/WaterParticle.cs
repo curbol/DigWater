@@ -1,9 +1,11 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Rigidbody2D))]
 public class WaterParticle : MonoBehaviour
 {
+    public Action OnDeath { get; set; }
     private float birthTime;
 
     private Rigidbody2D rigidBody;
@@ -32,9 +34,15 @@ public class WaterParticle : MonoBehaviour
         }
     }
 
-    private void Start()
+    public void Initialize()
     {
         birthTime = Time.time;
+        RigidBody.velocity = Vector2.zero;
+    }
+
+    private void Start()
+    {
+        Initialize();
     }
 
 	private void Update()
@@ -65,7 +73,12 @@ public class WaterParticle : MonoBehaviour
     {
         if (Age > maximumAge)
         {
-            Destroy(gameObject);
+            if (OnDeath != null)
+            {
+                OnDeath();
+            }
+
+            //Destroy(gameObject);
         }
     }
 }
