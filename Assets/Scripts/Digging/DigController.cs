@@ -41,31 +41,53 @@ public class DigController : MonoBehaviour
         }
     }
 
-	private void Update()
-	{
-        if (SoilMap != null && Input.GetMouseButton((int)MouseButton.Left))
+    [SerializeField]
+    private ParticleSystem digEffect;
+    public ParticleSystem DigEffect
+    {
+        get
         {
-            DrawDirt(SoilMap, GetCoordinateToDig(SoilMap, Input.mousePosition), SoilType.Default, DigRadius);
-            SoilMapController.RedrawSoilMesh();
+            return digEffect;
         }
-        else if (SoilMap != null && Input.GetMouseButton((int)MouseButton.Right))
+
+        set
         {
-            DrawDirt(SoilMap, GetCoordinateToDig(SoilMap, Input.mousePosition), SoilType.Dirt, DigRadius);
-            SoilMapController.RedrawSoilMesh();
+            digEffect = value;
         }
     }
 
-    private static Coordinate GetCoordinateToDig(SoilMap soilMap, Vector2 digPosition)
+    private void Start()
     {
-        Vector2 positionToDig = Camera.main.ScreenToWorldPoint(digPosition);
-        Coordinate coordinateToDig = soilMap.GetCoordinateFromPosition(positionToDig);
+        DigEffect = Instantiate(DigEffect, Vector2.zero, Quaternion.identity) as ParticleSystem;
+    }
 
-        return coordinateToDig;
+    private void Update()
+    {
+        bool leftMouseClicked = Input.GetMouseButton((int)MouseButton.Left);
+        bool rightMouseClicked = Input.GetMouseButton((int)MouseButton.Right);
+
+        if (SoilMap != null && (leftMouseClicked || rightMouseClicked))
+        {
+            SoilType newSoilType = leftMouseClicked ? SoilType.Default : SoilType.Dirt;
+            Vector2 screenPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Coordinate coordinateToDig = SoilMap.GetCoordinateFromPosition(screenPosition);
+
+            if (SoilMap.SoilGrid[coordinateToDig.X, coordinateToDig.Y] != newSoilType)
+            {
+                if (leftMouseClicked)
+                {
+                    ShowDigEffect(screenPosition);
+                }
+
+                DrawDirt(SoilMap, coordinateToDig, newSoilType, DigRadius);
+                SoilMapController.RedrawSoilMesh();
+            }
+        }
     }
 
     private static void DrawDirt(SoilMap soilMap, Coordinate coordinateToDig, SoilType soilType, float digRadius)
     {
-        if (soilMap == null || soilMap.SoilGrid == null || soilMap.SoilGrid[coordinateToDig.X, coordinateToDig.Y] == soilType)
+        if (soilMap == null || soilMap.SoilGrid == null)
             return;
 
         soilMap.SoilGrid[coordinateToDig.X, coordinateToDig.Y] = soilType;
@@ -73,5 +95,15 @@ public class DigController : MonoBehaviour
         {
             soilMap.SoilGrid[neighborCoordinate.X, neighborCoordinate.Y] = soilType;
         }
+    }
+
+    private void ShowDigEffect(Vector2 screenPosition)
+    {
+        if (DigEffect == null)
+            return;
+
+        DigEffect.Stop();
+        DigEffect.transform.position = screenPosition;
+        DigEffect.GetComponent<ParticleSystem>().Play();
     }
 }

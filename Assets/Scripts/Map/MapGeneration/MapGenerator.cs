@@ -8,6 +8,7 @@ public class MapGenerator : MonoBehaviour
     public SoilMap[] maps;
     public int mapIndex;
     public float digRadius;
+    public ParticleSystem digEffect;
 
     public SoilMap CurrentMap
     {
@@ -32,12 +33,13 @@ public class MapGenerator : MonoBehaviour
         mapHolder.transform.localScale = Vector3.one * CurrentMap.Scale;
 
         mapHolder.AddComponent<MeshFilter>();
-        MeshRenderer meshRenderer = mapHolder.AddComponent<MeshRenderer>();
+        mapHolder.AddComponent<MeshRenderer>();
         SoilMapController soilMapController = mapHolder.AddComponent<SoilMapController>();
         DigController digController = mapHolder.AddComponent<DigController>();
 
         soilMapController.SoilMap = CurrentMap;
         digController.DigRadius = digRadius;
+        digController.DigEffect = digEffect;
 
         soilMapController.GenerateSoilMap();
         soilMapController.RedrawSoilMesh();
