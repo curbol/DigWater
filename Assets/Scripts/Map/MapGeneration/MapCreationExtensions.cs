@@ -32,11 +32,9 @@ public static class MapCreationExtensions
             {
                 for (int y = 0; y < sizeY; y++)
                 {
-                    map[x, y] = value;
-
-                    if (x > borderThickness - 1 && x < sizeX - borderThickness && y == borderThickness - 1)
+                    if (x < borderThickness || x >= sizeX - borderThickness || y < borderThickness || y >= sizeY - borderThickness)
                     {
-                        y = sizeY - borderThickness - 1;
+                        map[x, y] = value;
                     }
                 }
             }

@@ -26,9 +26,7 @@ public static class MeshGeneration
 
     public static Mesh GetMesh(this MeshData meshData)
     {
-        Mesh mesh = null;
-
-        mesh = new Mesh();
+        Mesh mesh = new Mesh();
         mesh.vertices = meshData.GetVertices();
         mesh.triangles = meshData.GetTriangles();
         mesh.tangents = meshData.GetTangents();
@@ -71,7 +69,7 @@ public static class MeshGeneration
                 {
                     for (int y = 0; y < sizeY; y++)
                     {
-                        Vector2 position = new Vector2(-sizeX / 2f + x + 0.5f, -sizeY / 2f + y + 0.5f);
+                        Vector2 position = new Vector2(-sizeX / 2F + x + 0.5F, -sizeY / 2F + y + 0.5F);
                         controlMeshVertices[x, y] = new ControlMeshVertex(position, map[x, y]);
 
                         if (x > 0 && y > 0)

@@ -10,10 +10,10 @@ public class WaterSpawner : MonoBehaviour
     public Transform waterParticlePrefab;
 
     [Range(0, 2)]
-    public float spawnDelay = 0.5f;
+    public float spawnDelay = 0.5F;
 
     [Range(0, 10)]
-    public float spawnRadius = 2f;
+    public float spawnRadius = 2F;
 
     private void Awake()
     {
@@ -30,8 +30,8 @@ public class WaterSpawner : MonoBehaviour
     {
         while (waterParticlePrefab != null)
         {
-            float randomAdjustmentX = spawnRadius * random.Next(-100, 100) / 100f;
-            float randomAdjustmentY = spawnRadius * random.Next(-100, 100) / 100f;
+            float randomAdjustmentX = spawnRadius * random.Next(-100, 100) / 100F;
+            float randomAdjustmentY = spawnRadius * random.Next(-100, 100) / 100F;
             Vector2 position = new Vector2(transform.position.x + randomAdjustmentX, transform.position.y + randomAdjustmentY);
 
             Transform waterParticle = Instantiate(waterParticlePrefab, position, Quaternion.identity) as Transform;

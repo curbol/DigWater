@@ -39,8 +39,6 @@
     {
         switch (Configuration)
         {
-            case 0:
-                break;
             case 1:
                 return new MeshVertex[] { CenterLeft, CenterBottom, BottomLeft };
             case 2:

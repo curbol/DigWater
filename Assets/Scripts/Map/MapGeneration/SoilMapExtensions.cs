@@ -4,8 +4,8 @@ public static class SoilMapExtensions
 {
     public static Coordinate GetCoordinateFromPosition(this SoilMap soilMap, Vector2 position)
     {
-        int x = Mathf.RoundToInt((soilMap.SizeX - 1) / 2f + position.x / soilMap.Scale);
-        int y = Mathf.RoundToInt((soilMap.SizeY - 1) / 2f + position.y / soilMap.Scale);
+        int x = Mathf.RoundToInt((soilMap.SizeX - 1) / 2F + position.x / soilMap.Scale);
+        int y = Mathf.RoundToInt((soilMap.SizeY - 1) / 2F + position.y / soilMap.Scale);
         x = Mathf.Clamp(x, 0, soilMap.SizeX - 1);
         y = Mathf.Clamp(y, 0, soilMap.SizeY - 1);
 

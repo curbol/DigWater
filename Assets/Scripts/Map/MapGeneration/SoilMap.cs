@@ -50,7 +50,7 @@ public class SoilMap
     }
 
     [SerializeField]
-    [Range(.1f, 2f)]
+    [Range(.1F, 2F)]
     private float scale = 1;
     public float Scale
     {

@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class MeshData
 {
-    private List<Vector4> tangents;
-    private List<Vector2> uv;
-    private Dictionary<int, List<int[]>> trianglesDictionary;
-    private HashSet<int> checkedEdgeVertexIndices;
-    private float width;
-    private float height;
+    private readonly List<Vector4> tangents;
+    private readonly List<Vector2> uv;
+    private readonly Dictionary<int, List<int[]>> trianglesDictionary;
+    private readonly HashSet<int> checkedEdgeVertexIndices;
+    private readonly float width;
+    private readonly float height;
 
     public List<Vector3> Vertices { get; set; }
     public List<int> Triangles { get; set; }
@@ -37,10 +37,10 @@ public class MeshData
     public void AddVertex(Vector3 vertex)
     {
         Vertices.Add(vertex);
-        tangents.Add(new Vector4(1f, 0f, 0f, -1f));
+        tangents.Add(new Vector4(1F, 0F, 0F, -1F));
 
-        float percentX = Mathf.InverseLerp(-width / 2f, width / 2f, vertex.x);
-        float percentY = Mathf.InverseLerp(-height / 2f, height / 2f, vertex.y);
+        float percentX = Mathf.InverseLerp(-width / 2F, width / 2F, vertex.x);
+        float percentY = Mathf.InverseLerp(-height / 2F, height / 2F, vertex.y);
         uv.Add(new Vector2(percentX, percentY));
     }
 
