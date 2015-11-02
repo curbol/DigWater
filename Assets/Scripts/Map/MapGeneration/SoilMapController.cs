@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
@@ -102,7 +103,7 @@ public class SoilMapController : MonoBehaviour
         {
             EdgeCollider2D edgeCollider = edgeColliderHolder.AddComponent<EdgeCollider2D>();
             edgeCollider.sharedMaterial = SoilMap.DirtPhysics;
-            edgeCollider.points = edgePoints;
+            edgeCollider.points = edgePoints.Select(e => e * SoilMap.Scale).ToArray();
         }
     }
 }

@@ -60,7 +60,7 @@ public class WaterParticle : MonoBehaviour
     {
         if (RigidBody.velocity.magnitude < 1)
         {
-            transform.localScale = Vector2.one;
+            transform.localScale = Vector3.one;
             return;
         }
 

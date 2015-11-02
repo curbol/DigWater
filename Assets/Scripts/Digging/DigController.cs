@@ -53,6 +53,7 @@ public class DigController : MonoBehaviour
         set
         {
             digEffect = value;
+            digEffect.transform.parent = transform;
         }
     }
 
@@ -76,7 +77,7 @@ public class DigController : MonoBehaviour
             {
                 if (leftMouseClicked)
                 {
-                    ShowDigEffect(screenPosition);
+                    PlayDigEffect(screenPosition);
                 }
 
                 DrawDirt(SoilMap, coordinateToDig, newSoilType, DigRadius);
@@ -97,7 +98,7 @@ public class DigController : MonoBehaviour
         }
     }
 
-    private void ShowDigEffect(Vector2 screenPosition)
+    private void PlayDigEffect(Vector2 screenPosition)
     {
         if (DigEffect == null)
             return;
