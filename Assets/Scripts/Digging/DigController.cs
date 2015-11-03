@@ -53,13 +53,13 @@ public class DigController : MonoBehaviour
         set
         {
             digEffect = value;
-            digEffect.transform.parent = transform;
         }
     }
 
     private void Start()
     {
         DigEffect = Instantiate(DigEffect, Vector2.zero, Quaternion.identity) as ParticleSystem;
+        DigEffect.transform.parent = transform;
     }
 
     private void Update()
@@ -69,7 +69,7 @@ public class DigController : MonoBehaviour
 
         if (SoilMap != null && (leftMouseClicked || rightMouseClicked))
         {
-            SoilType newSoilType = leftMouseClicked ? SoilType.Default : SoilType.Dirt;
+            SoilType newSoilType = leftMouseClicked ? SoilType.None : SoilType.Dirt;
             Vector2 screenPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Coordinate coordinateToDig = SoilMap.GetCoordinateFromPosition(screenPosition);
 

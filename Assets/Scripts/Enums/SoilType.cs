@@ -1,5 +1,6 @@
 ﻿public enum SoilType
 {
-    Default,
-    Dirt
+    None,
+    Dirt,
+    Rock
 }

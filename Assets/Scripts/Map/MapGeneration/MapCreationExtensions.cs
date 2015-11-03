@@ -43,7 +43,7 @@ public static class MapCreationExtensions
         return map;
     }
 
-    public static T[,] RandomSmoothPass<T>(this T[,] map, T positiveValue, T negativeValue, int seed = 0)
+    public static T[,] RandomSmoothPass<T>(this T[,] map, int seed = 0)
     {
         int[] rangeX = Enumerable.Range(0, map.GetLength(0) - 1).ToArray().Shuffle(seed);
         int[] rangeY = Enumerable.Range(0, map.GetLength(1) - 1).ToArray().Shuffle(seed);
@@ -52,14 +52,14 @@ public static class MapCreationExtensions
         {
             foreach (int y in rangeY)
             {
-                map.SmoothCoordinate(positiveValue, negativeValue, x, y);
+                map.SmoothCoordinate(x, y);
             }
         }
 
         return map;
     }
 
-    public static T[,] CornerSmoothPass<T>(this T[,] map, T positiveValue, T negativeValue, SquareVertex corner)
+    public static T[,] CornerSmoothPass<T>(this T[,] map, SquareVertex corner)
     {
         IEnumerable<int> rangeX = Enumerable.Range(0, map.GetLength(0) - 1);
         IEnumerable<int> rangeY = Enumerable.Range(0, map.GetLength(1) - 1);
@@ -78,24 +78,26 @@ public static class MapCreationExtensions
         {
             foreach (int y in rangeY)
             {
-                map.SmoothCoordinate(positiveValue, negativeValue, x, y);
+                map.SmoothCoordinate(x, y);
             }
         }
 
         return map;
     }
 
-    public static T[,] SmoothCoordinate<T>(this T[,] map, T positiveValue, T negativeValue, int x, int y)
+    public static T[,] SmoothCoordinate<T>(this T[,] map, int x, int y)
     {
         int sizeX = map.GetLength(0);
         int sizeY = map.GetLength(1);
-        int neighborWallsCount = map.GetNeighbors(x, y).Count(a => a.Equals(positiveValue));
+        T positiveValue = map[x, y];
+        T negativeValue = map.GetNeighbors(x, y).Where(a => !a.Equals(map[x, y])).GroupBy(a => a).OrderByDescending(a => a.Count()).Select(a => a.Key).FirstOrDefault();
+        int positiveValueCount = map.GetNeighbors(x, y).Count(a => a.Equals(positiveValue));
 
-        if (x == 0 || x == sizeX - 1 || y == 0 || y == sizeY - 1 || neighborWallsCount > 4)
+        if (x == 0 || x == sizeX - 1 || y == 0 || y == sizeY - 1 || positiveValueCount > 4)
         {
             map[x, y] = positiveValue;
         }
-        else if (neighborWallsCount < 4)
+        else if (positiveValueCount < 4)
         {
             map[x, y] = negativeValue;
         }

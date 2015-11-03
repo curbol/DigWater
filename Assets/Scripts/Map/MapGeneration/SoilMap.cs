@@ -131,6 +131,21 @@ public class SoilMap
     }
 
     [SerializeField]
+    private Material rockMaterial;
+    public Material RockMaterial
+    {
+        get
+        {
+            return rockMaterial;
+        }
+
+        set
+        {
+            rockMaterial = value;
+        }
+    }
+
+    [SerializeField]
     private PhysicsMaterial2D dirtPhysics;
     public PhysicsMaterial2D DirtPhysics
     {

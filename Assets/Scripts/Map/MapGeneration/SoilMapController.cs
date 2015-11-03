@@ -5,34 +5,6 @@ using UnityEngine;
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class SoilMapController : MonoBehaviour
 {
-    private MeshFilter meshFilter;
-    private MeshFilter MeshFilter
-    {
-        get
-        {
-            if (meshFilter == null)
-            {
-                meshFilter = GetComponent<MeshFilter>();
-            }
-
-            return meshFilter;
-        }
-    }
-
-    private MeshRenderer meshRenderer;
-    private MeshRenderer MeshRenderer
-    {
-        get
-        {
-            if (meshRenderer == null)
-            {
-                meshRenderer = GetComponent<MeshRenderer>();
-            }
-
-            return meshRenderer;
-        }
-    }
-
     [SerializeField]
     private SoilMap soilMap;
     public SoilMap SoilMap
@@ -54,20 +26,31 @@ public class SoilMapController : MonoBehaviour
             return;
 
         SoilMap.SoilGrid = new SoilType[SoilMap.SizeX, SoilMap.SizeY];
+
+        SoilMap.SoilGrid.RandomFill(SoilType.Rock, SoilMap.PercentDirt, SoilMap.Seed+1);
         SoilMap.SoilGrid.RandomFill(SoilType.Dirt, SoilMap.PercentDirt, SoilMap.Seed);
+
         SoilMap.SoilGrid.SetBorder(SoilType.Dirt, SoilMap.BorderThickness);
-        Smooth(SoilMap.SoilGrid, SoilType.Dirt, SoilType.Default, SoilMap.Seed);
+
+        Smooth(SoilMap.SoilGrid, SoilMap.Seed);
     }
 
     public void RedrawSoilMesh()
     {
-        if (SoilMap == null || SoilMap.SoilGrid == null || MeshFilter == null)
+        if (SoilMap == null || SoilMap.SoilGrid == null)
             return;
 
         bool[,] dirtMap = SoilMap.SoilGrid.GetSoilBitMap(SoilType.Dirt);
         MeshData meshData = dirtMap.GetMarchingSquaresMeshData(SoilMap.Width, SoilMap.Height);
-        MeshFilter.sharedMesh = meshData.GetMesh();
-        MeshRenderer.materials = new Material[] { SoilMap.DirtMaterial };
+        GameObject dirtMeshHolder = GetUniqueChildGameObject(transform, "Dirt Mesh");
+        dirtMeshHolder.AddComponent<MeshFilter>().sharedMesh = meshData.GetMesh();
+        dirtMeshHolder.AddComponent<MeshRenderer>().materials = new Material[] { SoilMap.DirtMaterial };
+
+        bool[,] rockMap = SoilMap.SoilGrid.GetSoilBitMap(SoilType.Rock);
+        meshData = rockMap.GetMarchingSquaresMeshData(SoilMap.Width, SoilMap.Height);
+        GameObject rockMeshHolder = GetUniqueChildGameObject(transform, "Rock Mesh");
+        rockMeshHolder.AddComponent<MeshFilter>().sharedMesh = meshData.GetMesh();
+        rockMeshHolder.AddComponent<MeshRenderer>().materials = new Material[] { SoilMap.RockMaterial };
         CreateEdgeColliders(meshData);
     }
 
@@ -77,27 +60,20 @@ public class SoilMapController : MonoBehaviour
         RedrawSoilMesh();
     }
 
-    private static T[,] Smooth<T>(T[,] map, T positiveValue, T negativeValue, int seed = 0)
+    private static T[,] Smooth<T>(T[,] map, int seed = 0)
     {
-        map.RandomSmoothPass(positiveValue, negativeValue, seed);
-        map.CornerSmoothPass(positiveValue, negativeValue, SquareVertex.TopLeft);
-        map.CornerSmoothPass(positiveValue, negativeValue, SquareVertex.BottomRight);
-        map.CornerSmoothPass(positiveValue, negativeValue, SquareVertex.TopRight);
-        map.CornerSmoothPass(positiveValue, negativeValue, SquareVertex.BottomLeft);
+        map.RandomSmoothPass(seed);
+        map.CornerSmoothPass(SquareVertex.TopLeft);
+        map.CornerSmoothPass(SquareVertex.BottomRight);
+        map.CornerSmoothPass(SquareVertex.TopRight);
+        map.CornerSmoothPass(SquareVertex.BottomLeft);
 
         return map;
     }
 
     private void CreateEdgeColliders(MeshData meshData)
     {
-        string edgeColliderHolderName = "Edge Colliders";
-        if (transform.FindChild(edgeColliderHolderName))
-        {
-            DestroyImmediate(transform.FindChild(edgeColliderHolderName).gameObject);
-        }
-
-        GameObject edgeColliderHolder = new GameObject(edgeColliderHolderName);
-        edgeColliderHolder.transform.parent = transform;
+        GameObject edgeColliderHolder = GetUniqueChildGameObject(transform, "Edge Colliders");
 
         foreach (Vector2[] edgePoints in meshData.GetMeshEdges())
         {
@@ -105,5 +81,18 @@ public class SoilMapController : MonoBehaviour
             edgeCollider.sharedMaterial = SoilMap.DirtPhysics;
             edgeCollider.points = edgePoints.Select(e => e * SoilMap.Scale).ToArray();
         }
+    }
+
+    private static GameObject GetUniqueChildGameObject(Transform transform, string gameObjectName)
+    {
+        if (transform.FindChild(gameObjectName))
+        {
+            DestroyImmediate(transform.FindChild(gameObjectName).gameObject);
+        }
+
+        GameObject gameObjectHolder = new GameObject(gameObjectName);
+        gameObjectHolder.transform.parent = transform;
+
+        return gameObjectHolder;
     }
 }
