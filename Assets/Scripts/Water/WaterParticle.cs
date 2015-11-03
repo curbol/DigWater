@@ -58,14 +58,16 @@ public class WaterParticle : MonoBehaviour
 
     private void SetVelocityScale()
     {
-        if (RigidBody.velocity.magnitude < 1)
+        if (RigidBody.velocity.magnitude < 0.5F)
         {
             transform.localScale = Vector3.one;
             return;
         }
 
         Vector2 scale = Vector2.one;
-        scale.y += Mathf.Abs(RigidBody.velocity.y) * (deformability / 100);
+        float scaleModifier = Mathf.Min(Mathf.Abs(RigidBody.velocity.y) * (deformability / 100), 0.5F);
+        scale.x -= scaleModifier;
+        scale.y += scaleModifier;
 
         transform.localScale = scale;
     }
