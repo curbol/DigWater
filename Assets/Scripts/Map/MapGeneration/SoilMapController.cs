@@ -28,8 +28,10 @@ public class SoilMapController : MonoBehaviour
 
         SoilMap.SoilGrid = new SoilType[SoilMap.SizeX, SoilMap.SizeY];
 
-        SoilMap.SoilGrid.RandomFill(SoilType.Rock, SoilMap.PercentDirt, SoilMap.Seed + 1);
-        SoilMap.SoilGrid.RandomFill(SoilType.Dirt, SoilMap.PercentDirt, SoilMap.Seed);
+        foreach (SoilMetadata soil in SoilMap.Soils)
+        {
+            SoilMap.SoilGrid.RandomFill(soil.SoilType, soil.PercentCoverage, SoilMap.Seed + (int)soil.SoilType);
+        }
 
         SoilMap.SoilGrid.SetBorder(SoilType.Dirt, SoilMap.BorderThickness);
 
@@ -41,18 +43,19 @@ public class SoilMapController : MonoBehaviour
         if (SoilMap == null || SoilMap.SoilGrid == null)
             return;
 
-        bool[,] dirtMap = SoilMap.SoilGrid.GetSoilBitMap(SoilType.Dirt);
-        MeshData meshData = dirtMap.GetMarchingSquaresMeshData(SoilMap.Width, SoilMap.Height);
-        GameObject dirtMeshHolder = GetUniqueChildGameObject(transform, "Dirt Mesh");
-        dirtMeshHolder.AddComponent<MeshFilter>().sharedMesh = meshData.GetMesh();
-        dirtMeshHolder.AddComponent<MeshRenderer>().materials = new Material[] { SoilMap.DirtMaterial };
+        foreach (SoilMetadata soil in SoilMap.Soils)
+        {
+            bool[,] bitMap = SoilMap.SoilGrid.GetSoilBitMap(soil.SoilType);
+            MeshData meshData = bitMap.GetMarchingSquaresMeshData(SoilMap.Width, SoilMap.Height);
+            GameObject meshHolder = GetUniqueChildGameObject(transform, soil.SoilType.ToString());
+            meshHolder.AddComponent<MeshFilter>().sharedMesh = meshData.GetMesh();
+            meshHolder.AddComponent<MeshRenderer>().materials = new Material[] { soil.Material };
 
-        bool[,] rockMap = SoilMap.SoilGrid.GetSoilBitMap(SoilType.Rock);
-        meshData = rockMap.GetMarchingSquaresMeshData(SoilMap.Width, SoilMap.Height);
-        GameObject rockMeshHolder = GetUniqueChildGameObject(transform, "Rock Mesh");
-        rockMeshHolder.AddComponent<MeshFilter>().sharedMesh = meshData.GetMesh();
-        rockMeshHolder.AddComponent<MeshRenderer>().materials = new Material[] { SoilMap.RockMaterial };
-        CreateEdgeColliders(meshData);
+            if (soil.IsCollidable)
+            {
+                CreateEdgeColliders(meshHolder.transform, meshData, soil.PhysicsMaterial);
+            }
+        }
     }
 
     private static GameObject GetUniqueChildGameObject(Transform transform, string gameObjectName)
@@ -85,15 +88,19 @@ public class SoilMapController : MonoBehaviour
         RedrawSoilMesh();
     }
 
-    private void CreateEdgeColliders(MeshData meshData)
+    private void CreateEdgeColliders(Transform parent, MeshData meshData, PhysicsMaterial2D physicsMaterial = null)
     {
-        GameObject edgeColliderHolder = GetUniqueChildGameObject(transform, "Edge Colliders");
+        GameObject edgeColliderHolder = GetUniqueChildGameObject(parent, "Edge Colliders");
 
         foreach (Vector2[] edgePoints in meshData.GetMeshEdges())
         {
             EdgeCollider2D edgeCollider = edgeColliderHolder.AddComponent<EdgeCollider2D>();
-            edgeCollider.sharedMaterial = SoilMap.DirtPhysics;
             edgeCollider.points = edgePoints.Select(e => e * SoilMap.Scale).ToArray();
+
+            if (physicsMaterial != null)
+            {
+                edgeCollider.sharedMaterial = physicsMaterial;
+            }
         }
     }
 }

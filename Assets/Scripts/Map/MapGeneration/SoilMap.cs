@@ -9,19 +9,6 @@ public class SoilMap
     private int borderThickness;
 
     [SerializeField]
-    private Material dirtMaterial;
-
-    [SerializeField]
-    private PhysicsMaterial2D dirtPhysics;
-
-    [SerializeField]
-    [Range(25, 75)]
-    private int percentDirt;
-
-    [SerializeField]
-    private Material rockMaterial;
-
-    [SerializeField]
     [Range(.1F, 2F)]
     private float scale = 1;
 
@@ -33,6 +20,9 @@ public class SoilMap
 
     [SerializeField]
     private int sizeY;
+
+    [SerializeField]
+    private SoilMetadata[] soils;
 
     public int BorderThickness
     {
@@ -47,63 +37,11 @@ public class SoilMap
         }
     }
 
-    public Material DirtMaterial
-    {
-        get
-        {
-            return dirtMaterial;
-        }
-
-        set
-        {
-            dirtMaterial = value;
-        }
-    }
-
-    public PhysicsMaterial2D DirtPhysics
-    {
-        get
-        {
-            return dirtPhysics;
-        }
-
-        set
-        {
-            dirtPhysics = value;
-        }
-    }
-
     public float Height
     {
         get
         {
             return sizeY * Scale;
-        }
-    }
-
-    public int PercentDirt
-    {
-        get
-        {
-            return percentDirt;
-        }
-
-        set
-        {
-            percentDirt = value;
-        }
-    }
-
-    public Material RockMaterial
-    {
-        get
-        {
-            return rockMaterial;
-        }
-
-        set
-        {
-            rockMaterial = value;
         }
     }
 
@@ -160,6 +98,19 @@ public class SoilMap
     }
 
     public SoilType[,] SoilGrid { get; set; }
+
+    public SoilMetadata[] Soils
+    {
+        get
+        {
+            return soils;
+        }
+
+        set
+        {
+            soils = value;
+        }
+    }
 
     public float Width
     {
