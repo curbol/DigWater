@@ -31,11 +31,19 @@ public static class MapCreationExtensions
 
     public static T[,] RandomFill<T>(this T[,] map, T value, int randomFillPercent, int seed = 0)
     {
+        return map.RandomFillSection(0, map.GetLength(0) - 1, 0, map.GetLength(1) - 1, value, randomFillPercent, seed);
+    }
+
+    public static T[,] RandomFillSection<T>(this T[,] map, int startX, int endX, int startY, int endY, T value, int randomFillPercent, int seed = 0)
+    {
+        if (endX < startX || endY < startY)
+            return null;
+
         System.Random random = new System.Random(seed);
 
-        for (int x = 0; x < map.GetLength(0); x++)
+        for (int x = startX; x <= endX; x++)
         {
-            for (int y = 0; y < map.GetLength(1); y++)
+            for (int y = startY; y <= endY; y++)
             {
                 if (random.Next(0, 100) < randomFillPercent)
                 {
