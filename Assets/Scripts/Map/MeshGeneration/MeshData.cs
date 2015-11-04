@@ -4,16 +4,15 @@ using UnityEngine;
 
 public class MeshData
 {
-    private readonly List<Vector4> tangents;
-    private readonly List<Vector2> uv;
-    private readonly Dictionary<int, List<int[]>> trianglesDictionary;
     private readonly HashSet<int> checkedEdgeVertexIndices;
-    private readonly float width;
     private readonly float height;
-
-    public List<Vector3> Vertices { get; set; }
-    public List<int> Triangles { get; set; }
+    private readonly List<Vector4> tangents;
+    private readonly Dictionary<int, List<int[]>> trianglesDictionary;
+    private readonly List<Vector2> uv;
+    private readonly float width;
     public HashSet<int> NonEdgeVertexIndices { get; set; }
+    public List<int> Triangles { get; set; }
+    public List<Vector3> Vertices { get; set; }
 
     public MeshData(float width, float height)
     {
@@ -27,26 +26,6 @@ public class MeshData
         Vertices = new List<Vector3>();
         Triangles = new List<int>();
         NonEdgeVertexIndices = new HashSet<int>();
-    }
-
-    public Vector3[] GetVertices()
-    {
-        return Vertices.ToArray();
-    }
-
-    public void AddVertex(Vector3 vertex)
-    {
-        Vertices.Add(vertex);
-        tangents.Add(new Vector4(1F, 0F, 0F, -1F));
-
-        float percentX = Mathf.InverseLerp(-width / 2F, width / 2F, vertex.x);
-        float percentY = Mathf.InverseLerp(-height / 2F, height / 2F, vertex.y);
-        uv.Add(new Vector2(percentX, percentY));
-    }
-
-    public int[] GetTriangles()
-    {
-        return Triangles.ToArray();
     }
 
     public void AddTriangle(int vertexIndexA, int vertexIndexB, int vertexIndexC)
@@ -71,14 +50,14 @@ public class MeshData
         }
     }
 
-    public Vector4[] GetTangents()
+    public void AddVertex(Vector3 vertex)
     {
-        return tangents.ToArray();
-    }
+        Vertices.Add(vertex);
+        tangents.Add(new Vector4(1F, 0F, 0F, -1F));
 
-    public Vector2[] GetUV()
-    {
-        return uv.ToArray();
+        float percentX = Mathf.InverseLerp(-width / 2F, width / 2F, vertex.x);
+        float percentY = Mathf.InverseLerp(-height / 2F, height / 2F, vertex.y);
+        uv.Add(new Vector2(percentX, percentY));
     }
 
     public IEnumerable<IEnumerable<int>> GetOutlines()
@@ -98,19 +77,24 @@ public class MeshData
         }
     }
 
-    private IEnumerable<int> GetOutline(int vertexIndex)
+    public Vector4[] GetTangents()
     {
-        yield return vertexIndex;
+        return tangents.ToArray();
+    }
 
-        int? nextOutlineVertexIndex = GetConnectedOutlineVertex(vertexIndex);
-        while (nextOutlineVertexIndex != null && nextOutlineVertexIndex != vertexIndex)
-        {
-            checkedEdgeVertexIndices.Add((int)nextOutlineVertexIndex);
-            yield return (int)nextOutlineVertexIndex;
-            nextOutlineVertexIndex = GetConnectedOutlineVertex((int)nextOutlineVertexIndex);
-        }
+    public int[] GetTriangles()
+    {
+        return Triangles.ToArray();
+    }
 
-        yield return vertexIndex;
+    public Vector2[] GetUV()
+    {
+        return uv.ToArray();
+    }
+
+    public Vector3[] GetVertices()
+    {
+        return Vertices.ToArray();
     }
 
     private int? GetConnectedOutlineVertex(int vertexIndexA)
@@ -136,6 +120,21 @@ public class MeshData
         }
 
         return vertexIndex;
+    }
+
+    private IEnumerable<int> GetOutline(int vertexIndex)
+    {
+        yield return vertexIndex;
+
+        int? nextOutlineVertexIndex = GetConnectedOutlineVertex(vertexIndex);
+        while (nextOutlineVertexIndex != null && nextOutlineVertexIndex != vertexIndex)
+        {
+            checkedEdgeVertexIndices.Add((int)nextOutlineVertexIndex);
+            yield return (int)nextOutlineVertexIndex;
+            nextOutlineVertexIndex = GetConnectedOutlineVertex((int)nextOutlineVertexIndex);
+        }
+
+        yield return vertexIndex;
     }
 
     private bool IsOutlineEdge(int vertexIndexA, int vertexIndexB)

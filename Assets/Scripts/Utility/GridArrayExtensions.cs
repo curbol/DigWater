@@ -18,9 +18,32 @@ public static class GridArrayExtensions
         }
     }
 
-    public static IEnumerable<T> GetNeighbors<T>(this T[,] grid, int gridX, int gridY, bool allowDiagonals = true)
+    public static IEnumerable<Coordinate> GetFloodFillCoordinates<T>(this T[,] grid, int startX, int startY)
     {
-        return grid.GetNeighborCoordinates(gridX, gridY, allowDiagonals).Select(c => grid[c.X, c.Y]);
+        int sizeX = grid.GetLength(0);
+        int sizeY = grid.GetLength(1);
+        bool[,] gridFlags = new bool[sizeX, sizeY];
+        T targetValue = grid[startX, startY];
+        Queue<Coordinate> queue = new Queue<Coordinate>();
+
+        queue.Enqueue(new Coordinate(startX, startY));
+        gridFlags[startX, startY] = true;
+
+        while (queue.Count > 0)
+        {
+            Coordinate coordinate = queue.Dequeue();
+
+            yield return coordinate;
+
+            foreach (Coordinate neighbor in grid.GetNeighborCoordinates(coordinate.X, coordinate.Y, false))
+            {
+                if (!gridFlags[neighbor.X, neighbor.Y] && grid[neighbor.X, neighbor.Y].Equals(targetValue))
+                {
+                    queue.Enqueue(neighbor);
+                    gridFlags[neighbor.X, neighbor.Y] = true;
+                }
+            }
+        }
     }
 
     public static IEnumerable<Coordinate> GetNeighborCoordinates<T>(this T[,] grid, int gridX, int gridY, bool allowDiagonals = true)
@@ -65,31 +88,8 @@ public static class GridArrayExtensions
         }
     }
 
-    public static IEnumerable<Coordinate> GetFloodFillCoordinates<T>(this T[,] grid, int startX, int startY)
+    public static IEnumerable<T> GetNeighbors<T>(this T[,] grid, int gridX, int gridY, bool allowDiagonals = true)
     {
-        int sizeX = grid.GetLength(0);
-        int sizeY = grid.GetLength(1);
-        bool[,] gridFlags = new bool[sizeX, sizeY];
-        T targetValue = grid[startX, startY];
-        Queue<Coordinate> queue = new Queue<Coordinate>();
-
-        queue.Enqueue(new Coordinate(startX, startY));
-        gridFlags[startX, startY] = true;
-
-        while(queue.Count > 0)
-        {
-            Coordinate coordinate = queue.Dequeue();
-
-            yield return coordinate;
-
-            foreach(Coordinate neighbor in grid.GetNeighborCoordinates(coordinate.X, coordinate.Y, false))
-            {
-                if (!gridFlags[neighbor.X, neighbor.Y] && grid[neighbor.X, neighbor.Y].Equals(targetValue))
-                {
-                    queue.Enqueue(neighbor);
-                    gridFlags[neighbor.X, neighbor.Y] = true;
-                }
-            }
-        }
+        return grid.GetNeighborCoordinates(gridX, gridY, allowDiagonals).Select(c => grid[c.X, c.Y]);
     }
 }

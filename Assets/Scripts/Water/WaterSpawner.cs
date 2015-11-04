@@ -4,26 +4,20 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class WaterSpawner : MonoBehaviour
 {
-    private static readonly System.Random random = new System.Random();
-    private static readonly string waterHolderName = "Water";
-
-    public Transform waterParticlePrefab;
-
     [Range(0, 2)]
     public float spawnDelay = 0.5F;
 
     [Range(0, 10)]
     public float spawnRadius = 2F;
 
+    public Transform waterParticlePrefab;
+    private static readonly System.Random random = new System.Random();
+    private static readonly string waterHolderName = "Water";
+
     private void Awake()
     {
         GameObject waterHolder = new GameObject(waterHolderName);
         waterHolder.transform.parent = transform;
-    }
-
-	private void Start()
-	{
-        StartCoroutine(SpawnWater());
     }
 
     private IEnumerator SpawnWater()
@@ -39,5 +33,10 @@ public class WaterSpawner : MonoBehaviour
 
             yield return new WaitForSeconds(spawnDelay);
         }
+    }
+
+    private void Start()
+    {
+        StartCoroutine(SpawnWater());
     }
 }

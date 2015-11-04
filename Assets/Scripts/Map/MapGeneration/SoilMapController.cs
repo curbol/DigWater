@@ -7,6 +7,7 @@ public class SoilMapController : MonoBehaviour
 {
     [SerializeField]
     private SoilMap soilMap;
+
     public SoilMap SoilMap
     {
         get
@@ -27,7 +28,7 @@ public class SoilMapController : MonoBehaviour
 
         SoilMap.SoilGrid = new SoilType[SoilMap.SizeX, SoilMap.SizeY];
 
-        SoilMap.SoilGrid.RandomFill(SoilType.Rock, SoilMap.PercentDirt, SoilMap.Seed+1);
+        SoilMap.SoilGrid.RandomFill(SoilType.Rock, SoilMap.PercentDirt, SoilMap.Seed + 1);
         SoilMap.SoilGrid.RandomFill(SoilType.Dirt, SoilMap.PercentDirt, SoilMap.Seed);
 
         SoilMap.SoilGrid.SetBorder(SoilType.Dirt, SoilMap.BorderThickness);
@@ -54,10 +55,17 @@ public class SoilMapController : MonoBehaviour
         CreateEdgeColliders(meshData);
     }
 
-    private void Awake()
+    private static GameObject GetUniqueChildGameObject(Transform transform, string gameObjectName)
     {
-        GenerateSoilMap();
-        RedrawSoilMesh();
+        if (transform.FindChild(gameObjectName))
+        {
+            DestroyImmediate(transform.FindChild(gameObjectName).gameObject);
+        }
+
+        GameObject gameObjectHolder = new GameObject(gameObjectName);
+        gameObjectHolder.transform.parent = transform;
+
+        return gameObjectHolder;
     }
 
     private static T[,] Smooth<T>(T[,] map, int seed = 0)
@@ -71,6 +79,12 @@ public class SoilMapController : MonoBehaviour
         return map;
     }
 
+    private void Awake()
+    {
+        GenerateSoilMap();
+        RedrawSoilMesh();
+    }
+
     private void CreateEdgeColliders(MeshData meshData)
     {
         GameObject edgeColliderHolder = GetUniqueChildGameObject(transform, "Edge Colliders");
@@ -81,18 +95,5 @@ public class SoilMapController : MonoBehaviour
             edgeCollider.sharedMaterial = SoilMap.DirtPhysics;
             edgeCollider.points = edgePoints.Select(e => e * SoilMap.Scale).ToArray();
         }
-    }
-
-    private static GameObject GetUniqueChildGameObject(Transform transform, string gameObjectName)
-    {
-        if (transform.FindChild(gameObjectName))
-        {
-            DestroyImmediate(transform.FindChild(gameObjectName).gameObject);
-        }
-
-        GameObject gameObjectHolder = new GameObject(gameObjectName);
-        gameObjectHolder.transform.parent = transform;
-
-        return gameObjectHolder;
     }
 }

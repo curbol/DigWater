@@ -5,10 +5,23 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class WaterParticle : MonoBehaviour
 {
-    public Action OnDeath { get; set; }
-    private float birthTime;
+    [Range(0, 10)]
+    public float deformability = 3;
 
+    public float maximumAge = 5;
+    private float birthTime;
     private Rigidbody2D rigidBody;
+
+    public float Age
+    {
+        get
+        {
+            return Time.time - birthTime;
+        }
+    }
+
+    public Action OnDeath { get; set; }
+
     private Rigidbody2D RigidBody
     {
         get
@@ -22,38 +35,37 @@ public class WaterParticle : MonoBehaviour
         }
     }
 
-    [Range(0,10)]
-    public float deformability = 3;
-    public float maximumAge = 5;
-
-    public float Age
-    {
-        get
-        {
-            return Time.time - birthTime;
-        }
-    }
-
     public void Initialize()
     {
         birthTime = Time.time;
         RigidBody.velocity = Vector2.zero;
     }
 
-    private void Start()
-    {
-        Initialize();
-    }
-
-	private void Update()
-	{
-        SetDeath();
-    }
-
     private void FixedUpdate()
     {
         SetDirection();
         SetVelocityScale();
+    }
+
+    private void SetDeath()
+    {
+        if (Age > maximumAge)
+        {
+            if (OnDeath != null)
+            {
+                OnDeath();
+            }
+
+            Destroy(gameObject);
+        }
+    }
+
+    private void SetDirection()
+    {
+        if (RigidBody.velocity != Vector2.zero)
+        {
+            transform.rotation = Quaternion.LookRotation(Vector3.forward, RigidBody.velocity);
+        }
     }
 
     private void SetVelocityScale()
@@ -72,24 +84,13 @@ public class WaterParticle : MonoBehaviour
         transform.localScale = scale;
     }
 
-    private void SetDirection()
+    private void Start()
     {
-        if (RigidBody.velocity != Vector2.zero)
-        {
-            transform.rotation = Quaternion.LookRotation(Vector3.forward, RigidBody.velocity);
-        }
+        Initialize();
     }
 
-    private void SetDeath()
+    private void Update()
     {
-        if (Age > maximumAge)
-        {
-            if (OnDeath != null)
-            {
-                OnDeath();
-            }
-
-            Destroy(gameObject);
-        }
+        SetDeath();
     }
 }

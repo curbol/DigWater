@@ -6,6 +6,7 @@ public class SoilTypeSettings
 {
     [SerializeField]
     private int seed;
+
     public int Seed
     {
         get

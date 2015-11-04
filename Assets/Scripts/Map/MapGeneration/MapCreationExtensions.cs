@@ -3,6 +3,32 @@ using System.Linq;
 
 public static class MapCreationExtensions
 {
+    public static T[,] CornerSmoothPass<T>(this T[,] map, SquareVertex corner)
+    {
+        IEnumerable<int> rangeX = Enumerable.Range(0, map.GetLength(0) - 1);
+        IEnumerable<int> rangeY = Enumerable.Range(0, map.GetLength(1) - 1);
+
+        if (corner == SquareVertex.TopRight || corner == SquareVertex.BottomRight)
+        {
+            rangeX = rangeX.Reverse();
+        }
+
+        if (corner == SquareVertex.BottomLeft || corner == SquareVertex.BottomRight)
+        {
+            rangeY = rangeY.Reverse();
+        }
+
+        foreach (int x in rangeX)
+        {
+            foreach (int y in rangeY)
+            {
+                map.SmoothCoordinate(x, y);
+            }
+        }
+
+        return map;
+    }
+
     public static T[,] RandomFill<T>(this T[,] map, T value, int randomFillPercent, int seed = 0)
     {
         System.Random random = new System.Random(seed);
@@ -14,28 +40,6 @@ public static class MapCreationExtensions
                 if (random.Next(0, 100) < randomFillPercent)
                 {
                     map[x, y] = value;
-                }
-            }
-        }
-
-        return map;
-    }
-
-    public static T[,] SetBorder<T>(this T[,] map, T value, int borderThickness)
-    {
-        int sizeX = map.GetLength(0);
-        int sizeY = map.GetLength(1);
-
-        if (borderThickness > 0 && borderThickness * 2 < sizeX && borderThickness * 2 < sizeY)
-        {
-            for (int x = 0; x < sizeX; x++)
-            {
-                for (int y = 0; y < sizeY; y++)
-                {
-                    if (x < borderThickness || x >= sizeX - borderThickness || y < borderThickness || y >= sizeY - borderThickness)
-                    {
-                        map[x, y] = value;
-                    }
                 }
             }
         }
@@ -59,26 +63,22 @@ public static class MapCreationExtensions
         return map;
     }
 
-    public static T[,] CornerSmoothPass<T>(this T[,] map, SquareVertex corner)
+    public static T[,] SetBorder<T>(this T[,] map, T value, int borderThickness)
     {
-        IEnumerable<int> rangeX = Enumerable.Range(0, map.GetLength(0) - 1);
-        IEnumerable<int> rangeY = Enumerable.Range(0, map.GetLength(1) - 1);
+        int sizeX = map.GetLength(0);
+        int sizeY = map.GetLength(1);
 
-        if (corner == SquareVertex.TopRight || corner == SquareVertex.BottomRight)
+        if (borderThickness > 0 && borderThickness * 2 < sizeX && borderThickness * 2 < sizeY)
         {
-            rangeX = rangeX.Reverse();
-        }
-
-        if (corner == SquareVertex.BottomLeft || corner == SquareVertex.BottomRight)
-        {
-            rangeY = rangeY.Reverse();
-        }
-
-        foreach (int x in rangeX)
-        {
-            foreach (int y in rangeY)
+            for (int x = 0; x < sizeX; x++)
             {
-                map.SmoothCoordinate(x, y);
+                for (int y = 0; y < sizeY; y++)
+                {
+                    if (x < borderThickness || x >= sizeX - borderThickness || y < borderThickness || y >= sizeY - borderThickness)
+                    {
+                        map[x, y] = value;
+                    }
+                }
             }
         }
 

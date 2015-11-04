@@ -3,12 +3,11 @@
 [DisallowMultipleComponent]
 public class MapGenerator : MonoBehaviour
 {
-    private static readonly string mapHolderName = "Map";
-
-    public SoilMap[] maps;
-    public int mapIndex;
-    public float digRadius;
     public ParticleSystem digEffect;
+    public float digRadius;
+    public int mapIndex;
+    public SoilMap[] maps;
+    private static readonly string mapHolderName = "Map";
 
     public SoilMap CurrentMap
     {

@@ -4,11 +4,6 @@ using UnityEngine;
 
 public static class CoordinateExtenstions
 {
-    public static float ManhattanDistance(this Coordinate c1, Coordinate c2)
-    {
-        return Mathf.Abs(c1.X - c2.X) + Mathf.Abs(c1.Y - c2.Y);
-    }
-
     public static float EuclidianDistance(this Coordinate c1, Coordinate c2)
     {
         return Mathf.Sqrt(Mathf.Pow(c1.X - c2.X, 2) + Mathf.Pow(c1.Y - c2.Y, 2));
@@ -55,5 +50,10 @@ public static class CoordinateExtenstions
                 }
             }
         }
+    }
+
+    public static float ManhattanDistance(this Coordinate c1, Coordinate c2)
+    {
+        return Mathf.Abs(c1.X - c2.X) + Mathf.Abs(c1.Y - c2.Y);
     }
 }

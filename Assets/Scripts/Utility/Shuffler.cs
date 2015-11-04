@@ -7,7 +7,7 @@ public static class Shuffler
     {
         Random random = new Random(seed);
 
-        for (int i = 0; i < array.Length -1; i++)
+        for (int i = 0; i < array.Length - 1; i++)
         {
             int randomIndex = random.Next(i, array.Length);
             T temp = array[randomIndex];

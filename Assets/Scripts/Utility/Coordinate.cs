@@ -9,6 +9,16 @@
         Y = y;
     }
 
+    public static bool operator !=(Coordinate c1, Coordinate c2)
+    {
+        return !c1.Equals(c2);
+    }
+
+    public static bool operator ==(Coordinate c1, Coordinate c2)
+    {
+        return c1.Equals(c2);
+    }
+
     public override bool Equals(object obj)
     {
         if (obj is Coordinate)
@@ -22,15 +32,5 @@
     public override int GetHashCode()
     {
         return X.GetHashCode() * X.GetHashCode() * Y.GetHashCode() - X.GetHashCode() + Y.GetHashCode();
-    }
-
-    public static bool operator ==(Coordinate c1, Coordinate c2)
-    {
-        return c1.Equals(c2);
-    }
-
-    public static bool operator !=(Coordinate c1, Coordinate c2)
-    {
-        return !c1.Equals(c2);
     }
 }

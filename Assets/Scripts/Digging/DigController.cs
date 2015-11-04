@@ -4,30 +4,27 @@
 [RequireComponent(typeof(SoilMapController))]
 public class DigController : MonoBehaviour
 {
-    private SoilMapController soilMapController;
-    private SoilMapController SoilMapController
-    {
-        get
-        {
-            if (soilMapController == null)
-            {
-                soilMapController = GetComponent<SoilMapController>();
-            }
-
-            return soilMapController;
-        }
-    }
-
-    private SoilMap SoilMap
-    {
-        get
-        {
-            return SoilMapController != null ? SoilMapController.SoilMap : null;
-        }
-    }
+    [SerializeField]
+    private ParticleSystem digEffect;
 
     [SerializeField]
     private float digRadius;
+
+    private SoilMapController soilMapController;
+
+    public ParticleSystem DigEffect
+    {
+        get
+        {
+            return digEffect;
+        }
+
+        set
+        {
+            digEffect = value;
+        }
+    }
+
     public float DigRadius
     {
         get
@@ -41,19 +38,47 @@ public class DigController : MonoBehaviour
         }
     }
 
-    [SerializeField]
-    private ParticleSystem digEffect;
-    public ParticleSystem DigEffect
+    private SoilMap SoilMap
     {
         get
         {
-            return digEffect;
+            return SoilMapController != null ? SoilMapController.SoilMap : null;
         }
+    }
 
-        set
+    private SoilMapController SoilMapController
+    {
+        get
         {
-            digEffect = value;
+            if (soilMapController == null)
+            {
+                soilMapController = GetComponent<SoilMapController>();
+            }
+
+            return soilMapController;
         }
+    }
+
+    private static void DrawDirt(SoilMap soilMap, Coordinate coordinateToDig, SoilType soilType, float digRadius)
+    {
+        if (soilMap == null || soilMap.SoilGrid == null)
+            return;
+
+        soilMap.SoilGrid[coordinateToDig.X, coordinateToDig.Y] = soilType;
+        foreach (Coordinate neighborCoordinate in soilMap.SoilGrid.GetNeighborCoordinatesInRadius(coordinateToDig.X, coordinateToDig.Y, digRadius))
+        {
+            soilMap.SoilGrid[neighborCoordinate.X, neighborCoordinate.Y] = soilType;
+        }
+    }
+
+    private void PlayDigEffect(Vector2 screenPosition)
+    {
+        if (DigEffect == null)
+            return;
+
+        DigEffect.Stop();
+        DigEffect.transform.position = screenPosition;
+        DigEffect.GetComponent<ParticleSystem>().Play();
     }
 
     private void Start()
@@ -84,27 +109,5 @@ public class DigController : MonoBehaviour
                 SoilMapController.RedrawSoilMesh();
             }
         }
-    }
-
-    private static void DrawDirt(SoilMap soilMap, Coordinate coordinateToDig, SoilType soilType, float digRadius)
-    {
-        if (soilMap == null || soilMap.SoilGrid == null)
-            return;
-
-        soilMap.SoilGrid[coordinateToDig.X, coordinateToDig.Y] = soilType;
-        foreach (Coordinate neighborCoordinate in soilMap.SoilGrid.GetNeighborCoordinatesInRadius(coordinateToDig.X, coordinateToDig.Y, digRadius))
-        {
-            soilMap.SoilGrid[neighborCoordinate.X, neighborCoordinate.Y] = soilType;
-        }
-    }
-
-    private void PlayDigEffect(Vector2 screenPosition)
-    {
-        if (DigEffect == null)
-            return;
-
-        DigEffect.Stop();
-        DigEffect.transform.position = screenPosition;
-        DigEffect.GetComponent<ParticleSystem>().Play();
     }
 }

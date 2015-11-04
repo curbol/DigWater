@@ -17,7 +17,6 @@ public static class MeshGeneration
                 {
                     meshData.AddMarchingSquare(marchingSquares[x, y]);
                 }
-
             }
         }
 
@@ -48,6 +47,50 @@ public static class MeshGeneration
             }
 
             yield return edgePoints;
+        }
+    }
+
+    private static void AddMarchingSquare(this MeshData meshData, MarchingSquare square)
+    {
+        MeshVertex[] points = square.GetPoints();
+        if (points != null)
+        {
+            meshData.AddPoints(square.GetPoints());
+
+            foreach (MeshVertex meshVertex in points.OfType<ControlMeshVertex>().Where(p => p.VertexIndex != null))
+            {
+                meshData.NonEdgeVertexIndices.Add((int)meshVertex.VertexIndex);
+            }
+        }
+    }
+
+    private static void AddPoints(this MeshData meshData, params MeshVertex[] points)
+    {
+        meshData.AssignVertices(points);
+        meshData.AddTriangles(points);
+    }
+
+    private static void AddTriangles(this MeshData meshData, params MeshVertex[] points)
+    {
+        for (int i = 2; i < points.Length; i++)
+        {
+            int vertexIndexA = (int)points[0].VertexIndex;
+            int vertexIndexB = (int)points[i - 1].VertexIndex;
+            int vertexIndexC = (int)points[i].VertexIndex;
+
+            meshData.AddTriangle(vertexIndexA, vertexIndexB, vertexIndexC);
+        }
+    }
+
+    private static void AssignVertices(this MeshData meshData, params MeshVertex[] points)
+    {
+        for (int i = 0; i < points.Length; i++)
+        {
+            if (points[i].VertexIndex == null)
+            {
+                points[i].VertexIndex = meshData.Vertices.Count;
+                meshData.AddVertex(points[i].Position);
+            }
         }
     }
 
@@ -86,49 +129,5 @@ public static class MeshGeneration
         }
 
         return squares;
-    }
-
-    private static void AddMarchingSquare(this MeshData meshData, MarchingSquare square)
-    {
-        MeshVertex[] points = square.GetPoints();
-        if (points != null)
-        {
-            meshData.AddPoints(square.GetPoints());
-
-            foreach (MeshVertex meshVertex in points.OfType<ControlMeshVertex>().Where(p => p.VertexIndex != null))
-            {
-                meshData.NonEdgeVertexIndices.Add((int)meshVertex.VertexIndex);
-            }
-        }
-    }
-
-    private static void AddPoints(this MeshData meshData, params MeshVertex[] points)
-    {
-        meshData.AssignVertices(points);
-        meshData.AddTriangles(points);
-    }
-
-    private static void AssignVertices(this MeshData meshData, params MeshVertex[] points)
-    {
-        for (int i = 0; i < points.Length; i++)
-        {
-            if (points[i].VertexIndex == null)
-            {
-                points[i].VertexIndex = meshData.Vertices.Count;
-                meshData.AddVertex(points[i].Position);
-            }
-        }
-    }
-
-    private static void AddTriangles(this MeshData meshData, params MeshVertex[] points)
-    {
-        for (int i = 2; i < points.Length; i++)
-        {
-            int vertexIndexA = (int)points[0].VertexIndex;
-            int vertexIndexB = (int)points[i - 1].VertexIndex;
-            int vertexIndexC = (int)points[i].VertexIndex;
-
-            meshData.AddTriangle(vertexIndexA, vertexIndexB, vertexIndexC);
-        }
     }
 }
