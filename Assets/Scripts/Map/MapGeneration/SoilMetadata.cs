@@ -8,13 +8,28 @@ public class SoilMetadata
     private Transform digEffectPrefab;
 
     [SerializeField]
+    private int fillEndX;
+
+    [SerializeField]
+    private int fillEndY;
+
+    [SerializeField]
+    private int fillStartX;
+
+    [SerializeField]
+    private int fillStartY;
+
+    [SerializeField]
     private bool isCollidable;
+
+    [SerializeField]
+    private bool isDiggable;
 
     [SerializeField]
     private Material material;
 
     [SerializeField]
-    [Range(20, 80)]
+    [Range(0, 100)]
     private int percentCoverage;
 
     [SerializeField]
@@ -36,6 +51,58 @@ public class SoilMetadata
         }
     }
 
+    public int FillEndX
+    {
+        get
+        {
+            return fillEndX;
+        }
+
+        set
+        {
+            fillEndX = value;
+        }
+    }
+
+    public int FillEndY
+    {
+        get
+        {
+            return fillEndY;
+        }
+
+        set
+        {
+            fillEndY = value;
+        }
+    }
+
+    public int FillStartX
+    {
+        get
+        {
+            return fillStartX;
+        }
+
+        set
+        {
+            fillStartX = value;
+        }
+    }
+
+    public int FillStartY
+    {
+        get
+        {
+            return fillStartY;
+        }
+
+        set
+        {
+            fillStartY = value;
+        }
+    }
+
     public bool IsCollidable
     {
         get
@@ -46,6 +113,19 @@ public class SoilMetadata
         set
         {
             isCollidable = value;
+        }
+    }
+
+    public bool IsDiggable
+    {
+        get
+        {
+            return isDiggable;
+        }
+
+        set
+        {
+            isDiggable = value;
         }
     }
 

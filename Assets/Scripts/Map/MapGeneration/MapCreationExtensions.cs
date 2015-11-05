@@ -36,7 +36,7 @@ public static class MapCreationExtensions
 
     public static T[,] RandomFillSection<T>(this T[,] map, int startX, int endX, int startY, int endY, T value, int randomFillPercent, int seed = 0)
     {
-        if (endX < startX || endY < startY)
+        if (startX < 0 || startY < 0 || endX < startX || endY < startY)
             return null;
 
         System.Random random = new System.Random(seed);

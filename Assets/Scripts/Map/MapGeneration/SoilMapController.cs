@@ -30,10 +30,8 @@ public class SoilMapController : MonoBehaviour
 
         foreach (SoilMetadata soil in SoilMap.Soils)
         {
-            SoilMap.SoilGrid.RandomFillSection(0, 50, 0, 50, soil.SoilType, soil.PercentCoverage, SoilMap.Seed + (int)soil.SoilType);
+            SoilMap.SoilGrid.RandomFillSection(soil.FillStartX, soil.FillEndX, soil.FillStartY, soil.FillEndY, soil.SoilType, soil.PercentCoverage, SoilMap.Seed + (int)soil.SoilType);
         }
-
-        SoilMap.SoilGrid.SetBorder(SoilType.Dirt, SoilMap.BorderThickness);
 
         Smooth(SoilMap.SoilGrid, SoilMap.Seed);
     }
