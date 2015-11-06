@@ -5,78 +5,22 @@ using UnityEngine;
 public class SoilMetadata
 {
     [SerializeField]
-    private Transform digEffectPrefab;
+    private SoilType soilType;
+    public SoilType SoilType
+    {
+        get
+        {
+            return soilType;
+        }
 
-    [SerializeField]
-    private int fillEndX;
-
-    [SerializeField]
-    private int fillEndY;
+        set
+        {
+            soilType = value;
+        }
+    }
 
     [SerializeField]
     private int fillStartX;
-
-    [SerializeField]
-    private int fillStartY;
-
-    [SerializeField]
-    private bool isCollidable;
-
-    [SerializeField]
-    private bool isDiggable;
-
-    [SerializeField]
-    private Material material;
-
-    [SerializeField]
-    [Range(0, 100)]
-    private int percentCoverage;
-
-    [SerializeField]
-    private PhysicsMaterial2D physicsMaterial;
-
-    [SerializeField]
-    private SoilType soilType;
-
-    public Transform DigEffectPrefab
-    {
-        get
-        {
-            return digEffectPrefab;
-        }
-
-        set
-        {
-            digEffectPrefab = value;
-        }
-    }
-
-    public int FillEndX
-    {
-        get
-        {
-            return fillEndX;
-        }
-
-        set
-        {
-            fillEndX = value;
-        }
-    }
-
-    public int FillEndY
-    {
-        get
-        {
-            return fillEndY;
-        }
-
-        set
-        {
-            fillEndY = value;
-        }
-    }
-
     public int FillStartX
     {
         get
@@ -90,6 +34,23 @@ public class SoilMetadata
         }
     }
 
+    [SerializeField]
+    private int fillEndX;
+    public int FillEndX
+    {
+        get
+        {
+            return fillEndX;
+        }
+
+        set
+        {
+            fillEndX = value;
+        }
+    }
+
+    [SerializeField]
+    private int fillStartY;
     public int FillStartY
     {
         get
@@ -103,45 +64,24 @@ public class SoilMetadata
         }
     }
 
-    public bool IsCollidable
+    [SerializeField]
+    private int fillEndY;
+    public int FillEndY
     {
         get
         {
-            return isCollidable;
+            return fillEndY;
         }
 
         set
         {
-            isCollidable = value;
+            fillEndY = value;
         }
     }
 
-    public bool IsDiggable
-    {
-        get
-        {
-            return isDiggable;
-        }
-
-        set
-        {
-            isDiggable = value;
-        }
-    }
-
-    public Material Material
-    {
-        get
-        {
-            return material;
-        }
-
-        set
-        {
-            material = value;
-        }
-    }
-
+    [SerializeField]
+    [Range(0, 100)]
+    private int percentCoverage;
     public int PercentCoverage
     {
         get
@@ -155,6 +95,23 @@ public class SoilMetadata
         }
     }
 
+    [SerializeField]
+    private Material material;
+    public Material Material
+    {
+        get
+        {
+            return material;
+        }
+
+        set
+        {
+            material = value;
+        }
+    }
+
+    [SerializeField]
+    private PhysicsMaterial2D physicsMaterial;
     public PhysicsMaterial2D PhysicsMaterial
     {
         get
@@ -168,16 +125,48 @@ public class SoilMetadata
         }
     }
 
-    public SoilType SoilType
+    [SerializeField]
+    private Transform digEffectPrefab;
+    public Transform DigEffectPrefab
     {
         get
         {
-            return soilType;
+            return digEffectPrefab;
         }
 
         set
         {
-            soilType = value;
+            digEffectPrefab = value;
+        }
+    }
+
+    [SerializeField]
+    private bool isDiggable;
+    public bool IsDiggable
+    {
+        get
+        {
+            return isDiggable;
+        }
+
+        set
+        {
+            isDiggable = value;
+        }
+    }
+
+    [SerializeField]
+    private bool isCollidable;
+    public bool IsCollidable
+    {
+        get
+        {
+            return isCollidable;
+        }
+
+        set
+        {
+            isCollidable = value;
         }
     }
 }

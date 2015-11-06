@@ -5,12 +5,95 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class WaterParticle : MonoBehaviour
 {
-    [Range(0, 10)]
-    public float deformability = 3;
-
-    public float maximumAge = 5;
+    private WaterState state;
     private float birthTime;
     private Rigidbody2D rigidBody;
+
+    [Range(0, 10)]
+    [SerializeField]
+    private float deformability;
+    public float Deformability
+    {
+        get
+        {
+            return deformability;
+        }
+    }
+
+    [SerializeField]
+    private float maximumAge = 5;
+    public float MaximumAge
+    {
+        get
+        {
+            return maximumAge;
+        }
+
+        set
+        {
+            maximumAge = value;
+        }
+    }
+
+    [SerializeField]
+    private float temperature;
+    public float Temperature
+    {
+        get
+        {
+            return temperature;
+        }
+    }
+
+    [SerializeField]
+    private float heatRate;
+    public float HeatRate
+    {
+        get
+        {
+            return heatRate;
+        }
+    }
+
+    [SerializeField]
+    private float coolRate;
+    public float CoolRate
+    {
+        get
+        {
+            return coolRate;
+        }
+    }
+
+    [SerializeField]
+    private float vaporizationPoint;
+    public float VaporizationPoint
+    {
+        get
+        {
+            return vaporizationPoint;
+        }
+    }
+
+    [SerializeField]
+    private float vaporAcceleration;
+    public float VaporAcceleration
+    {
+        get
+        {
+            return vaporAcceleration;
+        }
+    }
+
+    [SerializeField]
+    private float vaporMaximumVelocity;
+    public float VaporMaximumVelocity
+    {
+        get
+        {
+            return vaporMaximumVelocity;
+        }
+    }
 
     public float Age
     {
@@ -35,29 +118,57 @@ public class WaterParticle : MonoBehaviour
         }
     }
 
+    public void Heat(float? heatIncrease = null)
+    {
+        temperature += heatIncrease ?? HeatRate;
+        temperature = Mathf.Max(0, temperature);
+
+        Debug.DrawLine(transform.position, transform.position + Vector3.up * 0.5F, Color.Lerp(new Color(255, 255, 0, 0), new Color(255, 0, 0), temperature / VaporizationPoint));
+
+        if (state == WaterState.Water && temperature >= VaporizationPoint)
+        {
+            state = WaterState.Vapor;
+        }
+        else if (state == WaterState.Vapor && temperature < VaporizationPoint)
+        {
+            state = WaterState.Water;
+        }
+    }
+
+    public void Cool(float? heatDecrease = null)
+    {
+        Heat(-(heatDecrease ?? CoolRate));
+    }
+
     public void Initialize()
     {
         birthTime = Time.time;
         RigidBody.velocity = Vector2.zero;
     }
 
-    private void FixedUpdate()
+    private void Start()
     {
-        SetDirection();
-        SetVelocityScale();
+        Initialize();
     }
 
-    private void SetDeath()
+    private void Update()
     {
-        if (Age > maximumAge)
-        {
-            if (OnDeath != null)
-            {
-                OnDeath();
-            }
+        Cool();
+        SetDeath();
+    }
 
-            Destroy(gameObject);
+    private void FixedUpdate()
+    {
+        if (state == WaterState.Water)
+        {
+            SetDirection();
         }
+        else if (state == WaterState.Vapor)
+        {
+            Evaporate();
+        }
+
+        SetVelocityScale();
     }
 
     private void SetDirection()
@@ -84,13 +195,23 @@ public class WaterParticle : MonoBehaviour
         transform.localScale = scale;
     }
 
-    private void Start()
+    private void Evaporate()
     {
-        Initialize();
+        transform.rotation = Quaternion.identity;
+        RigidBody.velocity -= new Vector2(RigidBody.velocity.x, 0);
+        RigidBody.gravityScale = RigidBody.velocity.y < VaporMaximumVelocity ? -VaporAcceleration : 0;
     }
 
-    private void Update()
+    private void SetDeath()
     {
-        SetDeath();
+        if (Age > maximumAge)
+        {
+            if (OnDeath != null)
+            {
+                OnDeath();
+            }
+
+            Destroy(gameObject);
+        }
     }
 }
