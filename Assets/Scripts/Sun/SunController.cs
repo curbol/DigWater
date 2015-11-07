@@ -1,9 +1,16 @@
 ﻿using System.Collections;
-using System.Linq;
 using UnityEngine;
 
 public class SunController : MonoBehaviour
 {
+    [Range(-90, 0)]
+    [SerializeField]
+    private int startRayAngle = -90;
+
+    [Range(0, 90)]
+    [SerializeField]
+    private int endRayAngle = 90;
+
     private void Start()
     {
         StartCoroutine(EmitRays());
@@ -13,19 +20,24 @@ public class SunController : MonoBehaviour
     {
         while (true)
         {
-            for (int i = -90; i <= 90; i++)
+            for (int i = startRayAngle; i <= endRayAngle; i++)
             {
                 transform.rotation = Quaternion.Euler(0, 0, i);
                 Vector2 direction = transform.TransformDirection(Vector2.down);
                 RaycastHit2D[] raycastHits = Physics2D.RaycastAll(transform.position, direction, Mathf.Infinity);
 
-                if (raycastHits.Length > 0)
+                foreach (RaycastHit2D raycastHit in raycastHits)
                 {
-                    WaterParticle waterParticle = raycastHits.First().transform.GetComponent<WaterParticle>() as WaterParticle;
+                    WaterParticle waterParticle = raycastHit.transform.GetComponent<WaterParticle>() as WaterParticle;
                     if (waterParticle != null)
                     {
-                        Debug.DrawLine(transform.position, raycastHits.First().point, new Color(0.5F, 0.5F, 0.2F, 0.2F));
+                        Debug.DrawLine(transform.position, raycastHit.point, new Color(0.5F, 0.5F, 0.2F, 0.2F));
                         waterParticle.Heat();
+
+                        if (waterParticle.State == WaterState.Water)
+                        {
+                            break;
+                        }
                     }
                 }
             }

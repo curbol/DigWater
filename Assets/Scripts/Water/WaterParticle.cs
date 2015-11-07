@@ -2,12 +2,68 @@
 using UnityEngine;
 
 [DisallowMultipleComponent]
-[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Rigidbody2D), typeof(SpriteRenderer))]
 public class WaterParticle : MonoBehaviour
 {
-    private WaterState state;
     private float birthTime;
+
     private Rigidbody2D rigidBody;
+    public Rigidbody2D RigidBody
+    {
+        get
+        {
+            if (rigidBody == null)
+            {
+                rigidBody = GetComponent<Rigidbody2D>();
+            }
+
+            return rigidBody;
+        }
+    }
+
+    private SpriteRenderer spriteRenderer;
+    public SpriteRenderer SpriteRenderer
+    {
+        get
+        {
+            if (spriteRenderer == null)
+            {
+                spriteRenderer = GetComponent<SpriteRenderer>();
+            }
+
+            return spriteRenderer;
+        }
+    }
+
+    public WaterState State { get; private set; }
+
+    public float Age
+    {
+        get
+        {
+            return Time.time - birthTime;
+        }
+    }
+
+    [SerializeField]
+    private Color waterColor;
+    public Color WaterColor
+    {
+        get
+        {
+            return waterColor;
+        }
+    }
+
+    [SerializeField]
+    private Color vaporColor;
+    public Color VaporColor
+    {
+        get
+        {
+            return vaporColor;
+        }
+    }
 
     [Range(0, 10)]
     [SerializeField]
@@ -28,21 +84,6 @@ public class WaterParticle : MonoBehaviour
         {
             return maximumAge;
         }
-
-        set
-        {
-            maximumAge = value;
-        }
-    }
-
-    [SerializeField]
-    private float temperature;
-    public float Temperature
-    {
-        get
-        {
-            return temperature;
-        }
     }
 
     [SerializeField]
@@ -62,6 +103,18 @@ public class WaterParticle : MonoBehaviour
         get
         {
             return coolRate;
+        }
+    }
+
+    public float Temperature { get; private set; }
+
+    [SerializeField]
+    private float maxTemperature;
+    public float MaxTemperature
+    {
+        get
+        {
+            return maxTemperature;
         }
     }
 
@@ -95,44 +148,22 @@ public class WaterParticle : MonoBehaviour
         }
     }
 
-    public float Age
+    [SerializeField]
+    private float cloudLevel;
+    public float CloudLevel
     {
         get
         {
-            return Time.time - birthTime;
+            return cloudLevel;
         }
     }
 
     public Action OnDeath { get; set; }
 
-    private Rigidbody2D RigidBody
-    {
-        get
-        {
-            if (rigidBody == null)
-            {
-                rigidBody = GetComponent<Rigidbody2D>();
-            }
-
-            return rigidBody;
-        }
-    }
-
     public void Heat(float? heatIncrease = null)
     {
-        temperature += heatIncrease ?? HeatRate;
-        temperature = Mathf.Max(0, temperature);
-
-        Debug.DrawLine(transform.position, transform.position + Vector3.up * 0.5F, Color.Lerp(new Color(255, 255, 0, 0), new Color(255, 0, 0), temperature / VaporizationPoint));
-
-        if (state == WaterState.Water && temperature >= VaporizationPoint)
-        {
-            state = WaterState.Vapor;
-        }
-        else if (state == WaterState.Vapor && temperature < VaporizationPoint)
-        {
-            state = WaterState.Water;
-        }
+        Temperature += heatIncrease ?? HeatRate;
+        Temperature = Mathf.Clamp(Temperature, 0, MaxTemperature);
     }
 
     public void Cool(float? heatDecrease = null)
@@ -140,30 +171,53 @@ public class WaterParticle : MonoBehaviour
         Heat(-(heatDecrease ?? CoolRate));
     }
 
-    public void Initialize()
+    private void Start()
     {
         birthTime = Time.time;
         RigidBody.velocity = Vector2.zero;
-    }
-
-    private void Start()
-    {
-        Initialize();
+        UpdateState();
     }
 
     private void Update()
     {
         Cool();
+        UpdateState();
         SetDeath();
+    }
+
+    private void UpdateState()
+    {
+        float vaporizationProgress = Mathf.Clamp(Temperature / VaporizationPoint, 0, 1);
+        SpriteRenderer.color = Color.Lerp(WaterColor, VaporColor, vaporizationProgress);
+
+        bool stateChanged = false;
+
+        if (State == WaterState.Water && vaporizationProgress >= 1)
+        {
+            State = WaterState.Vapor;
+            transform.rotation = Quaternion.identity;
+            RigidBody.velocity -= new Vector2(RigidBody.velocity.x, 0);
+            stateChanged = true;
+        }
+        else if (State == WaterState.Vapor && vaporizationProgress < 1)
+        {
+            State = WaterState.Water;
+            stateChanged = true;
+        }
+
+        if (stateChanged)
+        {
+            birthTime = Time.time;
+        }
     }
 
     private void FixedUpdate()
     {
-        if (state == WaterState.Water)
+        if (State == WaterState.Water)
         {
             SetDirection();
         }
-        else if (state == WaterState.Vapor)
+        else if (State == WaterState.Vapor)
         {
             Evaporate();
         }
@@ -197,9 +251,17 @@ public class WaterParticle : MonoBehaviour
 
     private void Evaporate()
     {
-        transform.rotation = Quaternion.identity;
-        RigidBody.velocity -= new Vector2(RigidBody.velocity.x, 0);
-        RigidBody.gravityScale = RigidBody.velocity.y < VaporMaximumVelocity ? -VaporAcceleration : 0;
+        bool belowMaximumLift = transform.TransformDirection(RigidBody.velocity).y < 0 || RigidBody.velocity.y < VaporMaximumVelocity;
+        bool belowCloudLevel = transform.position.y < CloudLevel;
+
+        if (belowCloudLevel)
+        {
+            RigidBody.gravityScale = belowMaximumLift ? -VaporAcceleration : 0;
+        }
+        else
+        {
+            RigidBody.gravityScale = 0.1F;
+        }
     }
 
     private void SetDeath()
