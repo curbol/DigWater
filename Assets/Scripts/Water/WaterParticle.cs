@@ -2,7 +2,7 @@
 using UnityEngine;
 
 [DisallowMultipleComponent]
-[RequireComponent(typeof(Rigidbody2D), typeof(SpriteRenderer))]
+[RequireComponent(typeof(Rigidbody2D))]
 public class WaterParticle : MonoBehaviour
 {
     private float birthTime;
@@ -21,17 +21,18 @@ public class WaterParticle : MonoBehaviour
         }
     }
 
-    private SpriteRenderer spriteRenderer;
+    [SerializeField]
+    private SpriteRenderer visuals;
     public SpriteRenderer SpriteRenderer
     {
         get
         {
-            if (spriteRenderer == null)
+            if (visuals.transform.parent == null)
             {
-                spriteRenderer = GetComponent<SpriteRenderer>();
+                visuals.transform.parent = transform;
             }
 
-            return spriteRenderer;
+            return visuals;
         }
     }
 
@@ -195,13 +196,18 @@ public class WaterParticle : MonoBehaviour
         if (State == WaterState.Water && vaporizationProgress >= 1)
         {
             State = WaterState.Vapor;
-            transform.rotation = Quaternion.identity;
-            RigidBody.velocity -= new Vector2(RigidBody.velocity.x, 0);
+
+            RigidBody.velocity = Vector2.zero;
+            RigidBody.gravityScale = -vaporAcceleration;
+
             stateChanged = true;
         }
         else if (State == WaterState.Vapor && vaporizationProgress < 1)
         {
             State = WaterState.Water;
+
+            RigidBody.gravityScale = 1;
+
             stateChanged = true;
         }
 
@@ -213,15 +219,12 @@ public class WaterParticle : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (State == WaterState.Water)
-        {
-            SetDirection();
-        }
-        else if (State == WaterState.Vapor)
+        if (State == WaterState.Vapor)
         {
             Evaporate();
         }
 
+        SetDirection();
         SetVelocityScale();
     }
 
@@ -229,7 +232,7 @@ public class WaterParticle : MonoBehaviour
     {
         if (RigidBody.velocity != Vector2.zero)
         {
-            transform.rotation = Quaternion.LookRotation(Vector3.forward, RigidBody.velocity);
+            SpriteRenderer.transform.rotation = Quaternion.LookRotation(Vector3.forward, RigidBody.velocity);
         }
     }
 
@@ -237,7 +240,7 @@ public class WaterParticle : MonoBehaviour
     {
         if (RigidBody.velocity.magnitude < 0.5F)
         {
-            transform.localScale = Vector3.one;
+            SpriteRenderer.transform.localScale = Vector3.one;
             return;
         }
 
@@ -246,21 +249,26 @@ public class WaterParticle : MonoBehaviour
         scale.x -= scaleModifier;
         scale.y += scaleModifier;
 
-        transform.localScale = scale;
+        SpriteRenderer.transform.localScale = scale;
     }
 
     private void Evaporate()
     {
-        bool belowMaximumLift = transform.TransformDirection(RigidBody.velocity).y < 0 || RigidBody.velocity.y < VaporMaximumVelocity;
+        bool belowMaximumVelocity = RigidBody.velocity.y < VaporMaximumVelocity;
         bool belowCloudLevel = transform.position.y < CloudLevel;
+
+        if (transform.position.y < CloudLevel / 2)
+        {
+            RigidBody.velocity -= new Vector2(RigidBody.velocity.x, 0);
+        }
 
         if (belowCloudLevel)
         {
-            RigidBody.gravityScale = belowMaximumLift ? -VaporAcceleration : 0;
+            RigidBody.gravityScale = belowMaximumVelocity ? -VaporAcceleration : 0;
         }
         else
         {
-            RigidBody.gravityScale = 0.1F;
+            RigidBody.gravityScale = VaporAcceleration;
         }
     }
 
