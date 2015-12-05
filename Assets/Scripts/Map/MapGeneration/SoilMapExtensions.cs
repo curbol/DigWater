@@ -12,6 +12,23 @@ public static class SoilMapExtensions
         return new Coordinate(x, y);
     }
 
+    public static void Draw(this SoilMap soilMap, Coordinate drawCoordinate, SoilType soilType, float radius = 0.5F)
+    {
+        if (soilMap == null || soilMap.SoilGrid == null)
+            return;
+
+        soilMap.SoilGrid[drawCoordinate.X, drawCoordinate.Y] = soilType;
+        foreach (Coordinate neighborCoordinate in soilMap.SoilGrid.GetNeighborCoordinatesInRadius(drawCoordinate.X, drawCoordinate.Y, radius))
+        {
+            soilMap.SoilGrid[neighborCoordinate.X, neighborCoordinate.Y] = soilType;
+        }
+    }
+
+    public static bool[,] GetSoilBitMap(this SoilMap soilMap, SoilType soilType)
+    {
+        return GetSoilBitMap(soilMap.SoilGrid, soilType);
+    }
+
     public static bool[,] GetSoilBitMap(this SoilType[,] soilGrid, SoilType soilType)
     {
         bool[,] bitMap = null;

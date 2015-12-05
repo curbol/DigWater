@@ -13,7 +13,14 @@ public class MapGenerator : MonoBehaviour
     {
         get
         {
-            return maps != null && maps.Length > mapIndex ? maps[mapIndex] : null;
+            SoilMap soilMap = maps != null && maps.Length > mapIndex ? maps[mapIndex] : null;
+
+            if (soilMap.SoilGrid == null)
+            {
+                soilMap.SoilGrid = new SoilType[soilMap.SizeX, soilMap.SizeY];
+            }
+
+            return soilMap;
         }
     }
 
@@ -38,7 +45,7 @@ public class MapGenerator : MonoBehaviour
         digController.DigRadius = digRadius;
         digController.DigEffect = digEffect;
 
-        soilMapController.GenerateSoilMap();
+        //soilMapController.GenerateSoilMap();
         soilMapController.RedrawSoilMesh();
     }
 }

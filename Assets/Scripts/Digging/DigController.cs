@@ -59,18 +59,6 @@ public class DigController : MonoBehaviour
         }
     }
 
-    private static void DrawDirt(SoilMap soilMap, Coordinate coordinateToDig, SoilType soilType, float digRadius)
-    {
-        if (soilMap == null || soilMap.SoilGrid == null)
-            return;
-
-        soilMap.SoilGrid[coordinateToDig.X, coordinateToDig.Y] = soilType;
-        foreach (Coordinate neighborCoordinate in soilMap.SoilGrid.GetNeighborCoordinatesInRadius(coordinateToDig.X, coordinateToDig.Y, digRadius))
-        {
-            soilMap.SoilGrid[neighborCoordinate.X, neighborCoordinate.Y] = soilType;
-        }
-    }
-
     private void PlayDigEffect(Vector2 screenPosition)
     {
         if (DigEffect == null)
@@ -105,7 +93,7 @@ public class DigController : MonoBehaviour
                     PlayDigEffect(screenPosition);
                 }
 
-                DrawDirt(SoilMap, coordinateToDig, newSoilType, DigRadius);
+                SoilMap.Draw(coordinateToDig, newSoilType, DigRadius);
                 SoilMapController.RedrawSoilMesh();
             }
         }

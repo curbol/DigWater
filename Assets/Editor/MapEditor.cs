@@ -24,4 +24,32 @@ public class MapEditor : Editor
             mapGenerator.GenerateMap();
         }
     }
+
+    public void OnSceneGUI()
+    {
+        Event e = Event.current;
+
+        if (e.type == EventType.MouseDown)
+        {
+            e.Use();
+
+            MapGenerator mapGenerator = target as MapGenerator;
+            if (mapGenerator.CurrentMap != null)
+            {
+                Vector2 mousePosition = Event.current.mousePosition + new Vector2(0, -2 * Event.current.mousePosition.y + SceneView.currentDrawingSceneView.camera.pixelHeight);
+                Vector2 sceneMousePosition = SceneView.currentDrawingSceneView.camera.ScreenToWorldPoint(mousePosition);
+                Coordinate coordinateToDig = mapGenerator.CurrentMap.GetCoordinateFromPosition(sceneMousePosition);
+
+                mapGenerator.CurrentMap.Draw(coordinateToDig, SoilType.Dirt, 4);
+                mapGenerator.GenerateMap();
+
+                Event.current.Use();
+            }
+        }
+        else if (e.type == EventType.Layout)
+        {
+            //somehow this allows e.Use() to actually function and block mouse input
+            HandleUtility.AddDefaultControl(GUIUtility.GetControlID(GetHashCode(), FocusType.Passive));
+        }
+    }
 }
