@@ -84,7 +84,8 @@
     <Compile Include="Assets\Scripts\Map\MapGeneration\SoilMap.cs" />
     <Compile Include="Assets\Scripts\Map\MapGeneration\SoilMapController.cs" />
     <Compile Include="Assets\Scripts\Map\MapGeneration\SoilMapExtensions.cs" />
-    <Compile Include="Assets\Scripts\Map\MapGeneration\SoilMetadata.cs" />
+    <Compile Include="Assets\Scripts\Map\MapGeneration\SoilTypeExtentions.cs" />
+    <Compile Include="Assets\Scripts\Map\MapGeneration\SoilTypeMetadata.cs" />
     <Compile Include="Assets\Scripts\Map\MeshGeneration\ControlMeshVertex.cs" />
     <Compile Include="Assets\Scripts\Map\MeshGeneration\MarchingSquare.cs" />
     <Compile Include="Assets\Scripts\Map\MeshGeneration\MeshData.cs" />

@@ -1,13 +1,16 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class SoilMapController : MonoBehaviour
 {
+    private readonly Dictionary<SoilType, bool[,]> soilBitMaps = new Dictionary<SoilType, bool[,]>();
+
     [SerializeField]
     private SoilMap soilMap;
-
     public SoilMap SoilMap
     {
         get
@@ -21,37 +24,43 @@ public class SoilMapController : MonoBehaviour
         }
     }
 
-    public void GenerateSoilMap()
-    {
-        if (SoilMap == null)
-            return;
-
-        SoilMap.SoilGrid = new SoilType[SoilMap.SizeX, SoilMap.SizeY];
-
-        foreach (SoilMetadata soil in SoilMap.Soils)
-        {
-            SoilMap.SoilGrid.RandomFillSection(soil.FillStartX, soil.FillEndX, soil.FillStartY, soil.FillEndY, soil.SoilType, soil.PercentCoverage, SoilMap.Seed + (int)soil.SoilType);
-        }
-
-        Smooth(SoilMap.SoilGrid, SoilMap.Seed);
-    }
-
-    public void RedrawSoilMesh()
+    // will not redraw if nothing changed by default
+    public void RedrawSoilMesh(bool forceRedraw = false)
     {
         if (SoilMap == null || SoilMap.SoilGrid == null)
             return;
 
-        foreach (SoilMetadata soil in SoilMap.Soils)
+        foreach (SoilType soilType in Enum.GetValues(typeof(SoilType)) as IEnumerable<SoilType>)
         {
-            bool[,] bitMap = SoilMap.SoilGrid.GetSoilBitMap(soil.SoilType);
-            MeshData meshData = bitMap.GetMarchingSquaresMeshData(SoilMap.Width, SoilMap.Height);
-            GameObject meshHolder = GetUniqueChildGameObject(transform, soil.SoilType.ToString());
-            meshHolder.AddComponent<MeshFilter>().sharedMesh = meshData.GetMesh();
-            meshHolder.AddComponent<MeshRenderer>().materials = new Material[] { soil.Material };
+            if (soilType.Material() == null)
+                continue;
 
-            if (soil.IsCollidable)
+            bool redraw = false;
+            bool[,] bitMap = SoilMap.SoilGrid.GetSoilBitMap(soilType);
+
+            if (!soilBitMaps.ContainsKey(soilType))
             {
-                CreateEdgeColliders(meshHolder.transform, meshData, soil.PhysicsMaterial);
+                soilBitMaps.Add(soilType, bitMap);
+                redraw = true;
+            }
+
+            if (!bitMap.Cast<bool>().SequenceEqual(soilBitMaps[soilType].Cast<bool>()))
+            {
+                soilBitMaps[soilType] = bitMap;
+                redraw = true;
+            }
+
+            if (redraw || forceRedraw)
+            {
+                MeshData meshData = bitMap.GetMarchingSquaresMeshData(SoilMap.Width, SoilMap.Height);
+                GameObject meshHolder = GetUniqueChildGameObject(transform, soilType.ToString());
+                meshHolder.AddComponent<MeshFilter>().sharedMesh = meshData.GetMesh();
+                meshHolder.AddComponent<MeshRenderer>().materials = new Material[] { soilType.Material() };
+
+                if (soilType.IsCollidable())
+                {
+                    CreateEdgeColliders(meshHolder.transform, meshData, soilType.PhysicsMaterial());
+                }
             }
         }
     }
@@ -82,7 +91,6 @@ public class SoilMapController : MonoBehaviour
 
     private void Awake()
     {
-        GenerateSoilMap();
         RedrawSoilMesh();
     }
 

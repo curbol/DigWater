@@ -5,59 +5,7 @@ using UnityEngine;
 public class SoilMap
 {
     [SerializeField]
-    [Range(0, 10)]
-    private int borderThickness;
-
-    [SerializeField]
-    [Range(.1F, 2F)]
-    private float scale = 1;
-
-    [SerializeField]
     private int seed;
-
-    [SerializeField]
-    private int sizeX;
-
-    [SerializeField]
-    private int sizeY;
-
-    [SerializeField]
-    private SoilMetadata[] soils;
-
-    public int BorderThickness
-    {
-        get
-        {
-            return borderThickness;
-        }
-
-        set
-        {
-            borderThickness = value;
-        }
-    }
-
-    public float Height
-    {
-        get
-        {
-            return sizeY * Scale;
-        }
-    }
-
-    public float Scale
-    {
-        get
-        {
-            return scale;
-        }
-
-        set
-        {
-            scale = value;
-        }
-    }
-
     public int Seed
     {
         get
@@ -71,6 +19,24 @@ public class SoilMap
         }
     }
 
+    [SerializeField]
+    [Range(.1F, 2F)]
+    private float scale = 1;
+    public float Scale
+    {
+        get
+        {
+            return scale;
+        }
+
+        set
+        {
+            scale = value;
+        }
+    }
+
+    [SerializeField]
+    private int sizeX;
     public int SizeX
     {
         get
@@ -84,6 +50,8 @@ public class SoilMap
         }
     }
 
+    [SerializeField]
+    private int sizeY;
     public int SizeY
     {
         get
@@ -97,26 +65,36 @@ public class SoilMap
         }
     }
 
-    public SoilType[,] SoilGrid { get; set; }
-
-    public SoilMetadata[] Soils
-    {
-        get
-        {
-            return soils;
-        }
-
-        set
-        {
-            soils = value;
-        }
-    }
-
     public float Width
     {
         get
         {
             return sizeX * Scale;
+        }
+    }
+
+    public float Height
+    {
+        get
+        {
+            return sizeY * Scale;
+        }
+    }
+
+    private SoilType[,] soilGrid;
+    public SoilType[,] SoilGrid
+    {
+        get
+        {
+            if (soilGrid == null || SizeX != soilGrid.GetLength(0) || SizeY != soilGrid.GetLength(1))
+                soilGrid = new SoilType[SizeX, SizeY];
+
+            return soilGrid;
+        }
+
+        set
+        {
+            soilGrid = value;
         }
     }
 }

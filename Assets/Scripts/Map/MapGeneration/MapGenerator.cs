@@ -3,6 +3,46 @@
 [DisallowMultipleComponent]
 public class MapGenerator : MonoBehaviour
 {
+    public SoilTypeMetadata[] soilTypeMetadata =
+    {
+        new SoilTypeMetadata
+        {
+            SoilType = SoilType.None,
+            Material = null,
+            IsDiggable = false,
+            DigEffectPrefab = null,
+            IsCollidable = false,
+            PhysicsMaterial = null
+        },
+        new SoilTypeMetadata
+        {
+            SoilType = SoilType.Dirt,
+            Material = null,
+            IsDiggable = true,
+            DigEffectPrefab = null,
+            IsCollidable = true,
+            PhysicsMaterial = null
+        },
+        new SoilTypeMetadata
+        {
+            SoilType = SoilType.Rock,
+            Material = null,
+            IsDiggable = true,
+            DigEffectPrefab = null,
+            IsCollidable = true,
+            PhysicsMaterial = null
+        },
+        new SoilTypeMetadata
+        {
+            SoilType = SoilType.Sand,
+            Material = null,
+            IsDiggable = true,
+            DigEffectPrefab = null,
+            IsCollidable = true,
+            PhysicsMaterial = null
+        }
+    };
+
     public ParticleSystem digEffect;
     public float digRadius;
     public int mapIndex;
@@ -13,19 +53,16 @@ public class MapGenerator : MonoBehaviour
     {
         get
         {
-            SoilMap soilMap = maps != null && maps.Length > mapIndex ? maps[mapIndex] : null;
-
-            if (soilMap.SoilGrid == null)
-            {
-                soilMap.SoilGrid = new SoilType[soilMap.SizeX, soilMap.SizeY];
-            }
-
-            return soilMap;
+            return maps != null && maps.Length > mapIndex ? maps[mapIndex] : null;
         }
     }
 
+    public GameObject MapHolder { get; set; }
+
     public void GenerateMap()
     {
+        SoilTypeExtentions.SoilTypeMetadata = soilTypeMetadata;
+
         if (CurrentMap == null)
             return;
 
@@ -34,18 +71,17 @@ public class MapGenerator : MonoBehaviour
             DestroyImmediate(transform.FindChild(mapHolderName).gameObject);
         }
 
-        GameObject mapHolder = new GameObject(mapHolderName);
-        mapHolder.transform.parent = transform;
-        mapHolder.transform.localScale = Vector3.one * CurrentMap.Scale;
+        MapHolder = new GameObject(mapHolderName);
+        MapHolder.transform.parent = transform;
+        MapHolder.transform.localScale = Vector3.one * CurrentMap.Scale;
 
-        SoilMapController soilMapController = mapHolder.AddComponent<SoilMapController>();
-        DigController digController = mapHolder.AddComponent<DigController>();
+        SoilMapController soilMapController = MapHolder.AddComponent<SoilMapController>();
+        DigController digController = MapHolder.AddComponent<DigController>();
 
         soilMapController.SoilMap = CurrentMap;
         digController.DigRadius = digRadius;
         digController.DigEffect = digEffect;
 
-        //soilMapController.GenerateSoilMap();
         soilMapController.RedrawSoilMesh();
     }
 }

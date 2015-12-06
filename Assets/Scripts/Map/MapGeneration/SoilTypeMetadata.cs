@@ -2,7 +2,7 @@
 using UnityEngine;
 
 [Serializable]
-public class SoilMetadata
+public class SoilTypeMetadata
 {
     [SerializeField]
     private SoilType soilType;
@@ -16,82 +16,6 @@ public class SoilMetadata
         set
         {
             soilType = value;
-        }
-    }
-
-    [SerializeField]
-    private int fillStartX;
-    public int FillStartX
-    {
-        get
-        {
-            return fillStartX;
-        }
-
-        set
-        {
-            fillStartX = value;
-        }
-    }
-
-    [SerializeField]
-    private int fillEndX;
-    public int FillEndX
-    {
-        get
-        {
-            return fillEndX;
-        }
-
-        set
-        {
-            fillEndX = value;
-        }
-    }
-
-    [SerializeField]
-    private int fillStartY;
-    public int FillStartY
-    {
-        get
-        {
-            return fillStartY;
-        }
-
-        set
-        {
-            fillStartY = value;
-        }
-    }
-
-    [SerializeField]
-    private int fillEndY;
-    public int FillEndY
-    {
-        get
-        {
-            return fillEndY;
-        }
-
-        set
-        {
-            fillEndY = value;
-        }
-    }
-
-    [SerializeField]
-    [Range(0, 100)]
-    private int percentCoverage;
-    public int PercentCoverage
-    {
-        get
-        {
-            return percentCoverage;
-        }
-
-        set
-        {
-            percentCoverage = value;
         }
     }
 

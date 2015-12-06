@@ -29,7 +29,7 @@ public class MapEditor : Editor
     {
         Event e = Event.current;
 
-        if (e.type == EventType.MouseDown)
+        if (e.type == EventType.MouseDown || e.type == EventType.MouseDrag)
         {
             e.Use();
 
@@ -41,14 +41,25 @@ public class MapEditor : Editor
                 Coordinate coordinateToDig = mapGenerator.CurrentMap.GetCoordinateFromPosition(sceneMousePosition);
 
                 mapGenerator.CurrentMap.Draw(coordinateToDig, SoilType.Dirt, 4);
-                mapGenerator.GenerateMap();
+
+                if (mapGenerator.MapHolder == null)
+                {
+                    mapGenerator.GenerateMap();
+                }
+
+                SoilMapController soilMapController = mapGenerator.MapHolder.GetComponent<SoilMapController>();
+
+                if (soilMapController != null)
+                {
+                    soilMapController.RedrawSoilMesh();
+                }
 
                 Event.current.Use();
             }
         }
         else if (e.type == EventType.Layout)
         {
-            //somehow this allows e.Use() to actually function and block mouse input
+            //This somehow allows e.Use() to actually function and block mouse input
             HandleUtility.AddDefaultControl(GUIUtility.GetControlID(GetHashCode(), FocusType.Passive));
         }
     }
