@@ -86,7 +86,7 @@ public class DigController : MonoBehaviour
             Vector2 screenPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Coordinate coordinateToDig = SoilMap.GetCoordinateFromPosition(screenPosition);
 
-            if (SoilMap.SoilGrid[coordinateToDig.X, coordinateToDig.Y] != newSoilType)
+            if (SoilMap[coordinateToDig.X, coordinateToDig.Y] != newSoilType)
             {
                 if (leftMouseClicked)
                 {

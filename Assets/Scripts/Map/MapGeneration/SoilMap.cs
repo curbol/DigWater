@@ -81,13 +81,15 @@ public class SoilMap
         }
     }
 
-    private SoilType[,] soilGrid;
-    public SoilType[,] SoilGrid
+    [HideInInspector]
+    [SerializeField]
+    private SoilType[] soilGrid;
+    private SoilType[] SoilGrid
     {
         get
         {
-            if (soilGrid == null || SizeX != soilGrid.GetLength(0) || SizeY != soilGrid.GetLength(1))
-                soilGrid = new SoilType[SizeX, SizeY];
+            if (soilGrid == null || soilGrid.Length != SizeX * SizeY)
+                soilGrid = new SoilType[SizeX * SizeY];
 
             return soilGrid;
         }
@@ -95,6 +97,19 @@ public class SoilMap
         set
         {
             soilGrid = value;
+        }
+    }
+
+    public SoilType this[int x, int y]
+    {
+        get
+        {
+            return SoilGrid[x * SizeY + y];
+        }
+
+        set
+        {
+            SoilGrid[x * SizeY + y] = value;
         }
     }
 }

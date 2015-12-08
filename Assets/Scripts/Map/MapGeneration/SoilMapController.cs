@@ -27,7 +27,7 @@ public class SoilMapController : MonoBehaviour
     // will not redraw if nothing changed by default
     public void RedrawSoilMesh(bool forceRedraw = false)
     {
-        if (SoilMap == null || SoilMap.SoilGrid == null)
+        if (SoilMap == null)
             return;
 
         foreach (SoilType soilType in Enum.GetValues(typeof(SoilType)) as IEnumerable<SoilType>)
@@ -36,7 +36,7 @@ public class SoilMapController : MonoBehaviour
                 continue;
 
             bool redraw = false;
-            bool[,] bitMap = SoilMap.SoilGrid.GetSoilBitMap(soilType);
+            bool[,] bitMap = SoilMap.GetSoilBitMap(soilType);
 
             if (!soilBitMaps.ContainsKey(soilType))
             {
