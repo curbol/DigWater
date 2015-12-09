@@ -94,6 +94,7 @@ public class DigController : MonoBehaviour
                 }
 
                 SoilMap.Draw(coordinateToDig, newSoilType, DigRadius);
+
                 SoilMapController.RedrawSoilMesh();
             }
         }

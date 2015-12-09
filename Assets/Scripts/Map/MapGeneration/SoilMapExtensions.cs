@@ -23,10 +23,10 @@ public static class SoilMapExtensions
             return;
 
         soilMap[drawCoordinate.X, drawCoordinate.Y] = soilType;
-        //foreach (Coordinate neighborCoordinate in soilMap.GetNeighborCoordinatesInRadius(drawCoordinate.X, drawCoordinate.Y, radius))
-        //{
-        //    soilMap[neighborCoordinate.X, neighborCoordinate.Y] = soilType;
-        //}
+        foreach (Coordinate neighborCoordinate in GridArrayExtensions.GetNeighborCoordinatesInRadius(drawCoordinate.X, drawCoordinate.Y, soilMap.SizeX, soilMap.SizeY, radius))
+        {
+            soilMap[neighborCoordinate.X, neighborCoordinate.Y] = soilType;
+        }
     }
 
     public static bool[,] GetSoilBitMap(this SoilMap soilMap, SoilType soilType)

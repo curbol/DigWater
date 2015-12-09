@@ -83,33 +83,23 @@ public class SoilMap
 
     [HideInInspector]
     [SerializeField]
-    private SoilType[] soilGrid;
-    private SoilType[] SoilGrid
-    {
-        get
-        {
-            if (soilGrid == null || soilGrid.Length != SizeX * SizeY)
-                soilGrid = new SoilType[SizeX * SizeY];
-
-            return soilGrid;
-        }
-
-        set
-        {
-            soilGrid = value;
-        }
-    }
-
+    private SoilType[] flattenedSoilGrid;
     public SoilType this[int x, int y]
     {
         get
         {
-            return SoilGrid[x * SizeY + y];
+            if (flattenedSoilGrid == null || flattenedSoilGrid.Length != SizeX * SizeY)
+                flattenedSoilGrid = new SoilType[SizeX * SizeY];
+
+            return flattenedSoilGrid[x * SizeY + y];
         }
 
         set
         {
-            SoilGrid[x * SizeY + y] = value;
+            if (flattenedSoilGrid == null || flattenedSoilGrid.Length != SizeX * SizeY)
+                flattenedSoilGrid = new SoilType[SizeX * SizeY];
+
+            flattenedSoilGrid[x * SizeY + y] = value;
         }
     }
 }

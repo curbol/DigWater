@@ -51,6 +51,11 @@ public static class GridArrayExtensions
         int sizeX = grid.GetLength(0);
         int sizeY = grid.GetLength(1);
 
+        return GetNeighborCoordinates(gridX, gridY, sizeX, sizeY, allowDiagonals);
+    }
+
+    public static IEnumerable<Coordinate> GetNeighborCoordinates(int gridX, int gridY, int sizeX, int sizeY, bool allowDiagonals = true)
+    {
         for (int neightborX = gridX - 1; neightborX <= gridX + 1; neightborX++)
         {
             for (int neighborY = gridY - 1; neighborY <= gridY + 1; neighborY++)
@@ -72,6 +77,11 @@ public static class GridArrayExtensions
         int sizeX = grid.GetLength(0);
         int sizeY = grid.GetLength(1);
 
+        return GetNeighborCoordinatesInRadius(gridX, gridY, sizeX, sizeY, radius);
+    }
+
+    public static IEnumerable<Coordinate> GetNeighborCoordinatesInRadius(int gridX, int gridY, int sizeX, int sizeY, float radius)
+    {
         for (int neightborX = gridX - (int)Mathf.Ceil(radius); neightborX <= gridX + (int)Mathf.Ceil(radius); neightborX++)
         {
             for (int neighborY = gridY - (int)Mathf.Ceil(radius); neighborY <= gridY + (int)Mathf.Ceil(radius); neighborY++)
