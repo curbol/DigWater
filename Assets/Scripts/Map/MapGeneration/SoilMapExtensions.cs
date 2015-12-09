@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 
 public static class SoilMapExtensions
 {
@@ -46,5 +47,40 @@ public static class SoilMapExtensions
         }
 
         return bitMap;
+    }
+
+    private static SoilTypeMetadata GetSoilTypeMetadata(this SoilMap soilMap, SoilType soilType)
+    {
+        return soilMap.SoilTypeMetadata != null ? soilMap.SoilTypeMetadata.FirstOrDefault(a => a.SoilType == soilType) : null;
+    }
+
+    public static Material GetMaterial(this SoilMap soilMap, SoilType soilType)
+    {
+        SoilTypeMetadata soilTypeMetadata = soilMap.GetSoilTypeMetadata(soilType);
+        return soilTypeMetadata != null ? soilTypeMetadata.Material : null;
+    }
+
+    public static bool GetIsDiggable(this SoilMap soilMap, SoilType soilType)
+    {
+        SoilTypeMetadata soilTypeMetadata = soilMap.GetSoilTypeMetadata(soilType);
+        return soilTypeMetadata != null ? soilTypeMetadata.IsCollidable : false;
+    }
+
+    public static PhysicsMaterial2D GetDigEffectPrefab(this SoilMap soilMap, SoilType soilType)
+    {
+        SoilTypeMetadata soilTypeMetadata = soilMap.GetSoilTypeMetadata(soilType);
+        return soilTypeMetadata != null ? soilTypeMetadata.PhysicsMaterial : null;
+    }
+
+    public static bool GetIsCollidable(this SoilMap soilMap, SoilType soilType)
+    {
+        SoilTypeMetadata soilTypeMetadata = soilMap.GetSoilTypeMetadata(soilType);
+        return soilTypeMetadata != null ? soilTypeMetadata.IsCollidable : false;
+    }
+
+    public static PhysicsMaterial2D GetPhysicsMaterial(this SoilMap soilMap, SoilType soilType)
+    {
+        SoilTypeMetadata soilTypeMetadata = soilMap.GetSoilTypeMetadata(soilType);
+        return soilTypeMetadata != null ? soilTypeMetadata.PhysicsMaterial : null;
     }
 }

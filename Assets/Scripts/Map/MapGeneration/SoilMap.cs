@@ -5,6 +5,61 @@ using UnityEngine;
 public class SoilMap
 {
     [SerializeField]
+    private SoilTypeMetadata[] soilTypeMetadata =
+    {
+        new SoilTypeMetadata
+        {
+            SoilType = SoilType.None,
+            Material = null,
+            IsDiggable = false,
+            DigEffectPrefab = null,
+            IsCollidable = false,
+            PhysicsMaterial = null
+        },
+        new SoilTypeMetadata
+        {
+            SoilType = SoilType.Dirt,
+            Material = null,
+            IsDiggable = true,
+            DigEffectPrefab = null,
+            IsCollidable = true,
+            PhysicsMaterial = null
+        },
+        new SoilTypeMetadata
+        {
+            SoilType = SoilType.Rock,
+            Material = null,
+            IsDiggable = true,
+            DigEffectPrefab = null,
+            IsCollidable = true,
+            PhysicsMaterial = null
+        },
+        new SoilTypeMetadata
+        {
+            SoilType = SoilType.Sand,
+            Material = null,
+            IsDiggable = true,
+            DigEffectPrefab = null,
+            IsCollidable = true,
+            PhysicsMaterial = null
+        }
+    };
+
+    public SoilTypeMetadata[] SoilTypeMetadata
+    {
+        get
+        {
+            return soilTypeMetadata;
+        }
+
+        set
+        {
+            soilTypeMetadata = value;
+        }
+    }
+
+    [HideInInspector]
+    [SerializeField]
     private int seed;
     public int Seed
     {
@@ -84,22 +139,37 @@ public class SoilMap
     [HideInInspector]
     [SerializeField]
     private SoilType[] flattenedSoilGrid;
-    public SoilType this[int x, int y]
+    public SoilType[] FlattenedSoilGrid
     {
         get
         {
             if (flattenedSoilGrid == null || flattenedSoilGrid.Length != SizeX * SizeY)
-                flattenedSoilGrid = new SoilType[SizeX * SizeY];
+                Clear();
 
-            return flattenedSoilGrid[x * SizeY + y];
+            return flattenedSoilGrid;
+        }
+
+        private set
+        {
+            flattenedSoilGrid = value;
+        }
+    }
+
+    public SoilType this[int x, int y]
+    {
+        get
+        {
+            return FlattenedSoilGrid[x * SizeY + y];
         }
 
         set
         {
-            if (flattenedSoilGrid == null || flattenedSoilGrid.Length != SizeX * SizeY)
-                flattenedSoilGrid = new SoilType[SizeX * SizeY];
-
-            flattenedSoilGrid[x * SizeY + y] = value;
+            FlattenedSoilGrid[x * SizeY + y] = value;
         }
+    }
+
+    public void Clear()
+    {
+        FlattenedSoilGrid = new SoilType[SizeX * SizeY];
     }
 }

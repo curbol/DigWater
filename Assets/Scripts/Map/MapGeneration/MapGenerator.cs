@@ -3,48 +3,12 @@
 [DisallowMultipleComponent]
 public class MapGenerator : MonoBehaviour
 {
-    public SoilTypeMetadata[] soilTypeMetadata =
-    {
-        new SoilTypeMetadata
-        {
-            SoilType = SoilType.None,
-            Material = null,
-            IsDiggable = false,
-            DigEffectPrefab = null,
-            IsCollidable = false,
-            PhysicsMaterial = null
-        },
-        new SoilTypeMetadata
-        {
-            SoilType = SoilType.Dirt,
-            Material = null,
-            IsDiggable = true,
-            DigEffectPrefab = null,
-            IsCollidable = true,
-            PhysicsMaterial = null
-        },
-        new SoilTypeMetadata
-        {
-            SoilType = SoilType.Rock,
-            Material = null,
-            IsDiggable = true,
-            DigEffectPrefab = null,
-            IsCollidable = true,
-            PhysicsMaterial = null
-        },
-        new SoilTypeMetadata
-        {
-            SoilType = SoilType.Sand,
-            Material = null,
-            IsDiggable = true,
-            DigEffectPrefab = null,
-            IsCollidable = true,
-            PhysicsMaterial = null
-        }
-    };
+    public bool enableSoilDrawing = true;
+    public SoilType selectedDrawingSoilType;
 
-    public ParticleSystem digEffect;
-    public float digRadius;
+    [Range(.1F, 5)]
+    public float drawRadius;
+
     public int mapIndex;
     public SoilMap[] maps;
     private static readonly string mapHolderName = "Map";
@@ -61,8 +25,6 @@ public class MapGenerator : MonoBehaviour
 
     public void GenerateMap()
     {
-        SoilTypeExtentions.SoilTypeMetadata = soilTypeMetadata;
-
         if (CurrentMap == null)
             return;
 
@@ -76,12 +38,9 @@ public class MapGenerator : MonoBehaviour
         MapHolder.transform.localScale = Vector3.one * CurrentMap.Scale;
 
         SoilMapController soilMapController = MapHolder.AddComponent<SoilMapController>();
-        DigController digController = MapHolder.AddComponent<DigController>();
+        MapHolder.AddComponent<DigController>();
 
         soilMapController.SoilMap = CurrentMap;
-        digController.DigRadius = digRadius;
-        digController.DigEffect = digEffect;
-
         soilMapController.RedrawSoilMesh();
     }
 }

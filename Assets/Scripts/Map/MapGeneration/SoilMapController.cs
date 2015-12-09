@@ -32,7 +32,7 @@ public class SoilMapController : MonoBehaviour
 
         foreach (SoilType soilType in Enum.GetValues(typeof(SoilType)) as IEnumerable<SoilType>)
         {
-            if (soilType.Material() == null)
+            if (SoilMap.GetMaterial(soilType) == null)
                 continue;
 
             bool redraw = false;
@@ -55,11 +55,11 @@ public class SoilMapController : MonoBehaviour
                 MeshData meshData = bitMap.GetMarchingSquaresMeshData(SoilMap.Width, SoilMap.Height);
                 GameObject meshHolder = GetUniqueChildGameObject(transform, soilType.ToString());
                 meshHolder.AddComponent<MeshFilter>().sharedMesh = meshData.GetMesh();
-                meshHolder.AddComponent<MeshRenderer>().materials = new Material[] { soilType.Material() };
+                meshHolder.AddComponent<MeshRenderer>().materials = new Material[] { SoilMap.GetMaterial(soilType) };
 
-                if (soilType.IsCollidable())
+                if (SoilMap.GetIsCollidable(soilType))
                 {
-                    CreateEdgeColliders(meshHolder.transform, meshData, soilType.PhysicsMaterial());
+                    CreateEdgeColliders(meshHolder.transform, meshData, SoilMap.GetPhysicsMaterial(soilType));
                 }
             }
         }
