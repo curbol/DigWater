@@ -4,7 +4,7 @@
 public class MapGenerator : MonoBehaviour
 {
     public bool enableSoilDrawing = true;
-    public SoilType selectedDrawingSoilType;
+    public SoilType drawingSoilType;
 
     [Range(.1F, 5)]
     public float drawRadius;

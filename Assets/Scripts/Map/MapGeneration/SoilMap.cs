@@ -27,6 +27,15 @@ public class SoilMap
         },
         new SoilTypeMetadata
         {
+            SoilType = SoilType.Grass,
+            Material = null,
+            IsDiggable = true,
+            DigEffectPrefab = null,
+            IsCollidable = true,
+            PhysicsMaterial = null
+        },
+        new SoilTypeMetadata
+        {
             SoilType = SoilType.Rock,
             Material = null,
             IsDiggable = true,
@@ -41,6 +50,24 @@ public class SoilMap
             IsDiggable = true,
             DigEffectPrefab = null,
             IsCollidable = true,
+            PhysicsMaterial = null
+        },
+        new SoilTypeMetadata
+        {
+            SoilType = SoilType.Bark,
+            Material = null,
+            IsDiggable = true,
+            DigEffectPrefab = null,
+            IsCollidable = false,
+            PhysicsMaterial = null
+        },
+        new SoilTypeMetadata
+        {
+            SoilType = SoilType.Leaves,
+            Material = null,
+            IsDiggable = true,
+            DigEffectPrefab = null,
+            IsCollidable = false,
             PhysicsMaterial = null
         }
     };

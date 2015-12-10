@@ -2,6 +2,9 @@
 {
     None,
     Dirt,
+    Grass,
     Rock,
-    Sand
+    Sand,
+    Bark,
+    Leaves
 }

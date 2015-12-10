@@ -22,17 +22,17 @@ public class WaterParticle : MonoBehaviour
     }
 
     [SerializeField]
-    private SpriteRenderer visuals;
+    private SpriteRenderer spriteRenderer;
     public SpriteRenderer SpriteRenderer
     {
         get
         {
-            if (visuals.transform.parent == null)
+            if (spriteRenderer.transform.parent == null)
             {
-                visuals.transform.parent = transform;
+                spriteRenderer.transform.parent = transform;
             }
 
-            return visuals;
+            return spriteRenderer;
         }
     }
 

@@ -4,13 +4,24 @@ using UnityEngine;
 [CustomEditor(typeof(MapGenerator))]
 public class MapEditor : Editor
 {
+    private bool canClearMap;
+
     public override void OnInspectorGUI()
     {
         MapGenerator mapGenerator = target as MapGenerator;
 
-        if (GUILayout.Button("Clear Map"))
+        canClearMap = GUILayout.Toggle(canClearMap, "Can Clear Map");
+        bool clearMap = GUILayout.Button("Clear Map");
+        bool generateMap = GUILayout.Button("Generate Map");
+
+        if (canClearMap && clearMap)
         {
             mapGenerator.CurrentMap.Clear();
+            mapGenerator.GenerateMap();
+        }
+
+        if (generateMap)
+        {
             mapGenerator.GenerateMap();
         }
 
@@ -32,7 +43,7 @@ public class MapEditor : Editor
                 Vector2 sceneMousePosition = SceneView.currentDrawingSceneView.camera.ScreenToWorldPoint(mousePosition);
                 Coordinate coordinateToDig = mapGenerator.CurrentMap.GetCoordinateFromPosition(sceneMousePosition);
 
-                mapGenerator.CurrentMap.Draw(coordinateToDig, mapGenerator.selectedDrawingSoilType, mapGenerator.drawRadius);
+                mapGenerator.CurrentMap.Draw(coordinateToDig, mapGenerator.drawingSoilType, mapGenerator.drawRadius);
 
                 if (mapGenerator.MapHolder == null)
                 {
