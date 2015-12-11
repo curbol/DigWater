@@ -9,23 +9,13 @@ public class MapGenerator : MonoBehaviour
     [Range(.1F, 5)]
     public float drawRadius;
 
-    public int mapIndex;
-    public SoilMap[] maps;
     private static readonly string mapHolderName = "Map";
-
-    public SoilMap CurrentMap
-    {
-        get
-        {
-            return maps != null && maps.Length > mapIndex ? maps[mapIndex] : null;
-        }
-    }
 
     public GameObject MapHolder { get; set; }
 
     public void GenerateMap()
     {
-        if (CurrentMap == null)
+        if (MapManager.Map == null)
             return;
 
         if (transform.FindChild(mapHolderName))
@@ -35,12 +25,11 @@ public class MapGenerator : MonoBehaviour
 
         MapHolder = new GameObject(mapHolderName);
         MapHolder.transform.parent = transform;
-        MapHolder.transform.localScale = Vector3.one * CurrentMap.Scale;
+        MapHolder.transform.localScale = Vector3.one * MapManager.Map.Scale;
 
-        SoilMapController soilMapController = MapHolder.AddComponent<SoilMapController>();
+        MapController soilMapController = MapHolder.AddComponent<MapController>();
         MapHolder.AddComponent<DigController>();
 
-        soilMapController.SoilMap = CurrentMap;
         soilMapController.RedrawSoilMesh();
     }
 }

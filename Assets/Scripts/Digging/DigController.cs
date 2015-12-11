@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 [DisallowMultipleComponent]
-[RequireComponent(typeof(SoilMapController))]
+[RequireComponent(typeof(MapController))]
 public class DigController : MonoBehaviour
 {
     [SerializeField]
@@ -10,7 +10,7 @@ public class DigController : MonoBehaviour
     [SerializeField]
     private float digRadius;
 
-    private SoilMapController soilMapController;
+    private MapController soilMapController;
 
     public ParticleSystem DigEffect
     {
@@ -38,21 +38,13 @@ public class DigController : MonoBehaviour
         }
     }
 
-    private SoilMap SoilMap
-    {
-        get
-        {
-            return SoilMapController != null ? SoilMapController.SoilMap : null;
-        }
-    }
-
-    private SoilMapController SoilMapController
+    private MapController SoilMapController
     {
         get
         {
             if (soilMapController == null)
             {
-                soilMapController = GetComponent<SoilMapController>();
+                soilMapController = GetComponent<MapController>();
             }
 
             return soilMapController;
@@ -80,20 +72,20 @@ public class DigController : MonoBehaviour
         bool leftMouseClicked = Input.GetMouseButton((int)MouseButton.Left);
         bool rightMouseClicked = Input.GetMouseButton((int)MouseButton.Right);
 
-        if (SoilMap != null && (leftMouseClicked || rightMouseClicked))
+        if (MapManager.Map != null && (leftMouseClicked || rightMouseClicked))
         {
             SoilType newSoilType = leftMouseClicked ? SoilType.None : SoilType.Dirt;
             Vector2 screenPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Coordinate coordinateToDig = SoilMap.GetCoordinateFromPosition(screenPosition);
+            Coordinate coordinateToDig = MapManager.Map.GetCoordinateFromPosition(screenPosition);
 
-            if (SoilMap[coordinateToDig.X, coordinateToDig.Y] != newSoilType)
+            if (MapManager.Map[coordinateToDig.X, coordinateToDig.Y] != newSoilType)
             {
                 if (leftMouseClicked)
                 {
                     PlayDigEffect(screenPosition);
                 }
 
-                SoilMap.Draw(coordinateToDig, newSoilType, DigRadius);
+                MapManager.Map.Draw(coordinateToDig, newSoilType, DigRadius);
 
                 SoilMapController.RedrawSoilMesh();
             }

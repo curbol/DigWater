@@ -16,7 +16,7 @@ public class MapEditor : Editor
 
         if (canClearMap && clearMap)
         {
-            mapGenerator.CurrentMap.Clear();
+            MapManager.Map.Clear();
             mapGenerator.GenerateMap();
         }
 
@@ -37,20 +37,20 @@ public class MapEditor : Editor
 
         if (Event.current.type == EventType.MouseDown || Event.current.type == EventType.MouseDrag)
         {
-            if (mapGenerator.CurrentMap != null)
+            if (MapManager.Map != null)
             {
                 Vector2 mousePosition = Event.current.mousePosition + new Vector2(0, -2 * Event.current.mousePosition.y + SceneView.currentDrawingSceneView.camera.pixelHeight);
                 Vector2 sceneMousePosition = SceneView.currentDrawingSceneView.camera.ScreenToWorldPoint(mousePosition);
-                Coordinate coordinateToDig = mapGenerator.CurrentMap.GetCoordinateFromPosition(sceneMousePosition);
+                Coordinate coordinateToDig = MapManager.Map.GetCoordinateFromPosition(sceneMousePosition);
 
-                mapGenerator.CurrentMap.Draw(coordinateToDig, mapGenerator.drawingSoilType, mapGenerator.drawRadius);
+                MapManager.Map.Draw(coordinateToDig, mapGenerator.drawingSoilType, mapGenerator.drawRadius);
 
                 if (mapGenerator.MapHolder == null)
                 {
                     mapGenerator.GenerateMap();
                 }
 
-                SoilMapController soilMapController = mapGenerator.MapHolder.GetComponent<SoilMapController>();
+                MapController soilMapController = mapGenerator.MapHolder.GetComponent<MapController>();
 
                 if (soilMapController != null)
                 {

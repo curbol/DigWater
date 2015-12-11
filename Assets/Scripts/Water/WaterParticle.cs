@@ -161,13 +161,23 @@ public class WaterParticle : MonoBehaviour
 
     public Action OnDeath { get; set; }
 
-    public void Heat(float? heatIncrease = null)
+    public void Heat()
+    {
+        Heat(null);
+    }
+
+    public void Heat(float? heatIncrease)
     {
         Temperature += heatIncrease ?? HeatRate;
         Temperature = Mathf.Clamp(Temperature, 0, MaxTemperature);
     }
 
-    public void Cool(float? heatDecrease = null)
+    public void Cool()
+    {
+        Cool(null);
+    }
+
+    public void Cool(float? heatDecrease)
     {
         Heat(-(heatDecrease ?? CoolRate));
     }
@@ -189,7 +199,9 @@ public class WaterParticle : MonoBehaviour
     private void UpdateState()
     {
         float vaporizationProgress = Mathf.Clamp(Temperature / VaporizationPoint, 0, 1);
-        SpriteRenderer.color = Color.Lerp(WaterColor, VaporColor, vaporizationProgress);
+
+        if (SpriteRenderer != null)
+            SpriteRenderer.color = Color.Lerp(WaterColor, VaporColor, vaporizationProgress);
 
         bool stateChanged = false;
 
@@ -230,7 +242,7 @@ public class WaterParticle : MonoBehaviour
 
     private void SetDirection()
     {
-        if (RigidBody.velocity != Vector2.zero)
+        if (SpriteRenderer != null && RigidBody.velocity != Vector2.zero)
         {
             SpriteRenderer.transform.rotation = Quaternion.LookRotation(Vector3.forward, RigidBody.velocity);
         }
@@ -238,7 +250,7 @@ public class WaterParticle : MonoBehaviour
 
     private void SetVelocityScale()
     {
-        if (RigidBody.velocity.magnitude < 0.5F)
+        if (SpriteRenderer != null && RigidBody.velocity.magnitude < 0.5F)
         {
             SpriteRenderer.transform.localScale = Vector3.one;
             return;
@@ -249,7 +261,8 @@ public class WaterParticle : MonoBehaviour
         scale.x -= scaleModifier;
         scale.y += scaleModifier;
 
-        SpriteRenderer.transform.localScale = scale;
+        if (SpriteRenderer != null)
+            SpriteRenderer.transform.localScale = scale;
     }
 
     private void Evaporate()
