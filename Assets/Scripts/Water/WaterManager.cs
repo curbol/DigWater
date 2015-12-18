@@ -155,4 +155,14 @@ public class WaterManager : MonoBehaviour
     {
         instance = this;
     }
+
+    private void OnDrawGizmos()
+    {
+        float cloudLevelY = CloudLevel - MapManager.Map.Height / 2;
+
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(new Vector2(MapManager.Map.Width / 2F, cloudLevelY), new Vector2(-MapManager.Map.Width / 2F, cloudLevelY));
+        Gizmos.DrawLine(new Vector2(MapManager.Map.Width / 2F, cloudLevelY - CloudLevelBuffer / 2), new Vector2(-MapManager.Map.Width / 2F, cloudLevelY - CloudLevelBuffer / 2));
+        Gizmos.DrawLine(new Vector2(MapManager.Map.Width / 2F, cloudLevelY + CloudLevelBuffer / 2), new Vector2(-MapManager.Map.Width / 2F, cloudLevelY + CloudLevelBuffer / 2));
+    }
 }
