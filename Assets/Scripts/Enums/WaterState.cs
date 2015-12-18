@@ -1,5 +1,7 @@
 ﻿public enum WaterState
 {
     Water,
-    Vapor
+    Vapor,
+    Cloud,
+    Rain,
 }

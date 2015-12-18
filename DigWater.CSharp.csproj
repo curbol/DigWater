@@ -92,6 +92,7 @@
     <Compile Include="Assets\Scripts\Utility\CoordinateExtenstions.cs" />
     <Compile Include="Assets\Scripts\Utility\GridArrayExtensions.cs" />
     <Compile Include="Assets\Scripts\Utility\Shuffler.cs" />
+    <Compile Include="Assets\Scripts\Water\WaterManager.cs" />
     <Compile Include="Assets\Scripts\Water\WaterParticle.cs" />
     <Compile Include="Assets\Scripts\Water\WaterSpawner.cs" />
     <Compile Include="Assets\Scripts\Wind\WindController.cs" />

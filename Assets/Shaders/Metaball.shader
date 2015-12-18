@@ -36,12 +36,16 @@ Shader "Custom/Metaball"
 				half4 color = tex2D(_MainTex, i.texcoord0);
 				float threshold = 0.3f;
 
-				if (color.r > threshold || color.g > threshold || color.b > threshold)
+				if (color.r >= threshold || color.g >= threshold || color.b >= threshold)
 				{
 					float majority = max(max(color.r, color.g), color.b);
 					float multiplier = 1 / majority;
 					color *= multiplier;
 					color.a = 0.6f;
+				}
+				else
+				{
+					color.a = 0;
 				}
 			
 				return color;
