@@ -44,6 +44,13 @@ public class WindController : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Debug.DrawLine(transform.position + Vector3.down * emmissionHeight / 2, transform.position + Vector3.up * emmissionHeight / 2, Color.red);
+        Vector2 bottomPosition = transform.position + Vector3.down * emmissionHeight / 2;
+        for (float i = 0; i <= emmissionHeight; i += 0.5F)
+        {
+            Gizmos.color = new Color(0F, 0.8F, 1F, 0.8F);
+            Vector2 startPosition = bottomPosition + Vector2.up * i;
+            Vector2 direction = Vector2.left * 10 * Mathf.Abs(Mathf.Cos(i));
+            Gizmos.DrawLine(startPosition, startPosition + direction);
+        }
     }
 }

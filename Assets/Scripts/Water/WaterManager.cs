@@ -160,7 +160,7 @@ public class WaterManager : MonoBehaviour
     {
         float cloudLevelY = CloudLevel - MapManager.Map.Height / 2;
 
-        Gizmos.color = Color.blue;
+        Gizmos.color = new Color(0F, 0.2F, 1F, 0.8F);
         Gizmos.DrawLine(new Vector2(MapManager.Map.Width / 2F, cloudLevelY), new Vector2(-MapManager.Map.Width / 2F, cloudLevelY));
         Gizmos.DrawLine(new Vector2(MapManager.Map.Width / 2F, cloudLevelY - CloudLevelBuffer / 2), new Vector2(-MapManager.Map.Width / 2F, cloudLevelY - CloudLevelBuffer / 2));
         Gizmos.DrawLine(new Vector2(MapManager.Map.Width / 2F, cloudLevelY + CloudLevelBuffer / 2), new Vector2(-MapManager.Map.Width / 2F, cloudLevelY + CloudLevelBuffer / 2));
