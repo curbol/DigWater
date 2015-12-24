@@ -32,4 +32,18 @@ public class MapGenerator : MonoBehaviour
 
         soilMapController.RedrawSoilMesh();
     }
+
+    private void OnDrawGizmos()
+    {
+        for (int x = 0; x < MapManager.Map.SizeX; x++)
+        {
+            for (int y = 0; y < MapManager.Map.SizeY; y++)
+            {
+                if (MapManager.Map[x, y] != SoilType.None)
+                {
+                    Gizmos.DrawCube(MapManager.Map.GetPositionFromCoordinate(x, y), Vector2.one * 0.2F);
+                }
+            }
+        }
+    }
 }

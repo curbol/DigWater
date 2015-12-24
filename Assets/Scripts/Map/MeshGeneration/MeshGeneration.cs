@@ -55,7 +55,7 @@ public static class MeshGeneration
         MeshVertex[] points = square.GetPoints();
         if (points != null)
         {
-            meshData.AddPoints(square.GetPoints());
+            meshData.AddPoints(points);
 
             foreach (MeshVertex meshVertex in points.OfType<ControlMeshVertex>().Where(p => p.VertexIndex != null))
             {

@@ -26,8 +26,6 @@ public class SunController : MonoBehaviour
         {
             for (int i = startRayAngle; i <= endRayAngle; i++)
             {
-                //transform.rotation = Quaternion.Euler(0, 0, i);
-                //Vector2 direction = transform.TransformDirection(Vector2.down);
                 Vector2 direction = Vector2FromAngle(i);
                 RaycastHit2D[] raycastHits = Physics2D.RaycastAll(transform.position, direction, Mathf.Infinity);
                 float heatPercent = 1;
