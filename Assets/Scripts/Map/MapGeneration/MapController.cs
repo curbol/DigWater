@@ -42,7 +42,7 @@ public class MapController : MonoBehaviour
 
             if (redraw || forceRedraw)
             {
-                MeshData meshData = bitMap.GetMarchingSquaresMeshData(MapManager.Map.Width, MapManager.Map.Height);
+                MeshData meshData = bitMap.GetMarchingSquaresMeshData(MapManager.Map.Scale);
                 GameObject meshHolder = GetUniqueChildGameObject(transform, soilType.ToString());
                 meshHolder.AddComponent<MeshFilter>().sharedMesh = meshData.GetMesh();
                 meshHolder.AddComponent<MeshRenderer>().materials = new Material[] { soilType.Material() };
@@ -66,17 +66,6 @@ public class MapController : MonoBehaviour
         gameObjectHolder.transform.parent = transform;
 
         return gameObjectHolder;
-    }
-
-    private static T[,] Smooth<T>(T[,] map, int seed = 0)
-    {
-        map.RandomSmoothPass(seed);
-        map.CornerSmoothPass(SquareVertex.TopLeft);
-        map.CornerSmoothPass(SquareVertex.BottomRight);
-        map.CornerSmoothPass(SquareVertex.TopRight);
-        map.CornerSmoothPass(SquareVertex.BottomLeft);
-
-        return map;
     }
 
     private void Awake()

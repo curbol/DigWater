@@ -4,10 +4,15 @@ using UnityEngine;
 
 public static class MeshGeneration
 {
-    public static MeshData GetMarchingSquaresMeshData(this bool[,] map, float width, float height)
+    public static MarchingSquare[,] marchingSquares { get; set; }
+
+    public static MeshData GetMarchingSquaresMeshData(this bool[,] map, float scale)
     {
-        MeshData meshData = new MeshData(width, height);
-        MarchingSquare[,] marchingSquares = map.CreateMarchingSquareGrid();
+        int mapSizeX = map.GetLength(0);
+        int mapSizeY = map.GetLength(1);
+
+        MeshData meshData = new MeshData(mapSizeX * scale, mapSizeY * scale);
+        marchingSquares = map.CreateMarchingSquareGrid(scale);
 
         if (marchingSquares != null)
         {
@@ -94,7 +99,7 @@ public static class MeshGeneration
         }
     }
 
-    private static MarchingSquare[,] CreateMarchingSquareGrid(this bool[,] map)
+    private static MarchingSquare[,] CreateMarchingSquareGrid(this bool[,] map, float scale)
     {
         MarchingSquare[,] squares = null;
 
@@ -112,10 +117,11 @@ public static class MeshGeneration
                 {
                     for (int y = 0; y < sizeY; y++)
                     {
-                        Vector2 position = new Vector2(-sizeX / 2F + x + 0.5F, -sizeY / 2F + y + 0.5F);
+                        Vector2 position = new Vector2(-sizeX / 2F + x + 0.5F, -sizeY / 2F + y + 0.5F) * scale;
                         controlMeshVertices[x, y] = new ControlMeshVertex(position, map[x, y]);
 
                         if (x > 0 && y > 0)
+
                         {
                             ControlMeshVertex topLeft = controlMeshVertices[x - 1, y];
                             ControlMeshVertex topRight = controlMeshVertices[x, y];
