@@ -3,6 +3,9 @@
 public class MapManager : MonoBehaviour
 {
     [SerializeField]
+    private bool showGizmos;
+
+    [SerializeField]
     private int mapIndex;
 
     [SerializeField]
@@ -41,6 +44,9 @@ public class MapManager : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        if (!showGizmos)
+            return;
+
         for (int x = 0; x < Map.SizeX; x++)
         {
             for (int y = 0; y < Map.SizeY; y++)

@@ -5,23 +5,19 @@ using UnityEngine;
 public class MeshData
 {
     private readonly HashSet<int> checkedEdgeVertexIndices;
-    private readonly float height;
     private readonly List<Vector4> tangents;
     private readonly Dictionary<int, List<int[]>> trianglesDictionary;
     private readonly List<Vector2> uv;
-    private readonly float width;
     public HashSet<int> NonEdgeVertexIndices { get; set; }
     public List<int> Triangles { get; set; }
     public List<Vector3> Vertices { get; set; }
 
-    public MeshData(float width, float height)
+    public MeshData()
     {
         tangents = new List<Vector4>();
         uv = new List<Vector2>();
         trianglesDictionary = new Dictionary<int, List<int[]>>();
         checkedEdgeVertexIndices = new HashSet<int>();
-        this.width = width;
-        this.height = height;
 
         Vertices = new List<Vector3>();
         Triangles = new List<int>();
@@ -55,26 +51,9 @@ public class MeshData
         Vertices.Add(vertex);
         tangents.Add(new Vector4(1F, 0F, 0F, -1F));
 
-        float percentX = Mathf.InverseLerp(-width / 2F, width / 2F, vertex.x);
-        float percentY = Mathf.InverseLerp(-height / 2F, height / 2F, vertex.y);
+        float percentX = Mathf.InverseLerp(-MapManager.Map.Width / 2F, MapManager.Map.Width / 2F, vertex.x);
+        float percentY = Mathf.InverseLerp(-MapManager.Map.Height / 2F, MapManager.Map.Height / 2F, vertex.y);
         uv.Add(new Vector2(percentX, percentY));
-    }
-
-    public IEnumerable<IEnumerable<int>> GetOutlines()
-    {
-        for (int vertexIndex = 0; vertexIndex < Vertices.Count; vertexIndex++)
-        {
-            if (!checkedEdgeVertexIndices.Contains(vertexIndex) && !NonEdgeVertexIndices.Contains(vertexIndex))
-            {
-                checkedEdgeVertexIndices.Add(vertexIndex);
-
-                int? nextOutlineVertexIndex = GetConnectedOutlineVertex(vertexIndex);
-                if (nextOutlineVertexIndex != null)
-                {
-                    yield return GetOutline(vertexIndex);
-                }
-            }
-        }
     }
 
     public Vector4[] GetTangents()
@@ -95,6 +74,38 @@ public class MeshData
     public Vector3[] GetVertices()
     {
         return Vertices.ToArray();
+    }
+
+    public IEnumerable<IEnumerable<int>> GetOutlines()
+    {
+        for (int vertexIndex = 0; vertexIndex < Vertices.Count; vertexIndex++)
+        {
+            if (!checkedEdgeVertexIndices.Contains(vertexIndex) && !NonEdgeVertexIndices.Contains(vertexIndex))
+            {
+                checkedEdgeVertexIndices.Add(vertexIndex);
+
+                int? nextOutlineVertexIndex = GetConnectedOutlineVertex(vertexIndex);
+                if (nextOutlineVertexIndex != null)
+                {
+                    yield return GetOutline(vertexIndex);
+                }
+            }
+        }
+    }
+
+    private IEnumerable<int> GetOutline(int vertexIndex)
+    {
+        yield return vertexIndex;
+
+        int? nextOutlineVertexIndex = GetConnectedOutlineVertex(vertexIndex);
+        while (nextOutlineVertexIndex != null && nextOutlineVertexIndex != vertexIndex)
+        {
+            checkedEdgeVertexIndices.Add((int)nextOutlineVertexIndex);
+            yield return (int)nextOutlineVertexIndex;
+            nextOutlineVertexIndex = GetConnectedOutlineVertex((int)nextOutlineVertexIndex);
+        }
+
+        yield return vertexIndex;
     }
 
     private int? GetConnectedOutlineVertex(int vertexIndexA)
@@ -120,21 +131,6 @@ public class MeshData
         }
 
         return vertexIndex;
-    }
-
-    private IEnumerable<int> GetOutline(int vertexIndex)
-    {
-        yield return vertexIndex;
-
-        int? nextOutlineVertexIndex = GetConnectedOutlineVertex(vertexIndex);
-        while (nextOutlineVertexIndex != null && nextOutlineVertexIndex != vertexIndex)
-        {
-            checkedEdgeVertexIndices.Add((int)nextOutlineVertexIndex);
-            yield return (int)nextOutlineVertexIndex;
-            nextOutlineVertexIndex = GetConnectedOutlineVertex((int)nextOutlineVertexIndex);
-        }
-
-        yield return vertexIndex;
     }
 
     private bool IsOutlineEdge(int vertexIndexA, int vertexIndexB)

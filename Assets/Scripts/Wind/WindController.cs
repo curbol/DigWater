@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class WindController : MonoBehaviour
 {
+    [SerializeField]
+    private bool showGizmos;
+
     [Range(0, 50)]
     [SerializeField]
     private int emmissionHeight = 10;
@@ -44,6 +47,9 @@ public class WindController : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        if (!showGizmos)
+            return;
+
         Vector2 bottomPosition = transform.position + Vector3.down * emmissionHeight / 2;
         for (float i = 0; i <= emmissionHeight; i += 0.5F)
         {

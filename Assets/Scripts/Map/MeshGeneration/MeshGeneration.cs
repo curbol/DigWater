@@ -11,7 +11,7 @@ public static class MeshGeneration
         int mapSizeX = map.GetLength(0);
         int mapSizeY = map.GetLength(1);
 
-        MeshData meshData = new MeshData(mapSizeX * scale, mapSizeY * scale);
+        MeshData meshData = new MeshData();
         marchingSquares = map.CreateMarchingSquareGrid(scale);
 
         if (marchingSquares != null)

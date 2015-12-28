@@ -62,7 +62,7 @@ public class Map
 
         set
         {
-            sizeY = value;
+            SizeY = value;
         }
     }
 
@@ -70,7 +70,7 @@ public class Map
     {
         get
         {
-            return sizeX * Scale;
+            return SizeX * Scale;
         }
     }
 
@@ -78,7 +78,7 @@ public class Map
     {
         get
         {
-            return sizeY * Scale;
+            return SizeY * Scale;
         }
     }
 

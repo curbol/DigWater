@@ -90,7 +90,12 @@ public class WaterParticle : MonoBehaviour
     {
         get
         {
-            return Mathf.Clamp(Mathf.Abs(WaterManager.CloudLevel - MapY) / WaterManager.CloudLevelBuffer, 0, 1);
+            if (GetNeighbors(2, LayerMask.NameToLayer("Cloud")).Length > 4)
+            {
+                return Mathf.Clamp(Mathf.Abs(WaterManager.CloudLevel - MapY) / WaterManager.CloudLevelBuffer, 0, 1);
+            }
+
+            return 1;
         }
     }
 
@@ -118,6 +123,11 @@ public class WaterParticle : MonoBehaviour
     {
         Temperature -= coolPercent != null ? Mathf.Clamp((float)coolPercent, 0, 1) * WaterManager.CoolRate : WaterManager.CoolRate;
         Temperature = Mathf.Clamp(Temperature, 0, WaterManager.MaximumTemperature);
+    }
+
+    public Collider2D[] GetNeighbors(float radius, LayerMask layerMask)
+    {
+        return Physics2D.OverlapCircleAll(transform.position, radius);
     }
 
     private void Start()

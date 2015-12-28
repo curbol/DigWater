@@ -2,6 +2,9 @@
 
 public class WaterManager : MonoBehaviour
 {
+    [SerializeField]
+    private bool showGizmos;
+
     private static WaterManager instance;
     private static WaterManager Instance
     {
@@ -158,6 +161,9 @@ public class WaterManager : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        if (!showGizmos)
+            return;
+
         float cloudLevelY = CloudLevel - MapManager.Map.Height / 2;
 
         Gizmos.color = new Color(0F, 0.2F, 1F, 0.8F);

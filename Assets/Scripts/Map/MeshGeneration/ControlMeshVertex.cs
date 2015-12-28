@@ -9,7 +9,7 @@ public class ControlMeshVertex : MeshVertex
     public ControlMeshVertex(Vector2 position, bool isActive) : base(position)
     {
         IsActive = isActive;
-        UpVertex = new MeshVertex(position + Vector2.up * 0.5F);
-        RightVertex = new MeshVertex(position + Vector2.right * 0.5F);
+        UpVertex = new MeshVertex(position + Vector2.up * MapManager.Map.Scale / 2);
+        RightVertex = new MeshVertex(position + Vector2.right * MapManager.Map.Scale / 2);
     }
 }

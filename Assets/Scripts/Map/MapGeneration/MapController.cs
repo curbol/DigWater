@@ -80,7 +80,7 @@ public class MapController : MonoBehaviour
         foreach (Vector2[] edgePoints in meshData.GetMeshEdges())
         {
             EdgeCollider2D edgeCollider = edgeColliderHolder.AddComponent<EdgeCollider2D>();
-            edgeCollider.points = edgePoints.Select(e => e * MapManager.Map.Scale).ToArray();
+            edgeCollider.points = edgePoints;
 
             if (physicsMaterial != null)
             {
