@@ -154,6 +154,39 @@ public class WaterManager : MonoBehaviour
         }
     }
 
+    [Range(0, 10)]
+    [SerializeField]
+    private float cloudClusterMinimumCount;
+    public static float CloudClusterMinimumCount
+    {
+        get
+        {
+            return Instance.cloudClusterMinimumCount;
+        }
+    }
+
+    [Range(0, 10)]
+    [SerializeField]
+    private float cloudClusterRadius;
+    public static float CloudClusterRadius
+    {
+        get
+        {
+            return Instance.cloudClusterRadius;
+        }
+    }
+
+    [Range(0, 1)]
+    [SerializeField]
+    private float cloudClusterTransitionRate;
+    public static float CloudClusterTransitionRate
+    {
+        get
+        {
+            return Instance.cloudClusterTransitionRate;
+        }
+    }
+
     private void Awake()
     {
         instance = this;

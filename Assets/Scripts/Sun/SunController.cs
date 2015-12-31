@@ -4,7 +4,7 @@ using UnityEngine;
 public class SunController : MonoBehaviour
 {
     [SerializeField]
-    private bool showGizmos;
+    private bool showGizmos = true;
 
     [Range(-360, 360)]
     [SerializeField]
@@ -12,11 +12,11 @@ public class SunController : MonoBehaviour
 
     [Range(-360, 360)]
     [SerializeField]
-    private int endRayAngle = 0;
+    private int endRayAngle = 10;
 
     [Range(0, 1)]
     [SerializeField]
-    private float obstaclePercentHeatDecrease = 0.1F;
+    private float HeatPenetration = 0.85F;
 
     private void Start()
     {
@@ -41,7 +41,7 @@ public class SunController : MonoBehaviour
 
                     Debug.DrawLine((Vector2)transform.position, raycastHit.point, new Color(0.5F, 0.5F, 0.2F, 0.2F));
                     waterParticle.Heat(heatPercent);
-                    heatPercent -= obstaclePercentHeatDecrease;
+                    heatPercent *= HeatPenetration;
 
                     if (waterParticle.State == WaterState.Water || heatPercent <= 0)
                         break;

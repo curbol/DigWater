@@ -78,7 +78,7 @@ public class WaterParticle : MonoBehaviour
         }
     }
 
-    public float VaporToCloudTransitionRatio
+    public float VaporToCloudLevelTransitionRatio
     {
         get
         {
@@ -86,16 +86,17 @@ public class WaterParticle : MonoBehaviour
         }
     }
 
-    public float CloudToVaporTransitionRatio
+    private float cloudClusterTransitionRatio;
+    private float CloudClusterTransitionRatio
     {
         get
         {
-            if (GetNeighbors(2, LayerMask.NameToLayer("Cloud")).Length > 4)
-            {
-                return Mathf.Clamp(Mathf.Abs(WaterManager.CloudLevel - MapY) / WaterManager.CloudLevelBuffer, 0, 1);
-            }
+            return cloudClusterTransitionRatio;
+        }
 
-            return 1;
+        set
+        {
+            cloudClusterTransitionRatio = Mathf.Clamp(value, 0, 1);
         }
     }
 
@@ -166,6 +167,7 @@ public class WaterParticle : MonoBehaviour
         else if (state == WaterState.Cloud)
         {
             State = WaterState.Cloud;
+            cloudClusterTransitionRatio = 0;
             RigidBody.gravityScale = 0;
             RigidBody.angularDrag = 0.2F;
             gameObject.layer = LayerMask.NameToLayer("Cloud");
@@ -196,7 +198,7 @@ public class WaterParticle : MonoBehaviour
     {
         if (State == WaterState.Water && SpriteRenderer != null)
         {
-            SpriteRenderer.color = Color.Lerp(WaterManager.WaterColor, WaterManager.VaporColor, WaterToVaporTransitionRatio - 0.6F);
+            SpriteRenderer.color = Color.Lerp(WaterManager.VaporColor, WaterManager.WaterColor, (1 - WaterToVaporTransitionRatio) + 0.6F);
         }
         else if (State == WaterState.Vapor && SpriteRenderer != null)
         {
@@ -204,7 +206,7 @@ public class WaterParticle : MonoBehaviour
         }
         else if (State == WaterState.Cloud && SpriteRenderer != null)
         {
-            SpriteRenderer.color = Color.Lerp(WaterManager.CloudColor, WaterManager.VaporColor, CloudToVaporTransitionRatio - 0.3F);
+            SpriteRenderer.color = Color.Lerp(WaterManager.VaporColor, WaterManager.CloudColor, CloudClusterTransitionRatio + 0.3F);
         }
     }
 
@@ -226,18 +228,29 @@ public class WaterParticle : MonoBehaviour
     private void RunVaporBehavior()
     {
         Vector2 direction = MapY < WaterManager.CloudLevel + WaterManager.CloudLevelBuffer ? Vector2.up : Vector2.down;
-        RigidBody.velocity = direction * Mathf.Lerp(0, WaterManager.VaporMaximumVelocity, VaporToCloudTransitionRatio) + new Vector2(RigidBody.velocity.x, 0);
+        RigidBody.velocity = direction * Mathf.Lerp(0, WaterManager.VaporMaximumVelocity, VaporToCloudLevelTransitionRatio) + new Vector2(RigidBody.velocity.x, 0);
     }
 
     private void RunCloudBehavior()
     {
+        // Update cluster transition progress
+        if (CloudClusterTransitionRatio < 1 && GetNeighbors(WaterManager.CloudClusterRadius, LayerMask.NameToLayer("Cloud")).Length > WaterManager.CloudClusterMinimumCount)
+        {
+            CloudClusterTransitionRatio += WaterManager.CloudClusterTransitionRate * Time.fixedDeltaTime;
+        }
+        else if (CloudClusterTransitionRatio > 0)
+        {
+            CloudClusterTransitionRatio -= WaterManager.CloudClusterTransitionRate * Time.fixedDeltaTime;
+        }
+
+        // Update velocity
         if (MapY < WaterManager.CloudLevel - WaterManager.CloudLevelBuffer / 3)
         {
             RigidBody.gravityScale = RigidBody.velocity.y < WaterManager.VaporMaximumVelocity ? -WaterManager.VaporAcceleration : 0;
         }
         else if (MapY > WaterManager.CloudLevel + WaterManager.CloudLevelBuffer / 3)
         {
-            RigidBody.gravityScale = WaterManager.VaporAcceleration;
+            RigidBody.gravityScale = RigidBody.velocity.y > -WaterManager.VaporMaximumVelocity ? WaterManager.VaporAcceleration : 0;
         }
         else
         {
