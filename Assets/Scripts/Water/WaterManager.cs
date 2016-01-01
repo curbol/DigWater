@@ -154,6 +154,16 @@ public class WaterManager : MonoBehaviour
         }
     }
 
+    [SerializeField]
+    private float cloudLevelEquilibriumZoneSize;
+    public static float CloudLevelEquilibriumZoneSize
+    {
+        get
+        {
+            return Instance.cloudLevelEquilibriumZoneSize;
+        }
+    }
+
     [Range(0, 10)]
     [SerializeField]
     private float cloudClusterMinimumCount;
@@ -187,6 +197,17 @@ public class WaterManager : MonoBehaviour
         }
     }
 
+    [Range(0, 1)]
+    [SerializeField]
+    private float cloudDrag = 0.2F;
+    public static float CloudDrag
+    {
+        get
+        {
+            return Instance.cloudDrag;
+        }
+    }
+
     private void Awake()
     {
         instance = this;
@@ -201,7 +222,11 @@ public class WaterManager : MonoBehaviour
 
         Gizmos.color = new Color(0F, 0.2F, 1F, 0.8F);
         Gizmos.DrawLine(new Vector2(MapManager.Map.Width / 2F, cloudLevelY), new Vector2(-MapManager.Map.Width / 2F, cloudLevelY));
-        Gizmos.DrawLine(new Vector2(MapManager.Map.Width / 2F, cloudLevelY - CloudLevelBuffer / 2), new Vector2(-MapManager.Map.Width / 2F, cloudLevelY - CloudLevelBuffer / 2));
-        Gizmos.DrawLine(new Vector2(MapManager.Map.Width / 2F, cloudLevelY + CloudLevelBuffer / 2), new Vector2(-MapManager.Map.Width / 2F, cloudLevelY + CloudLevelBuffer / 2));
+        Gizmos.DrawLine(new Vector2(MapManager.Map.Width / 2F, cloudLevelY - CloudLevelBuffer), new Vector2(-MapManager.Map.Width / 2F, cloudLevelY - CloudLevelBuffer));
+        Gizmos.DrawLine(new Vector2(MapManager.Map.Width / 2F, cloudLevelY + CloudLevelBuffer), new Vector2(-MapManager.Map.Width / 2F, cloudLevelY + CloudLevelBuffer));
+
+        Gizmos.color = new Color(0F, 0.4F, 0.8F, 0.8F);
+        Gizmos.DrawLine(new Vector2(MapManager.Map.Width / 2F, cloudLevelY - CloudLevelEquilibriumZoneSize), new Vector2(-MapManager.Map.Width / 2F, cloudLevelY - CloudLevelEquilibriumZoneSize));
+        Gizmos.DrawLine(new Vector2(MapManager.Map.Width / 2F, cloudLevelY + CloudLevelEquilibriumZoneSize), new Vector2(-MapManager.Map.Width / 2F, cloudLevelY + CloudLevelEquilibriumZoneSize));
     }
 }

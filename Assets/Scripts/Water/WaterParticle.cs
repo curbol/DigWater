@@ -100,6 +100,30 @@ public class WaterParticle : MonoBehaviour
         }
     }
 
+    public bool InCloudZone
+    {
+        get
+        {
+            return MapY >= WaterManager.CloudLevel - WaterManager.CloudLevelBuffer && MapY <= WaterManager.CloudLevel + WaterManager.CloudLevelBuffer;
+        }
+    }
+
+    public bool InCloudEqualibriumZone
+    {
+        get
+        {
+            return MapY >= WaterManager.CloudLevel - WaterManager.CloudLevelEquilibriumZoneSize && MapY <= WaterManager.CloudLevel + WaterManager.CloudLevelEquilibriumZoneSize;
+        }
+    }
+
+    public bool InMapRegion
+    {
+        get
+        {
+            return MapY >= 0 && MapY <= MapManager.Map.SizeY && MapX >= 0 && MapX <= MapManager.Map.SizeX;
+        }
+    }
+
     public WaterState State { get; private set; }
 
     public float Temperature { get; private set; }
@@ -144,7 +168,7 @@ public class WaterParticle : MonoBehaviour
         Cool();
         UpdateState();
         SetColor();
-        SetDeath();
+        UpdateDeath();
     }
 
     private void ResetAsState(WaterState state)
@@ -169,7 +193,7 @@ public class WaterParticle : MonoBehaviour
             State = WaterState.Cloud;
             cloudClusterTransitionRatio = 0;
             RigidBody.gravityScale = 0;
-            RigidBody.angularDrag = 0.2F;
+            RigidBody.angularDrag = WaterManager.CloudDrag;
             gameObject.layer = LayerMask.NameToLayer("Cloud");
         }
     }
@@ -184,11 +208,11 @@ public class WaterParticle : MonoBehaviour
         {
             ResetAsState(WaterState.Water);
         }
-        else if (State == WaterState.Vapor && MapY >= WaterManager.CloudLevel - WaterManager.CloudLevelBuffer && MapY <= WaterManager.CloudLevel + WaterManager.CloudLevelBuffer)
+        else if (State == WaterState.Vapor && InCloudZone)
         {
             ResetAsState(WaterState.Cloud);
         }
-        else if (State == WaterState.Cloud && (MapY < WaterManager.CloudLevel - WaterManager.CloudLevelBuffer || MapY > WaterManager.CloudLevel + WaterManager.CloudLevelBuffer))
+        else if (State == WaterState.Cloud && !InCloudZone)
         {
             ResetAsState(WaterState.Vapor);
         }
@@ -221,13 +245,13 @@ public class WaterParticle : MonoBehaviour
             RunCloudBehavior();
         }
 
-        SetRotation();
-        SetVelocityScale();
+        UpdateRotation();
+        UpdateVelocityScale();
     }
 
     private void RunVaporBehavior()
     {
-        Vector2 direction = MapY < WaterManager.CloudLevel + WaterManager.CloudLevelBuffer ? Vector2.up : Vector2.down;
+        Vector2 direction = MapY < WaterManager.CloudLevel ? Vector2.up : Vector2.down;
         RigidBody.velocity = direction * Mathf.Lerp(0, WaterManager.VaporMaximumVelocity, VaporToCloudLevelTransitionRatio) + new Vector2(RigidBody.velocity.x, 0);
     }
 
@@ -244,11 +268,11 @@ public class WaterParticle : MonoBehaviour
         }
 
         // Update velocity
-        if (MapY < WaterManager.CloudLevel - WaterManager.CloudLevelBuffer / 3)
+        if (MapY < WaterManager.CloudLevel - WaterManager.CloudLevelEquilibriumZoneSize)
         {
             RigidBody.gravityScale = RigidBody.velocity.y < WaterManager.VaporMaximumVelocity ? -WaterManager.VaporAcceleration : 0;
         }
-        else if (MapY > WaterManager.CloudLevel + WaterManager.CloudLevelBuffer / 3)
+        else if (MapY > WaterManager.CloudLevel + WaterManager.CloudLevelEquilibriumZoneSize)
         {
             RigidBody.gravityScale = RigidBody.velocity.y > -WaterManager.VaporMaximumVelocity ? WaterManager.VaporAcceleration : 0;
         }
@@ -258,7 +282,7 @@ public class WaterParticle : MonoBehaviour
         }
     }
 
-    private void SetRotation()
+    private void UpdateRotation()
     {
         if (SpriteRenderer != null && RigidBody.velocity != Vector2.zero)
         {
@@ -266,7 +290,7 @@ public class WaterParticle : MonoBehaviour
         }
     }
 
-    private void SetVelocityScale()
+    private void UpdateVelocityScale()
     {
         if (SpriteRenderer != null && RigidBody.velocity.magnitude < 0.5F)
         {
@@ -283,14 +307,12 @@ public class WaterParticle : MonoBehaviour
             SpriteRenderer.transform.localScale = scale;
     }
 
-    private void SetDeath()
+    private void UpdateDeath()
     {
-        if (MapY < 0 || MapY > MapManager.Map.SizeY || MapX < 0 || MapX > MapManager.Map.SizeX)
+        if (!InMapRegion)
         {
             if (OnDeath != null)
-            {
                 OnDeath();
-            }
 
             Destroy(gameObject);
         }
