@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
 using UnityEngine;
 
@@ -159,79 +160,13 @@ public class WaterParticle : MonoBehaviour
     {
         birthTime = Time.time;
         RigidBody.velocity = Vector2.zero;
-        UpdateState();
-        SetColor();
-    }
 
-    private void Update()
-    {
-        Cool();
-        UpdateState();
-        SetColor();
-        UpdateDeath();
-    }
-
-    private void ResetAsState(WaterState state)
-    {
-        if (state == WaterState.Water)
-        {
-            State = WaterState.Water;
-            RigidBody.gravityScale = 1;
-            RigidBody.angularDrag = 0;
-            gameObject.layer = LayerMask.NameToLayer("Metaball");
-        }
-        else if (state == WaterState.Vapor)
-        {
-            State = WaterState.Vapor;
-            RigidBody.velocity = Vector2.zero;
-            RigidBody.gravityScale = 0;
-            RigidBody.angularDrag = 0;
-            gameObject.layer = LayerMask.NameToLayer("Vapor");
-        }
-        else if (state == WaterState.Cloud)
-        {
-            State = WaterState.Cloud;
-            cloudClusterTransitionRatio = 0;
-            RigidBody.gravityScale = 0;
-            RigidBody.angularDrag = WaterManager.CloudDrag;
-            gameObject.layer = LayerMask.NameToLayer("Cloud");
-        }
-    }
-
-    private void UpdateState()
-    {
-        if (State == WaterState.Water && WaterToVaporTransitionRatio >= 1)
-        {
-            ResetAsState(WaterState.Vapor);
-        }
-        else if (WaterToVaporTransitionRatio < 1)
-        {
-            ResetAsState(WaterState.Water);
-        }
-        else if (State == WaterState.Vapor && InCloudZone)
-        {
-            ResetAsState(WaterState.Cloud);
-        }
-        else if (State == WaterState.Cloud && !InCloudZone)
-        {
-            ResetAsState(WaterState.Vapor);
-        }
-    }
-
-    private void SetColor()
-    {
-        if (State == WaterState.Water && SpriteRenderer != null)
-        {
-            SpriteRenderer.color = Color.Lerp(WaterManager.VaporColor, WaterManager.WaterColor, (1 - WaterToVaporTransitionRatio) + 0.6F);
-        }
-        else if (State == WaterState.Vapor && SpriteRenderer != null)
-        {
-            SpriteRenderer.color = WaterManager.VaporColor;
-        }
-        else if (State == WaterState.Cloud && SpriteRenderer != null)
-        {
-            SpriteRenderer.color = Color.Lerp(WaterManager.VaporColor, WaterManager.CloudColor, CloudClusterTransitionRatio + 0.3F);
-        }
+        StartCoroutine(UpdateState());
+        StartCoroutine(UpdateTemperature());
+        StartCoroutine(UpdateColor());
+        StartCoroutine(UpdateRotation());
+        StartCoroutine(UpdateVelocityScale());
+        StartCoroutine(UpdateDeath());
     }
 
     private void FixedUpdate()
@@ -244,9 +179,6 @@ public class WaterParticle : MonoBehaviour
         {
             RunCloudBehavior();
         }
-
-        UpdateRotation();
-        UpdateVelocityScale();
     }
 
     private void RunVaporBehavior()
@@ -282,39 +214,137 @@ public class WaterParticle : MonoBehaviour
         }
     }
 
-    private void UpdateRotation()
+    private void ResetAsState(WaterState state)
     {
-        if (SpriteRenderer != null && RigidBody.velocity != Vector2.zero)
+        if (state == WaterState.Water)
         {
-            SpriteRenderer.transform.rotation = Quaternion.LookRotation(Vector3.forward, RigidBody.velocity);
+            State = WaterState.Water;
+            RigidBody.gravityScale = 1;
+            RigidBody.angularDrag = 0;
+            gameObject.layer = LayerMask.NameToLayer("Metaball");
+        }
+        else if (state == WaterState.Vapor)
+        {
+            State = WaterState.Vapor;
+            RigidBody.velocity = Vector2.zero;
+            RigidBody.gravityScale = 0;
+            RigidBody.angularDrag = 0;
+            gameObject.layer = LayerMask.NameToLayer("Vapor");
+        }
+        else if (state == WaterState.Cloud)
+        {
+            State = WaterState.Cloud;
+            cloudClusterTransitionRatio = 0;
+            RigidBody.gravityScale = 0;
+            RigidBody.angularDrag = WaterManager.CloudDrag;
+            gameObject.layer = LayerMask.NameToLayer("Cloud");
         }
     }
 
-    private void UpdateVelocityScale()
+    private IEnumerator UpdateTemperature()
     {
-        if (SpriteRenderer != null && RigidBody.velocity.magnitude < 0.5F)
+        while (true)
         {
-            SpriteRenderer.transform.localScale = Vector3.one;
-            return;
+            Cool();
+
+            yield return null;
         }
-
-        Vector2 scale = Vector2.one;
-        float scaleModifier = Mathf.Min(Mathf.Abs(RigidBody.velocity.y) * (WaterManager.Deformability / 100), 0.5F);
-        scale.x -= scaleModifier;
-        scale.y += scaleModifier;
-
-        if (SpriteRenderer != null)
-            SpriteRenderer.transform.localScale = scale;
     }
 
-    private void UpdateDeath()
+    private IEnumerator UpdateState()
     {
-        if (!InMapRegion)
+        while (true)
         {
-            if (OnDeath != null)
-                OnDeath();
+            if (State == WaterState.Water && WaterToVaporTransitionRatio >= 1)
+            {
+                ResetAsState(WaterState.Vapor);
+            }
+            else if (WaterToVaporTransitionRatio < 1)
+            {
+                ResetAsState(WaterState.Water);
+            }
+            else if (State == WaterState.Vapor && InCloudZone)
+            {
+                ResetAsState(WaterState.Cloud);
+            }
+            else if (State == WaterState.Cloud && !InCloudZone)
+            {
+                ResetAsState(WaterState.Vapor);
+            }
 
-            Destroy(gameObject);
+            yield return null;
+        }
+    }
+
+    private IEnumerator UpdateColor()
+    {
+        while (true)
+        {
+            if (State == WaterState.Water && SpriteRenderer != null)
+            {
+                SpriteRenderer.color = Color.Lerp(WaterManager.VaporColor, WaterManager.WaterColor, (1 - WaterToVaporTransitionRatio) + 0.6F);
+            }
+            else if (State == WaterState.Vapor && SpriteRenderer != null)
+            {
+                SpriteRenderer.color = WaterManager.VaporColor;
+            }
+            else if (State == WaterState.Cloud && SpriteRenderer != null)
+            {
+                SpriteRenderer.color = Color.Lerp(WaterManager.VaporColor, WaterManager.CloudColor, CloudClusterTransitionRatio + 0.3F);
+            }
+
+            yield return new WaitForEndOfFrame();
+        }
+    }
+
+    private IEnumerator UpdateRotation()
+    {
+        while (true)
+        {
+            if (SpriteRenderer != null && RigidBody.velocity != Vector2.zero)
+            {
+                SpriteRenderer.transform.rotation = Quaternion.LookRotation(Vector3.forward, RigidBody.velocity);
+            }
+
+            yield return new WaitForFixedUpdate();
+        }
+    }
+
+    private IEnumerator UpdateVelocityScale()
+    {
+        while (true)
+        {
+            yield return new WaitForFixedUpdate();
+
+            if (SpriteRenderer != null && RigidBody.velocity.magnitude < 0.5F)
+            {
+                SpriteRenderer.transform.localScale = Vector3.one;
+                continue;
+            }
+
+            Vector2 scale = Vector2.one;
+            float scaleModifier = Mathf.Min(Mathf.Abs(RigidBody.velocity.y) * (WaterManager.Deformability / 100), 0.5F);
+            scale.x -= scaleModifier;
+            scale.y += scaleModifier;
+
+            if (SpriteRenderer != null)
+                SpriteRenderer.transform.localScale = scale;
+        }
+    }
+
+    private IEnumerator UpdateDeath()
+    {
+        while (true)
+        {
+            if (!InMapRegion)
+            {
+                if (OnDeath != null)
+                    OnDeath();
+
+                Destroy(gameObject);
+            }
+
+            yield return new WaitForSeconds(2);
         }
     }
 }
