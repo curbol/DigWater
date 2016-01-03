@@ -15,7 +15,7 @@ public class WaterSpawner : MonoBehaviour
     [Range(0, 10)]
     public float spawnRadius = 2F;
 
-    public WaterParticle waterParticlePrefab;
+    public HydroParticle waterParticlePrefab;
 
     private void Awake()
     {
@@ -27,13 +27,13 @@ public class WaterSpawner : MonoBehaviour
     {
         while (waterParticlePrefab != null)
         {
-            if (waterParticleCount < WaterManager.MaximumNumberOfParticles)
+            if (waterParticleCount < HydroManager.MaximumNumberOfParticles)
             {
                 float randomAdjustmentX = spawnRadius * random.Next(-100, 100) / 100F;
                 float randomAdjustmentY = spawnRadius * random.Next(-100, 100) / 100F;
                 Vector2 position = new Vector2(transform.position.x + randomAdjustmentX, transform.position.y + randomAdjustmentY);
 
-                WaterParticle waterParticle = Instantiate(waterParticlePrefab, position, Quaternion.identity) as WaterParticle;
+                HydroParticle waterParticle = Instantiate(waterParticlePrefab, position, Quaternion.identity) as HydroParticle;
                 waterParticle.transform.parent = transform;
                 waterParticle.OnDeath += WaterParticleDeath;
                 waterParticleCount++;

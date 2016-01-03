@@ -31,7 +31,7 @@ public class WindController : MonoBehaviour
 
                 foreach (RaycastHit2D raycastHit in raycastHits)
                 {
-                    WaterParticle waterParticle = raycastHit.transform.GetComponent<WaterParticle>() as WaterParticle;
+                    HydroParticle waterParticle = raycastHit.transform.GetComponent<HydroParticle>() as HydroParticle;
                     if (waterParticle != null)
                     {
                         Debug.DrawLine(startPosition, raycastHit.point, new Color(0.5F, 0.2F, 0.2F, 0.2F));

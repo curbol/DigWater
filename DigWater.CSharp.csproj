@@ -73,6 +73,12 @@
     <Compile Include="Assets\Scripts\Enums\SoilType.cs" />
     <Compile Include="Assets\Scripts\Enums\SquareVertex.cs" />
     <Compile Include="Assets\Scripts\Enums\WaterState.cs" />
+    <Compile Include="Assets\Scripts\Hydro\CloudProperties.cs" />
+    <Compile Include="Assets\Scripts\Hydro\HydroManager.cs" />
+    <Compile Include="Assets\Scripts\Hydro\HydroParticle.cs" />
+    <Compile Include="Assets\Scripts\Hydro\LiquidProperties.cs" />
+    <Compile Include="Assets\Scripts\Hydro\VaporProperties.cs" />
+    <Compile Include="Assets\Scripts\Hydro\WaterSpawner.cs" />
     <Compile Include="Assets\Scripts\Map\MapGeneration\Map.cs" />
     <Compile Include="Assets\Scripts\Map\MapGeneration\MapController.cs" />
     <Compile Include="Assets\Scripts\Map\MapGeneration\MapCreationExtensions.cs" />
@@ -92,9 +98,6 @@
     <Compile Include="Assets\Scripts\Utility\CoordinateExtenstions.cs" />
     <Compile Include="Assets\Scripts\Utility\GridArrayExtensions.cs" />
     <Compile Include="Assets\Scripts\Utility\Shuffler.cs" />
-    <Compile Include="Assets\Scripts\Water\WaterManager.cs" />
-    <Compile Include="Assets\Scripts\Water\WaterParticle.cs" />
-    <Compile Include="Assets\Scripts\Water\WaterSpawner.cs" />
     <Compile Include="Assets\Scripts\Wind\WindController.cs" />
   </ItemGroup>
   <ItemGroup>

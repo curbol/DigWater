@@ -5,17 +5,25 @@ using UnityEngine;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Rigidbody2D), typeof(CircleCollider2D))]
-public class WaterParticle : MonoBehaviour
+public class HydroParticle : MonoBehaviour
 {
-    private float birthTime;
-
     public Action OnDeath { get; set; }
 
+    public float BirthTime { get; private set; }
+
+    public WaterState State { get; private set; }
+
+    private SpriteRenderer spriteRenderer;
     public SpriteRenderer SpriteRenderer
     {
         get
         {
-            return GetComponentsInChildren<SpriteRenderer>().FirstOrDefault();
+            if (spriteRenderer == null)
+            {
+                spriteRenderer = GetComponentsInChildren<SpriteRenderer>().FirstOrDefault();
+            }
+
+            return spriteRenderer;
         }
     }
 
@@ -51,7 +59,7 @@ public class WaterParticle : MonoBehaviour
     {
         get
         {
-            return Time.time - birthTime;
+            return Time.time - BirthTime;
         }
     }
 
@@ -71,33 +79,47 @@ public class WaterParticle : MonoBehaviour
         }
     }
 
-    public float WaterToVaporTransitionRatio
+    private float temperature;
+    public float Temperature
     {
         get
         {
-            return Mathf.Clamp(Temperature / WaterManager.VaporizationPoint, 0, 1);
-        }
-    }
-
-    public float VaporToCloudLevelTransitionRatio
-    {
-        get
-        {
-            return Mathf.Clamp(Mathf.Abs(WaterManager.CloudLevel - MapY) / WaterManager.CloudLevel, 0, 1);
-        }
-    }
-
-    private float cloudClusterTransitionRatio;
-    private float CloudClusterTransitionRatio
-    {
-        get
-        {
-            return cloudClusterTransitionRatio;
+            return temperature;
         }
 
         set
         {
-            cloudClusterTransitionRatio = Mathf.Clamp(value, 0, 1);
+            temperature = Mathf.Clamp(value, 0, HydroManager.MaximumTemperature);
+        }
+    }
+
+    public float PercentToVaporizationPoint
+    {
+        get
+        {
+            return Mathf.Clamp(Temperature / HydroManager.VaporizationPoint, 0, 1);
+        }
+    }
+
+    public float PercentToCloudLevel
+    {
+        get
+        {
+            return Mathf.Clamp(MapY / HydroManager.CloudProperties.CloudLevel, 0, 1);
+        }
+    }
+
+    private float cloudFadePercent;
+    private float CloudFadePercent
+    {
+        get
+        {
+            return cloudFadePercent;
+        }
+
+        set
+        {
+            cloudFadePercent = Mathf.Clamp(value, 0, 1);
         }
     }
 
@@ -105,7 +127,7 @@ public class WaterParticle : MonoBehaviour
     {
         get
         {
-            return MapY >= WaterManager.CloudLevel - WaterManager.CloudLevelBuffer && MapY <= WaterManager.CloudLevel + WaterManager.CloudLevelBuffer;
+            return MapY >= HydroManager.CloudProperties.CloudLevelLowerBound && MapY <= HydroManager.CloudProperties.CloudLevelUpperBound;
         }
     }
 
@@ -113,7 +135,7 @@ public class WaterParticle : MonoBehaviour
     {
         get
         {
-            return MapY >= WaterManager.CloudLevel - WaterManager.CloudLevelEquilibriumZoneSize && MapY <= WaterManager.CloudLevel + WaterManager.CloudLevelEquilibriumZoneSize;
+            return MapY >= HydroManager.CloudProperties.EquilibriumZoneLowerBound && MapY <= HydroManager.CloudProperties.EquilibriumZoneUpperBound;
         }
     }
 
@@ -125,40 +147,19 @@ public class WaterParticle : MonoBehaviour
         }
     }
 
-    public WaterState State { get; private set; }
-
-    public float Temperature { get; private set; }
-
-    public void Heat()
-    {
-        Heat(null);
-    }
-
-    public void Heat(float? heatPercent)
-    {
-        Temperature += heatPercent != null ? Mathf.Clamp((float)heatPercent, 0, 1) * WaterManager.HeatRate : WaterManager.HeatRate;
-        Temperature = Mathf.Clamp(Temperature, 0, WaterManager.MaximumTemperature);
-    }
-
-    public void Cool()
-    {
-        Cool(null);
-    }
-
-    public void Cool(float? coolPercent)
-    {
-        Temperature -= coolPercent != null ? Mathf.Clamp((float)coolPercent, 0, 1) * WaterManager.CoolRate : WaterManager.CoolRate;
-        Temperature = Mathf.Clamp(Temperature, 0, WaterManager.MaximumTemperature);
-    }
-
-    public Collider2D[] GetNeighbors(float radius, LayerMask layerMask)
+    public Collider2D[] GetNeighbors(float radius)
     {
         return Physics2D.OverlapCircleAll(transform.position, radius);
     }
 
+    public Collider2D[] GetNeighbors(float radius, LayerMask layerMask)
+    {
+        return Physics2D.OverlapCircleAll(transform.position, radius, layerMask);
+    }
+
     private void Start()
     {
-        birthTime = Time.time;
+        BirthTime = Time.time;
         RigidBody.velocity = Vector2.zero;
 
         StartCoroutine(UpdateState());
@@ -183,30 +184,30 @@ public class WaterParticle : MonoBehaviour
 
     private void RunVaporBehavior()
     {
-        Vector2 direction = MapY < WaterManager.CloudLevel ? Vector2.up : Vector2.down;
-        RigidBody.velocity = direction * Mathf.Lerp(0, WaterManager.VaporMaximumVelocity, VaporToCloudLevelTransitionRatio) + new Vector2(RigidBody.velocity.x, 0);
+        Vector2 direction = MapY < HydroManager.CloudProperties.CloudLevel ? Vector2.up : Vector2.down;
+        RigidBody.velocity = direction * Mathf.Lerp(HydroManager.VaporProperties.MaximumVelocity, HydroManager.CloudProperties.MaximumVelocity, PercentToCloudLevel) + new Vector2(RigidBody.velocity.x, 0);
     }
 
     private void RunCloudBehavior()
     {
         // Update cluster transition progress
-        if (CloudClusterTransitionRatio < 1 && GetNeighbors(WaterManager.CloudClusterRadius, LayerMask.NameToLayer("Cloud")).Length > WaterManager.CloudClusterMinimumCount)
+        if (CloudFadePercent < 1 && GetNeighbors(HydroManager.CloudProperties.NeighborSearchRadius, LayerMask.NameToLayer("Cloud")).Length > HydroManager.CloudProperties.MinimumNeighborCount)
         {
-            CloudClusterTransitionRatio += WaterManager.CloudClusterTransitionRate * Time.fixedDeltaTime;
+            CloudFadePercent += HydroManager.CloudProperties.FadeRate * Time.fixedDeltaTime;
         }
-        else if (CloudClusterTransitionRatio > 0)
+        else if (CloudFadePercent > 0)
         {
-            CloudClusterTransitionRatio -= WaterManager.CloudClusterTransitionRate * Time.fixedDeltaTime;
+            CloudFadePercent -= HydroManager.CloudProperties.FadeRate * Time.fixedDeltaTime;
         }
 
         // Update velocity
-        if (MapY < WaterManager.CloudLevel - WaterManager.CloudLevelEquilibriumZoneSize)
+        if (MapY < HydroManager.CloudProperties.EquilibriumZoneLowerBound)
         {
-            RigidBody.gravityScale = RigidBody.velocity.y < WaterManager.VaporMaximumVelocity ? -WaterManager.VaporAcceleration : 0;
+            RigidBody.gravityScale = RigidBody.velocity.y < HydroManager.CloudProperties.MaximumVelocity ? -HydroManager.CloudProperties.BaseAcceleration : 0;
         }
-        else if (MapY > WaterManager.CloudLevel + WaterManager.CloudLevelEquilibriumZoneSize)
+        else if (MapY > HydroManager.CloudProperties.EquilibriumZoneUpperBound)
         {
-            RigidBody.gravityScale = RigidBody.velocity.y > -WaterManager.VaporMaximumVelocity ? WaterManager.VaporAcceleration : 0;
+            RigidBody.gravityScale = RigidBody.velocity.y > -HydroManager.CloudProperties.MaximumVelocity ? HydroManager.CloudProperties.BaseAcceleration : 0;
         }
         else
         {
@@ -234,9 +235,9 @@ public class WaterParticle : MonoBehaviour
         else if (state == WaterState.Cloud)
         {
             State = WaterState.Cloud;
-            cloudClusterTransitionRatio = 0;
+            cloudFadePercent = 0;
             RigidBody.gravityScale = 0;
-            RigidBody.angularDrag = WaterManager.CloudDrag;
+            RigidBody.angularDrag = HydroManager.CloudProperties.Drag;
             gameObject.layer = LayerMask.NameToLayer("Cloud");
         }
     }
@@ -245,7 +246,7 @@ public class WaterParticle : MonoBehaviour
     {
         while (true)
         {
-            Cool();
+            Temperature += HydroManager.AmbientTemperatureChange;
 
             yield return null;
         }
@@ -255,11 +256,11 @@ public class WaterParticle : MonoBehaviour
     {
         while (true)
         {
-            if (State == WaterState.Water && WaterToVaporTransitionRatio >= 1)
+            if (State == WaterState.Water && PercentToVaporizationPoint >= 1)
             {
                 ResetAsState(WaterState.Vapor);
             }
-            else if (WaterToVaporTransitionRatio < 1)
+            else if (PercentToVaporizationPoint < 1)
             {
                 ResetAsState(WaterState.Water);
             }
@@ -282,15 +283,15 @@ public class WaterParticle : MonoBehaviour
         {
             if (State == WaterState.Water && SpriteRenderer != null)
             {
-                SpriteRenderer.color = Color.Lerp(WaterManager.VaporColor, WaterManager.WaterColor, (1 - WaterToVaporTransitionRatio) + 0.6F);
+                SpriteRenderer.color = Color.Lerp(HydroManager.VaporProperties.Color, HydroManager.LiquidProperties.Color, (1 - PercentToVaporizationPoint) + 0.6F);
             }
             else if (State == WaterState.Vapor && SpriteRenderer != null)
             {
-                SpriteRenderer.color = WaterManager.VaporColor;
+                SpriteRenderer.color = HydroManager.VaporProperties.Color;
             }
             else if (State == WaterState.Cloud && SpriteRenderer != null)
             {
-                SpriteRenderer.color = Color.Lerp(WaterManager.VaporColor, WaterManager.CloudColor, CloudClusterTransitionRatio + 0.3F);
+                SpriteRenderer.color = Color.Lerp(HydroManager.VaporProperties.Color, HydroManager.CloudProperties.Color, CloudFadePercent + 0.3F);
             }
 
             yield return new WaitForEndOfFrame();
@@ -323,7 +324,7 @@ public class WaterParticle : MonoBehaviour
             }
 
             Vector2 scale = Vector2.one;
-            float scaleModifier = Mathf.Min(Mathf.Abs(RigidBody.velocity.y) * (WaterManager.Deformability / 100), 0.5F);
+            float scaleModifier = Mathf.Min(Mathf.Abs(RigidBody.velocity.y) * (HydroManager.Deformability / 100), 0.5F);
             scale.x -= scaleModifier;
             scale.y += scaleModifier;
 
