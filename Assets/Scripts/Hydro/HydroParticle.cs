@@ -191,14 +191,9 @@ public class HydroParticle : MonoBehaviour
     private void RunCloudBehavior()
     {
         // Update cluster transition progress
-        if (CloudFadePercent < 1 && GetNeighbors(HydroManager.CloudProperties.NeighborSearchRadius, LayerMask.NameToLayer("Cloud")).Length > HydroManager.CloudProperties.MinimumNeighborCount)
-        {
-            CloudFadePercent += HydroManager.CloudProperties.FadeRate * Time.fixedDeltaTime;
-        }
-        else if (CloudFadePercent > 0)
-        {
-            CloudFadePercent -= HydroManager.CloudProperties.FadeRate * Time.fixedDeltaTime;
-        }
+        bool enoughNeighbors = GetNeighbors(HydroManager.CloudProperties.NeighborSearchRadius).Length >= HydroManager.CloudProperties.MinimumNeighborCount;
+        float amountToFade = HydroManager.CloudProperties.FadeRate * Time.fixedDeltaTime;
+        CloudFadePercent += enoughNeighbors ? amountToFade : -amountToFade;
 
         // Update velocity
         if (MapY < HydroManager.CloudProperties.EquilibriumZoneLowerBound)
@@ -291,7 +286,7 @@ public class HydroParticle : MonoBehaviour
             }
             else if (State == WaterState.Cloud && SpriteRenderer != null)
             {
-                SpriteRenderer.color = Color.Lerp(HydroManager.VaporProperties.Color, HydroManager.CloudProperties.Color, CloudFadePercent + 0.3F);
+                SpriteRenderer.color = Color.Lerp(HydroManager.VaporProperties.Color, HydroManager.CloudProperties.Color, CloudFadePercent);
             }
 
             yield return new WaitForEndOfFrame();
