@@ -11,7 +11,7 @@ public class HydroParticle : MonoBehaviour
 
     public float BirthTime { get; private set; }
 
-    public WaterState State { get; private set; }
+    public HydroState State { get; private set; }
 
     private SpriteRenderer spriteRenderer;
     public SpriteRenderer SpriteRenderer
@@ -172,11 +172,11 @@ public class HydroParticle : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (State == WaterState.Vapor)
+        if (State == HydroState.Vapor)
         {
             RunVaporBehavior();
         }
-        else if (State == WaterState.Cloud)
+        else if (State == HydroState.Cloud)
         {
             RunCloudBehavior();
         }
@@ -190,6 +190,15 @@ public class HydroParticle : MonoBehaviour
 
     private void RunCloudBehavior()
     {
+        //if (CloudFadePercent < 1 && GetNeighbors(HydroManager.CloudProperties.NeighborSearchRadius, LayerMask.NameToLayer("Cloud")).Length > HydroManager.CloudProperties.MinimumNeighborCount)
+        //{
+        //    CloudFadePercent += HydroManager.CloudProperties.FadeRate * Time.fixedDeltaTime;
+        //}
+        //else if (CloudFadePercent > 0)
+        //{
+        //    CloudFadePercent -= HydroManager.CloudProperties.FadeRate * Time.fixedDeltaTime;
+        //}
+
         // Update cluster transition progress
         bool enoughNeighbors = GetNeighbors(HydroManager.CloudProperties.NeighborSearchRadius).Length >= HydroManager.CloudProperties.MinimumNeighborCount;
         float amountToFade = HydroManager.CloudProperties.FadeRate * Time.fixedDeltaTime;
@@ -210,26 +219,26 @@ public class HydroParticle : MonoBehaviour
         }
     }
 
-    private void ResetAsState(WaterState state)
+    private void ResetAsState(HydroState state)
     {
-        if (state == WaterState.Water)
+        if (state == HydroState.Water)
         {
-            State = WaterState.Water;
+            State = HydroState.Water;
             RigidBody.gravityScale = 1;
             RigidBody.angularDrag = 0;
             gameObject.layer = LayerMask.NameToLayer("Metaball");
         }
-        else if (state == WaterState.Vapor)
+        else if (state == HydroState.Vapor)
         {
-            State = WaterState.Vapor;
+            State = HydroState.Vapor;
             RigidBody.velocity = Vector2.zero;
             RigidBody.gravityScale = 0;
             RigidBody.angularDrag = 0;
             gameObject.layer = LayerMask.NameToLayer("Vapor");
         }
-        else if (state == WaterState.Cloud)
+        else if (state == HydroState.Cloud)
         {
-            State = WaterState.Cloud;
+            State = HydroState.Cloud;
             cloudFadePercent = 0;
             RigidBody.gravityScale = 0;
             RigidBody.angularDrag = HydroManager.CloudProperties.Drag;
@@ -251,21 +260,34 @@ public class HydroParticle : MonoBehaviour
     {
         while (true)
         {
-            if (State == WaterState.Water && PercentToVaporizationPoint >= 1)
+            //if (State == WaterState.Water && PercentToVaporizationPoint >= 1)
+            //{
+            //    ResetAsState(WaterState.Vapor);
+            //}
+            //else if (PercentToVaporizationPoint < 1)
+            //{
+            //    ResetAsState(WaterState.Water);
+            //}
+            //else if (State == WaterState.Vapor && InCloudZone)
+            //{
+            //    ResetAsState(WaterState.Cloud);
+            //}
+            //else if (State == WaterState.Cloud && !InCloudZone)
+            //{
+            //    ResetAsState(WaterState.Vapor);
+            //}
+
+            if (PercentToVaporizationPoint < 1)
             {
-                ResetAsState(WaterState.Vapor);
+                ResetAsState(HydroState.Water);
             }
-            else if (PercentToVaporizationPoint < 1)
+            else if (!InCloudZone && PercentToVaporizationPoint >= 1)
             {
-                ResetAsState(WaterState.Water);
+                ResetAsState(HydroState.Vapor);
             }
-            else if (State == WaterState.Vapor && InCloudZone)
+            else if (InCloudZone && PercentToVaporizationPoint >= 1)
             {
-                ResetAsState(WaterState.Cloud);
-            }
-            else if (State == WaterState.Cloud && !InCloudZone)
-            {
-                ResetAsState(WaterState.Vapor);
+                ResetAsState(HydroState.Cloud);
             }
 
             yield return null;
@@ -276,15 +298,15 @@ public class HydroParticle : MonoBehaviour
     {
         while (true)
         {
-            if (State == WaterState.Water && SpriteRenderer != null)
+            if (State == HydroState.Water && SpriteRenderer != null)
             {
                 SpriteRenderer.color = Color.Lerp(HydroManager.VaporProperties.Color, HydroManager.LiquidProperties.Color, (1 - PercentToVaporizationPoint) + 0.6F);
             }
-            else if (State == WaterState.Vapor && SpriteRenderer != null)
+            else if (State == HydroState.Vapor && SpriteRenderer != null)
             {
                 SpriteRenderer.color = HydroManager.VaporProperties.Color;
             }
-            else if (State == WaterState.Cloud && SpriteRenderer != null)
+            else if (State == HydroState.Cloud && SpriteRenderer != null)
             {
                 SpriteRenderer.color = Color.Lerp(HydroManager.VaporProperties.Color, HydroManager.CloudProperties.Color, CloudFadePercent);
             }

@@ -1,4 +1,4 @@
-﻿public enum WaterState
+﻿public enum HydroState
 {
     Water,
     Vapor,

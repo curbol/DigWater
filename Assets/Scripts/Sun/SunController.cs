@@ -47,7 +47,7 @@ public class SunController : MonoBehaviour
                     waterParticle.Temperature += heatRate * heatPercent;
                     heatPercent *= heatPenetration;
 
-                    if (waterParticle.State == WaterState.Water || heatPercent <= 0F)
+                    if (waterParticle.State == HydroState.Water || heatPercent <= 0F)
                         break;
                 }
             }

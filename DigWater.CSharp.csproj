@@ -69,10 +69,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Digging\DigController.cs" />
+    <Compile Include="Assets\Scripts\Enums\HydroState.cs" />
     <Compile Include="Assets\Scripts\Enums\MouseButton.cs" />
     <Compile Include="Assets\Scripts\Enums\SoilType.cs" />
     <Compile Include="Assets\Scripts\Enums\SquareVertex.cs" />
-    <Compile Include="Assets\Scripts\Enums\WaterState.cs" />
     <Compile Include="Assets\Scripts\Hydro\CloudProperties.cs" />
     <Compile Include="Assets\Scripts\Hydro\HydroManager.cs" />
     <Compile Include="Assets\Scripts\Hydro\HydroParticle.cs" />
