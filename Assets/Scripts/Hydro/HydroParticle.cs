@@ -5,7 +5,7 @@ using UnityEngine;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Rigidbody2D), typeof(CircleCollider2D))]
-public class HydroParticle : MonoBehaviour
+public class HydroParticle : MonoBehaviour, IHeatable, IPushable
 {
     public Action OnDeath { get; set; }
 
@@ -14,7 +14,7 @@ public class HydroParticle : MonoBehaviour
     public HydroState State { get; private set; }
 
     private SpriteRenderer spriteRenderer;
-    public SpriteRenderer SpriteRenderer
+    private SpriteRenderer SpriteRenderer
     {
         get
         {
@@ -28,7 +28,7 @@ public class HydroParticle : MonoBehaviour
     }
 
     private Rigidbody2D rigidBody;
-    public Rigidbody2D RigidBody
+    private Rigidbody2D RigidBody
     {
         get
         {
@@ -42,7 +42,7 @@ public class HydroParticle : MonoBehaviour
     }
 
     private CircleCollider2D circleCollider;
-    public CircleCollider2D CircleCollider
+    private CircleCollider2D CircleCollider
     {
         get
         {
@@ -147,6 +147,16 @@ public class HydroParticle : MonoBehaviour
         }
     }
 
+    public void AddHeat(float value)
+    {
+        Temperature += value;
+    }
+
+    public void AddForce(Vector2 force)
+    {
+        RigidBody.AddForce(force);
+    }
+
     public Collider2D[] GetNeighbors(float radius)
     {
         return Physics2D.OverlapCircleAll(transform.position, radius);
@@ -190,15 +200,6 @@ public class HydroParticle : MonoBehaviour
 
     private void RunCloudBehavior()
     {
-        //if (CloudFadePercent < 1 && GetNeighbors(HydroManager.CloudProperties.NeighborSearchRadius, LayerMask.NameToLayer("Cloud")).Length > HydroManager.CloudProperties.MinimumNeighborCount)
-        //{
-        //    CloudFadePercent += HydroManager.CloudProperties.FadeRate * Time.fixedDeltaTime;
-        //}
-        //else if (CloudFadePercent > 0)
-        //{
-        //    CloudFadePercent -= HydroManager.CloudProperties.FadeRate * Time.fixedDeltaTime;
-        //}
-
         // Update cluster transition progress
         bool enoughNeighbors = GetNeighbors(HydroManager.CloudProperties.NeighborSearchRadius).Length >= HydroManager.CloudProperties.MinimumNeighborCount;
         float amountToFade = HydroManager.CloudProperties.FadeRate * Time.fixedDeltaTime;
@@ -250,7 +251,7 @@ public class HydroParticle : MonoBehaviour
     {
         while (true)
         {
-            Temperature += HydroManager.AmbientTemperatureChange;
+            AddHeat(HydroManager.AmbientTemperatureChange);
 
             yield return null;
         }
@@ -260,32 +261,15 @@ public class HydroParticle : MonoBehaviour
     {
         while (true)
         {
-            //if (State == WaterState.Water && PercentToVaporizationPoint >= 1)
-            //{
-            //    ResetAsState(WaterState.Vapor);
-            //}
-            //else if (PercentToVaporizationPoint < 1)
-            //{
-            //    ResetAsState(WaterState.Water);
-            //}
-            //else if (State == WaterState.Vapor && InCloudZone)
-            //{
-            //    ResetAsState(WaterState.Cloud);
-            //}
-            //else if (State == WaterState.Cloud && !InCloudZone)
-            //{
-            //    ResetAsState(WaterState.Vapor);
-            //}
-
-            if (PercentToVaporizationPoint < 1)
+            if (State != HydroState.Water && PercentToVaporizationPoint < 1)
             {
                 ResetAsState(HydroState.Water);
             }
-            else if (!InCloudZone && PercentToVaporizationPoint >= 1)
+            else if (State != HydroState.Vapor && !InCloudZone && PercentToVaporizationPoint >= 1)
             {
                 ResetAsState(HydroState.Vapor);
             }
-            else if (InCloudZone && PercentToVaporizationPoint >= 1)
+            else if (State != HydroState.Cloud && InCloudZone && PercentToVaporizationPoint >= 1)
             {
                 ResetAsState(HydroState.Cloud);
             }

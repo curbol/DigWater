@@ -3,5 +3,4 @@
     Water,
     Vapor,
     Cloud,
-    Rain,
 }

@@ -39,15 +39,17 @@ public class SunController : MonoBehaviour
 
                 foreach (RaycastHit2D raycastHit in raycastHits)
                 {
-                    HydroParticle waterParticle = raycastHit.transform.GetComponent<HydroParticle>() as HydroParticle;
-                    if (waterParticle == null)
+                    HydroParticle hydroParticle = raycastHit.transform.GetComponent<HydroParticle>() as HydroParticle;
+                    if (hydroParticle == null)
                         break;
 
-                    Debug.DrawLine((Vector2)transform.position, raycastHit.point, new Color(0.5F, 0.5F, 0.2F, 0.2F));
-                    waterParticle.Temperature += heatRate * heatPercent;
+                    if (showGizmos)
+                        Debug.DrawLine((Vector2)transform.position, raycastHit.point, new Color(0.5F, 0.5F, 0.2F, 0.2F));
+
+                    hydroParticle.AddHeat(heatRate * heatPercent);
                     heatPercent *= heatPenetration;
 
-                    if (waterParticle.State == HydroState.Water || heatPercent <= 0F)
+                    if (hydroParticle.State == HydroState.Water || heatPercent <= 0F)
                         break;
                 }
             }

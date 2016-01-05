@@ -12,7 +12,7 @@ public class WindController : MonoBehaviour
 
     [Range(0, 2)]
     [SerializeField]
-    private float force = 0.1F;
+    private float magnitude = 0.1F;
 
     private void Start()
     {
@@ -31,11 +31,13 @@ public class WindController : MonoBehaviour
 
                 foreach (RaycastHit2D raycastHit in raycastHits)
                 {
-                    HydroParticle waterParticle = raycastHit.transform.GetComponent<HydroParticle>() as HydroParticle;
-                    if (waterParticle != null)
+                    IPushable pushableObject = raycastHit.transform.GetComponent<IPushable>() as IPushable;
+                    if (pushableObject != null)
                     {
-                        Debug.DrawLine(startPosition, raycastHit.point, new Color(0.5F, 0.2F, 0.2F, 0.2F));
-                        waterParticle.RigidBody.AddForce(direction * force);
+                        if (showGizmos)
+                            Debug.DrawLine(startPosition, raycastHit.point, new Color(0F, 0.8F, 1F, 0.8F));
+
+                        pushableObject.AddForce(direction * magnitude);
                         break;
                     }
                 }

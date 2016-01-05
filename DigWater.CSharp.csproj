@@ -93,11 +93,13 @@
     <Compile Include="Assets\Scripts\Map\MeshGeneration\MeshData.cs" />
     <Compile Include="Assets\Scripts\Map\MeshGeneration\MeshGeneration.cs" />
     <Compile Include="Assets\Scripts\Map\MeshGeneration\MeshVertex.cs" />
+    <Compile Include="Assets\Scripts\Sun\IHeatable.cs" />
     <Compile Include="Assets\Scripts\Sun\SunController.cs" />
     <Compile Include="Assets\Scripts\Utility\Coordinate.cs" />
     <Compile Include="Assets\Scripts\Utility\CoordinateExtenstions.cs" />
     <Compile Include="Assets\Scripts\Utility\GridArrayExtensions.cs" />
     <Compile Include="Assets\Scripts\Utility\Shuffler.cs" />
+    <Compile Include="Assets\Scripts\Wind\IPushable.cs" />
     <Compile Include="Assets\Scripts\Wind\WindController.cs" />
   </ItemGroup>
   <ItemGroup>
