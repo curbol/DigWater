@@ -37,6 +37,15 @@ public class MapManager : MonoBehaviour
         }
     }
 
+    public static bool MouseIsInsideMap
+    {
+        get
+        {
+            Vector2 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            return mouseWorldPosition.y > -Map.Height / 2 && mouseWorldPosition.y < Map.Height / 2 && mouseWorldPosition.x > -Map.Width / 2 && mouseWorldPosition.x < Map.Width / 2;
+        }
+    }
+
     private void Awake()
     {
         instance = this;

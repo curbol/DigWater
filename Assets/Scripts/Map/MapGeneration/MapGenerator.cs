@@ -28,7 +28,6 @@ public class MapGenerator : MonoBehaviour
         MapHolder.transform.localScale = Vector3.one * MapManager.Map.Scale;
 
         MapController soilMapController = MapHolder.AddComponent<MapController>();
-        MapHolder.AddComponent<DigController>();
 
         soilMapController.RedrawSoilMesh();
     }

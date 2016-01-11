@@ -251,9 +251,12 @@ public class HydroParticle : MonoBehaviour, IHeatable, IPushable
     {
         while (true)
         {
-            AddHeat(HydroManager.AmbientTemperatureChange);
-
             yield return null;
+
+            if (State == HydroState.Cloud && CloudFadePercent < 0.5F)
+                continue;
+
+            AddHeat(HydroManager.AmbientTemperatureChange);
         }
     }
 

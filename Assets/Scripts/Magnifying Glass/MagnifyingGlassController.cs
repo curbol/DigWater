@@ -3,9 +3,11 @@ using UnityEngine;
 
 public class MagnifyingGlassController : MonoBehaviour
 {
+    [SerializeField]
+    private bool showCursor;
+
     private void Start()
     {
-        Cursor.visible = false;
         StartCoroutine(FollowMouse());
     }
 
@@ -13,8 +15,9 @@ public class MagnifyingGlassController : MonoBehaviour
     {
         while (true)
         {
+            Cursor.visible = showCursor;
             Vector2 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            transform.position = new Vector3(mouseWorldPosition.x, mouseWorldPosition.y, -0.5F);
+            transform.position = new Vector3(mouseWorldPosition.x, mouseWorldPosition.y);
 
             yield return null;
         }
