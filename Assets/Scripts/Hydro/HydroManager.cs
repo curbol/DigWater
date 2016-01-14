@@ -75,6 +75,36 @@ public class HydroManager : MonoBehaviour
     }
 
     [SerializeField]
+    private float minimumEnergyLevel;
+    public static float MinimumEnergyLevel
+    {
+        get
+        {
+            return Instance.minimumEnergyLevel;
+        }
+    }
+
+    [SerializeField]
+    private float maximumEnergyLevel;
+    public static float MaximumEnergyLevel
+    {
+        get
+        {
+            return Instance.maximumEnergyLevel;
+        }
+    }
+
+    [SerializeField]
+    private float energyLevelDeviation;
+    public static float EnergyLevelDeviation
+    {
+        get
+        {
+            return Instance.energyLevelDeviation;
+        }
+    }
+
+    [SerializeField]
     private LiquidProperties liquidProperties;
     public static LiquidProperties LiquidProperties
     {

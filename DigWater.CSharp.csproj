@@ -74,11 +74,15 @@
     <Compile Include="Assets\Scripts\Enums\SoilType.cs" />
     <Compile Include="Assets\Scripts\Enums\SquareVertex.cs" />
     <Compile Include="Assets\Scripts\Hydro\CloudProperties.cs" />
+    <Compile Include="Assets\Scripts\Hydro\HydroDefomationController.cs" />
     <Compile Include="Assets\Scripts\Hydro\HydroManager.cs" />
     <Compile Include="Assets\Scripts\Hydro\HydroParticle.cs" />
+    <Compile Include="Assets\Scripts\Hydro\HydroRotatingVibration.cs" />
     <Compile Include="Assets\Scripts\Hydro\LiquidProperties.cs" />
     <Compile Include="Assets\Scripts\Hydro\VaporProperties.cs" />
     <Compile Include="Assets\Scripts\Hydro\WaterSpawner.cs" />
+    <Compile Include="Assets\Scripts\Interfaces\IHeatable.cs" />
+    <Compile Include="Assets\Scripts\Interfaces\IPushable.cs" />
     <Compile Include="Assets\Scripts\Magnifying Glass\MagnifyingGlassController.cs" />
     <Compile Include="Assets\Scripts\Map\MapGeneration\Map.cs" />
     <Compile Include="Assets\Scripts\Map\MapGeneration\MapController.cs" />
@@ -94,13 +98,12 @@
     <Compile Include="Assets\Scripts\Map\MeshGeneration\MeshData.cs" />
     <Compile Include="Assets\Scripts\Map\MeshGeneration\MeshGeneration.cs" />
     <Compile Include="Assets\Scripts\Map\MeshGeneration\MeshVertex.cs" />
-    <Compile Include="Assets\Scripts\Sun\IHeatable.cs" />
     <Compile Include="Assets\Scripts\Sun\SunController.cs" />
     <Compile Include="Assets\Scripts\Utility\Coordinate.cs" />
     <Compile Include="Assets\Scripts\Utility\CoordinateExtenstions.cs" />
     <Compile Include="Assets\Scripts\Utility\GridArrayExtensions.cs" />
     <Compile Include="Assets\Scripts\Utility\Shuffler.cs" />
-    <Compile Include="Assets\Scripts\Wind\IPushable.cs" />
+    <Compile Include="Assets\Scripts\Utility\Vector2Extentions.cs" />
     <Compile Include="Assets\Scripts\Wind\WindController.cs" />
   </ItemGroup>
   <ItemGroup>

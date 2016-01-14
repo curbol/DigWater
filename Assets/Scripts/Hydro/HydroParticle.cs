@@ -13,6 +13,7 @@ public class HydroParticle : MonoBehaviour, IHeatable, IPushable
 
     public HydroState State { get; private set; }
 
+    [SerializeField]
     private SpriteRenderer spriteRenderer;
     private SpriteRenderer SpriteRenderer
     {
@@ -27,6 +28,7 @@ public class HydroParticle : MonoBehaviour, IHeatable, IPushable
         }
     }
 
+    [SerializeField]
     private Rigidbody2D rigidBody;
     private Rigidbody2D RigidBody
     {
@@ -41,6 +43,7 @@ public class HydroParticle : MonoBehaviour, IHeatable, IPushable
         }
     }
 
+    [SerializeField]
     private CircleCollider2D circleCollider;
     private CircleCollider2D CircleCollider
     {
@@ -76,6 +79,25 @@ public class HydroParticle : MonoBehaviour, IHeatable, IPushable
         get
         {
             return transform.position.y + MapManager.Map.SizeY / 2F;
+        }
+    }
+
+    public bool InMapRegion
+    {
+        get
+        {
+            return MapY >= 0 && MapY <= MapManager.Map.SizeY && MapX >= 0 && MapX <= MapManager.Map.SizeX;
+        }
+    }
+
+    public float EnergyLevel
+    {
+        get
+        {
+            float energyLevel = Mathf.Lerp(HydroManager.MinimumEnergyLevel, HydroManager.MaximumEnergyLevel, PercentToVaporizationPoint);
+            float deviation = Mathf.Lerp(-HydroManager.EnergyLevelDeviation, HydroManager.EnergyLevelDeviation, UnityEngine.Random.Range(0, 1));
+
+            return energyLevel + deviation;
         }
     }
 
@@ -139,14 +161,6 @@ public class HydroParticle : MonoBehaviour, IHeatable, IPushable
         }
     }
 
-    public bool InMapRegion
-    {
-        get
-        {
-            return MapY >= 0 && MapY <= MapManager.Map.SizeY && MapX >= 0 && MapX <= MapManager.Map.SizeX;
-        }
-    }
-
     public void AddHeat(float value)
     {
         Temperature += value;
@@ -175,8 +189,6 @@ public class HydroParticle : MonoBehaviour, IHeatable, IPushable
         StartCoroutine(UpdateState());
         StartCoroutine(UpdateTemperature());
         StartCoroutine(UpdateColor());
-        StartCoroutine(UpdateRotation());
-        StartCoroutine(UpdateVelocityScale());
         StartCoroutine(UpdateDeath());
     }
 
@@ -299,41 +311,6 @@ public class HydroParticle : MonoBehaviour, IHeatable, IPushable
             }
 
             yield return new WaitForEndOfFrame();
-        }
-    }
-
-    private IEnumerator UpdateRotation()
-    {
-        while (true)
-        {
-            if (SpriteRenderer != null && RigidBody.velocity != Vector2.zero)
-            {
-                SpriteRenderer.transform.rotation = Quaternion.LookRotation(Vector3.forward, RigidBody.velocity);
-            }
-
-            yield return new WaitForFixedUpdate();
-        }
-    }
-
-    private IEnumerator UpdateVelocityScale()
-    {
-        while (true)
-        {
-            yield return new WaitForFixedUpdate();
-
-            if (SpriteRenderer != null && RigidBody.velocity.magnitude < 0.5F)
-            {
-                SpriteRenderer.transform.localScale = Vector3.one;
-                continue;
-            }
-
-            Vector2 scale = Vector2.one;
-            float scaleModifier = Mathf.Min(Mathf.Abs(RigidBody.velocity.y) * (HydroManager.Deformability / 100), 0.5F);
-            scale.x -= scaleModifier;
-            scale.y += scaleModifier;
-
-            if (SpriteRenderer != null)
-                SpriteRenderer.transform.localScale = scale;
         }
     }
 
