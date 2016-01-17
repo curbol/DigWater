@@ -74,11 +74,11 @@
     <Compile Include="Assets\Scripts\Enums\SoilType.cs" />
     <Compile Include="Assets\Scripts\Enums\SquareVertex.cs" />
     <Compile Include="Assets\Scripts\Hydro\CloudProperties.cs" />
-    <Compile Include="Assets\Scripts\Hydro\HydroDefomationController.cs" />
+    <Compile Include="Assets\Scripts\Hydro\DefomationController.cs" />
     <Compile Include="Assets\Scripts\Hydro\HydroManager.cs" />
     <Compile Include="Assets\Scripts\Hydro\HydroParticle.cs" />
-    <Compile Include="Assets\Scripts\Hydro\HydroRotatingVibration.cs" />
     <Compile Include="Assets\Scripts\Hydro\LiquidProperties.cs" />
+    <Compile Include="Assets\Scripts\Hydro\RotatingVibrationController.cs" />
     <Compile Include="Assets\Scripts\Hydro\VaporProperties.cs" />
     <Compile Include="Assets\Scripts\Hydro\WaterSpawner.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IHeatable.cs" />

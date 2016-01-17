@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class HydroDefomationController : MonoBehaviour
+public class DefomationController : MonoBehaviour
 {
     [SerializeField]
     private SpriteRenderer spriteRenderer;

@@ -4,7 +4,6 @@ using System.Linq;
 using UnityEngine;
 
 [DisallowMultipleComponent]
-[RequireComponent(typeof(Rigidbody2D), typeof(CircleCollider2D))]
 public class HydroParticle : MonoBehaviour, IHeatable, IPushable
 {
     public Action OnDeath { get; set; }
@@ -12,21 +11,6 @@ public class HydroParticle : MonoBehaviour, IHeatable, IPushable
     public float BirthTime { get; private set; }
 
     public HydroState State { get; private set; }
-
-    [SerializeField]
-    private SpriteRenderer spriteRenderer;
-    private SpriteRenderer SpriteRenderer
-    {
-        get
-        {
-            if (spriteRenderer == null)
-            {
-                spriteRenderer = GetComponentsInChildren<SpriteRenderer>().FirstOrDefault();
-            }
-
-            return spriteRenderer;
-        }
-    }
 
     [SerializeField]
     private Rigidbody2D rigidBody;
@@ -55,6 +39,51 @@ public class HydroParticle : MonoBehaviour, IHeatable, IPushable
             }
 
             return circleCollider;
+        }
+    }
+
+    [SerializeField]
+    private SpriteRenderer spriteRenderer;
+    private SpriteRenderer SpriteRenderer
+    {
+        get
+        {
+            if (spriteRenderer == null)
+            {
+                spriteRenderer = GetComponentsInChildren<SpriteRenderer>().FirstOrDefault();
+            }
+
+            return spriteRenderer;
+        }
+    }
+
+    [SerializeField]
+    private RotatingVibrationController rotatingVibrationController;
+    private RotatingVibrationController RotatingVibrationController
+    {
+        get
+        {
+            if (rotatingVibrationController == null)
+            {
+                rotatingVibrationController = GetComponentsInChildren<RotatingVibrationController>().FirstOrDefault();
+            }
+
+            return rotatingVibrationController;
+        }
+    }
+
+    [SerializeField]
+    private DefomationController defomationController;
+    private DefomationController DefomationController
+    {
+        get
+        {
+            if (defomationController == null)
+            {
+                defomationController = GetComponentsInChildren<DefomationController>().FirstOrDefault();
+            }
+
+            return defomationController;
         }
     }
 
@@ -269,6 +298,8 @@ public class HydroParticle : MonoBehaviour, IHeatable, IPushable
                 continue;
 
             AddHeat(HydroManager.AmbientTemperatureChange);
+
+            RotatingVibrationController.EnergyLevel = EnergyLevel;
         }
     }
 

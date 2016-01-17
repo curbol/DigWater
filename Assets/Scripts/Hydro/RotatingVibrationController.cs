@@ -1,12 +1,24 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class HydroRotatingVibration : MonoBehaviour
+public class RotatingVibrationController : MonoBehaviour
 {
     private static readonly System.Random random = new System.Random();
 
     [SerializeField]
-    private HydroParticle hydroParticle;
+    private float energyLevel;
+    public float EnergyLevel
+    {
+        get
+        {
+            return energyLevel;
+        }
+
+        set
+        {
+            energyLevel = Mathf.Max(0, value);
+        }
+    }
 
     private float vibrationAngle;
     private bool rotateClockwise;
@@ -29,7 +41,7 @@ public class HydroRotatingVibration : MonoBehaviour
         while (true)
         {
             Vector2 vector = Vector2Extentions.Vector2FromAngle(vibrationAngle);
-            transform.position = Vector2.Lerp((Vector2)transform.parent.position - vector * travelDistance, (Vector2)transform.parent.position + vector * travelDistance, (Mathf.Sin(Time.time * hydroParticle.EnergyLevel) + 1) / 2);
+            transform.position = Vector2.Lerp((Vector2)transform.parent.position - vector * travelDistance, (Vector2)transform.parent.position + vector * travelDistance, (Mathf.Sin(Time.time * EnergyLevel) + 1) / 2);
 
             int increment = rotateClockwise ? 1 : -1;
             vibrationAngle += increment;
