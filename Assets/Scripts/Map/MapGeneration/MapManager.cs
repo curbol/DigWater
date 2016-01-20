@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class MapManager : MonoBehaviour
+public class MapManager : Singleton<MapManager>
 {
     [SerializeField]
     private bool showGizmos;
@@ -10,24 +10,6 @@ public class MapManager : MonoBehaviour
 
     [SerializeField]
     private Map[] maps;
-
-    private static MapManager instance;
-    private static MapManager Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
-                instance = (MapManager)FindObjectOfType(typeof(MapManager));
-                if (instance == null)
-                {
-                    instance = new GameObject("MapManager").AddComponent<MapManager>();
-                }
-            }
-
-            return instance;
-        }
-    }
 
     public static Map Map
     {
@@ -44,11 +26,6 @@ public class MapManager : MonoBehaviour
             Vector2 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             return mouseWorldPosition.y > -Map.Height / 2 && mouseWorldPosition.y < Map.Height / 2 && mouseWorldPosition.x > -Map.Width / 2 && mouseWorldPosition.x < Map.Width / 2;
         }
-    }
-
-    private void Awake()
-    {
-        instance = this;
     }
 
     private void OnDrawGizmos()

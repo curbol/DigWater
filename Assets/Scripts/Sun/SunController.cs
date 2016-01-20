@@ -18,10 +18,6 @@ public class SunController : MonoBehaviour
     [SerializeField]
     private float heatRate = 0.4F;
 
-    [Range(0, 1)]
-    [SerializeField]
-    private float heatPenetration = 0.85F;
-
     private void Start()
     {
         StartCoroutine(EmitRays());
@@ -39,18 +35,15 @@ public class SunController : MonoBehaviour
 
                 foreach (RaycastHit2D raycastHit in raycastHits)
                 {
-                    HydroParticle hydroParticle = raycastHit.transform.GetComponent<HydroParticle>() as HydroParticle;
-                    if (hydroParticle == null)
+                    Heatable heatableObject = raycastHit.transform.GetComponent<Heatable>() as Heatable;
+                    if (heatableObject == null)
                         break;
 
                     if (showGizmos)
                         Debug.DrawLine((Vector2)transform.position, raycastHit.point, new Color(0.5F, 0.5F, 0.2F, 0.2F));
 
-                    hydroParticle.AddHeat(heatRate * heatPercent);
-                    heatPercent *= heatPenetration;
-
-                    if (hydroParticle.State == HydroState.Water || heatPercent <= 0F)
-                        break;
+                    heatableObject.AddHeat(heatRate * heatPercent);
+                    heatPercent *= heatableObject.HeatPenetration;
                 }
             }
 

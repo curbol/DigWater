@@ -31,7 +31,7 @@ public class WindController : MonoBehaviour
 
                 foreach (RaycastHit2D raycastHit in raycastHits)
                 {
-                    IPushable pushableObject = raycastHit.transform.GetComponent<IPushable>() as IPushable;
+                    PushableObject pushableObject = raycastHit.transform.GetComponent<PushableObject>() as PushableObject;
                     if (pushableObject != null)
                     {
                         if (showGizmos)
