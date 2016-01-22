@@ -1,20 +1,35 @@
 ﻿using UnityEngine;
 
-public class WaterBehavior : StateBehaviorBase
+public class WaterBehavior : HydroStateBehavior
 {
+    public float PercentToVaporizationPoint
+    {
+        get
+        {
+            return Mathf.Clamp(HeatableObject.Temperature / HydroManager.VaporizationPoint, 0, 1);
+        }
+    }
+
     public override void InitializeState()
+    {
+        gameObject.layer = LayerMask.NameToLayer("Metaball");
+        Rigidbody.gravityScale = 1;
+        Rigidbody.angularDrag = 0;
+        HeatableObject.HeatPenetration = 0.5F;
+    }
+
+    public override void RunPhysicsBehavior()
     {
         return;
     }
 
-    public override void RunPhysicsBehavior(Rigidbody2D rigidBody)
+    public override void RunGraphicsBehavior()
     {
-        rigidBody.gravityScale = 1;
-        rigidBody.angularDrag = 0;
+        SpriteRenderer.color = Color.Lerp(HydroManager.VaporProperties.Color, HydroManager.LiquidProperties.Color, (1 - PercentToVaporizationPoint) + 0.6F);
     }
 
-    public override void RunGraphicsBehavior(SpriteRenderer spriteRenderer)
+    public override void RunTemperatureBehavior()
     {
-        spriteRenderer.color = Color.Lerp(HydroManager.VaporProperties.Color, HydroManager.LiquidProperties.Color, (1 - PercentToVaporizationPoint) + 0.6F);
+        HeatableObject.AddHeat(HydroManager.AmbientTemperatureChange * Time.deltaTime);
     }
 }

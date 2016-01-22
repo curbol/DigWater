@@ -2,7 +2,7 @@
 
 public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 {
-    protected static T instance;
+    private static T instance;
     public static T Instance
     {
         get
@@ -13,7 +13,7 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 
                 if (instance == null)
                 {
-                    instance = new GameObject(nameof(T)).AddComponent<T>();
+                    instance = new GameObject(typeof(T).Name).AddComponent<T>();
                     Debug.LogError("An instance of " + typeof(T) + " was not found, so an instance was created.");
                 }
             }

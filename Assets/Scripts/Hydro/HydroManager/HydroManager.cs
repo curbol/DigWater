@@ -5,8 +5,8 @@ public class HydroManager : Singleton<HydroManager>
     [SerializeField]
     private bool showGizmos;
 
-    [Range(0, 10)]
     [SerializeField]
+    [Range(0, 10)]
     private float deformability;
     public static float Deformability
     {
@@ -17,6 +17,7 @@ public class HydroManager : Singleton<HydroManager>
     }
 
     [SerializeField]
+    [Range(-10, 10)]
     private float ambientTemperatureChange;
     public static float AmbientTemperatureChange
     {

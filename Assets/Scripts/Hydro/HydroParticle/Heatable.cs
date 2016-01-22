@@ -3,21 +3,6 @@
 public class Heatable : MonoBehaviour
 {
     [SerializeField]
-    private float maximumTemperature;
-    public float MaximumTemperature
-    {
-        get
-        {
-            return maximumTemperature;
-        }
-
-        set
-        {
-            maximumTemperature = value;
-        }
-    }
-
-    [SerializeField]
     private float heatPenetration;
     public float HeatPenetration
     {
@@ -42,7 +27,7 @@ public class Heatable : MonoBehaviour
 
         set
         {
-            temperature = Mathf.Clamp(value, 0, MaximumTemperature);
+            temperature = Mathf.Clamp(value, 0, HydroManager.MaximumTemperature);
         }
     }
 

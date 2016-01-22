@@ -29,12 +29,22 @@ public static class MapCreationExtensions
         return map;
     }
 
-    public static T[,] RandomFill<T>(this T[,] map, T value, int randomFillPercent, int seed = 0)
+    public static T[,] RandomFill<T>(this T[,] map, T value, int randomFillPercent)
+    {
+        return RandomFill(map, value, randomFillPercent, 0);
+    }
+
+    public static T[,] RandomFill<T>(this T[,] map, T value, int randomFillPercent, int seed)
     {
         return map.RandomFillSection(0, map.GetLength(0) - 1, 0, map.GetLength(1) - 1, value, randomFillPercent, seed);
     }
 
-    public static T[,] RandomFillSection<T>(this T[,] map, int startX, int endX, int startY, int endY, T value, int randomFillPercent, int seed = 0)
+    public static T[,] RandomFillSection<T>(this T[,] map, int startX, int endX, int startY, int endY, T value, int randomFillPercent)
+    {
+        return RandomFillSection(map, startX, endX, startY, endY, value, randomFillPercent, 0);
+    }
+
+    public static T[,] RandomFillSection<T>(this T[,] map, int startX, int endX, int startY, int endY, T value, int randomFillPercent, int seed)
     {
         if (startX < 0 || startY < 0 || endX < startX || endY < startY)
             return null;
@@ -55,7 +65,12 @@ public static class MapCreationExtensions
         return map;
     }
 
-    public static T[,] RandomSmoothPass<T>(this T[,] map, int seed = 0)
+    public static T[,] RandomSmoothPass<T>(this T[,] map)
+    {
+        return RandomSmoothPass(map, 0);
+    }
+
+    public static T[,] RandomSmoothPass<T>(this T[,] map, int seed)
     {
         int[] rangeX = Enumerable.Range(0, map.GetLength(0) - 1).ToArray().Shuffle(seed);
         int[] rangeY = Enumerable.Range(0, map.GetLength(1) - 1).ToArray().Shuffle(seed);

@@ -4,27 +4,40 @@ using UnityEngine;
 public class Vibration : MonoBehaviour
 {
     private static readonly System.Random random = new System.Random();
+    private readonly float vibrationAngle = random.Next(180);
+    private readonly float energyLevelAdjustment = Mathf.Lerp(-HydroManager.EnergyLevelDeviation, HydroManager.EnergyLevelDeviation, (float)random.NextDouble());
 
-    private float vibrationAngle;
-    private float energyLevelDeviation;
-
-    [SerializeField]
-    private Transform transformToManipulate;
-
-    [SerializeField]
-    private float energyLevel;
-    public float EnergyLevel
+    private float PercentToMaximumTemperature
     {
         get
         {
-            return energyLevel;
-        }
-
-        set
-        {
-            energyLevel = Mathf.Max(0, value);
+            return Mathf.Clamp(HeatableObject.Temperature / HydroManager.MaximumTemperature, 0, 1);
         }
     }
+
+    private float EnergyLevel
+    {
+        get
+        {
+            return Mathf.Lerp(HydroManager.MinimumEnergyLevel, HydroManager.MaximumEnergyLevel, PercentToMaximumTemperature) + energyLevelAdjustment;
+        }
+    }
+
+    [SerializeField]
+    private Heatable heatableObject;
+    private Heatable HeatableObject
+    {
+        get
+        {
+            if (heatableObject == null)
+                heatableObject = gameObject.GetSafeComponent<Heatable>();
+
+            return heatableObject;
+        }
+    }
+
+    [SerializeField]
+    private Transform transformToManipulate;
 
     [SerializeField]
     [Range(0, 0.5F)]
@@ -32,8 +45,6 @@ public class Vibration : MonoBehaviour
 
     private void Start()
     {
-        vibrationAngle = random.Next(180);
-
         StartCoroutine(Vibrate());
     }
 

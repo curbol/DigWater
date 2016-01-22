@@ -8,9 +8,6 @@ public static class MeshGeneration
 
     public static MeshData GetMarchingSquaresMeshData(this bool[,] map, float scale)
     {
-        int mapSizeX = map.GetLength(0);
-        int mapSizeY = map.GetLength(1);
-
         MeshData meshData = new MeshData();
         marchingSquares = map.CreateMarchingSquareGrid(scale);
 

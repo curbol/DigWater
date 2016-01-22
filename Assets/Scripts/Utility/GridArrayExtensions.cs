@@ -46,7 +46,12 @@ public static class GridArrayExtensions
         }
     }
 
-    public static IEnumerable<Coordinate> GetNeighborCoordinates<T>(this T[,] grid, int gridX, int gridY, bool allowDiagonals = true)
+    public static IEnumerable<Coordinate> GetNeighborCoordinates<T>(this T[,] grid, int gridX, int gridY)
+    {
+        return GetNeighborCoordinates(grid, gridX, gridY, true);
+    }
+
+    public static IEnumerable<Coordinate> GetNeighborCoordinates<T>(this T[,] grid, int gridX, int gridY, bool allowDiagonals)
     {
         int sizeX = grid.GetLength(0);
         int sizeY = grid.GetLength(1);
@@ -54,7 +59,12 @@ public static class GridArrayExtensions
         return GetNeighborCoordinates(gridX, gridY, sizeX, sizeY, allowDiagonals);
     }
 
-    public static IEnumerable<Coordinate> GetNeighborCoordinates(int gridX, int gridY, int sizeX, int sizeY, bool allowDiagonals = true)
+    public static IEnumerable<Coordinate> GetNeighborCoordinates(int gridX, int gridY, int sizeX, int sizeY)
+    {
+        return GetNeighborCoordinates(gridX, gridY, sizeX, sizeY, true);
+    }
+
+    public static IEnumerable<Coordinate> GetNeighborCoordinates(int gridX, int gridY, int sizeX, int sizeY, bool allowDiagonals)
     {
         for (int neightborX = gridX - 1; neightborX <= gridX + 1; neightborX++)
         {
@@ -98,7 +108,12 @@ public static class GridArrayExtensions
         }
     }
 
-    public static IEnumerable<T> GetNeighbors<T>(this T[,] grid, int gridX, int gridY, bool allowDiagonals = true)
+    public static IEnumerable<T> GetNeighbors<T>(this T[,] grid, int gridX, int gridY)
+    {
+        return GetNeighbors(grid, gridX, gridY, true);
+    }
+
+    public static IEnumerable<T> GetNeighbors<T>(this T[,] grid, int gridX, int gridY, bool allowDiagonals)
     {
         return grid.GetNeighborCoordinates(gridX, gridY, allowDiagonals).Select(c => grid[c.X, c.Y]);
     }

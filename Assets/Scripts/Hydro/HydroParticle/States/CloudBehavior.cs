@@ -1,40 +1,79 @@
 ﻿using UnityEngine;
 
-public class CloudBehavior : StateBehaviorBase
+public class CloudBehavior : HydroStateBehavior
 {
-    public override void InitializeState()
+    private float cloudFadePercent;
+    private float CloudFadePercent
     {
-        return;
+        get
+        {
+            return cloudFadePercent;
+        }
+
+        set
+        {
+            cloudFadePercent = Mathf.Clamp(value, 0, 1);
+        }
     }
 
-    public override void RunPhysicsBehavior(Rigidbody2D rigidBody)
+    public override void InitializeState()
     {
-        cloudFadePercent = 0;
-        rigidBody.gravityScale = 0;
-        rigidBody.angularDrag = HydroManager.CloudProperties.Drag;
+        gameObject.layer = LayerMask.NameToLayer("Cloud");
+        Rigidbody.gravityScale = 0;
+        Rigidbody.angularDrag = HydroManager.CloudProperties.Drag;
+        HeatableObject.HeatPenetration = 0.75F;
+        CloudFadePercent = 0;
+    }
 
-        // Update velocity
-        if (rigidBody.transform.MapY() < HydroManager.CloudProperties.EquilibriumZoneLowerBound)
+    public override void RunPhysicsBehavior()
+    {
+        SetCloudLevelGravityScale();
+
+        if (CloudFadePercent < 0.5F)
+            AttractToCloudParticles();
+    }
+
+    private void SetCloudLevelGravityScale()
+    {
+        if (Rigidbody.transform.MapY() < HydroManager.CloudProperties.EquilibriumZoneLowerBound)
         {
-            rigidBody.gravityScale = rigidBody.velocity.y < HydroManager.CloudProperties.MaximumVelocity ? -HydroManager.CloudProperties.BaseAcceleration : 0;
+            Rigidbody.gravityScale = Rigidbody.velocity.y < HydroManager.CloudProperties.MaximumVelocity ? -HydroManager.CloudProperties.BaseAcceleration : 0;
         }
-        else if (rigidBody.transform.MapY() > HydroManager.CloudProperties.EquilibriumZoneUpperBound)
+        else if (Rigidbody.transform.MapY() > HydroManager.CloudProperties.EquilibriumZoneUpperBound)
         {
-            rigidBody.gravityScale = rigidBody.velocity.y > -HydroManager.CloudProperties.MaximumVelocity ? HydroManager.CloudProperties.BaseAcceleration : 0;
+            Rigidbody.gravityScale = Rigidbody.velocity.y > -HydroManager.CloudProperties.MaximumVelocity ? HydroManager.CloudProperties.BaseAcceleration : 0;
         }
         else
         {
-            rigidBody.gravityScale = 0;
+            Rigidbody.gravityScale = 0;
         }
     }
 
-    public override void RunGraphicsBehavior(SpriteRenderer spriteRenderer)
+    private void AttractToCloudParticles()
     {
-        // Update cluster transition progress
-        bool enoughNeighbors = GetNeighbors(HydroManager.CloudProperties.NeighborSearchRadius).Length >= HydroManager.CloudProperties.MinimumNeighborCount;
+        Vector2 averageVector = Vector2.zero;
+        Collider2D[] colliders = ((Vector2)SpriteRenderer.transform.position).GetNeighbors(HydroManager.CloudProperties.NeighborSearchRadius);
+        foreach (Collider2D collider in colliders)
+        {
+            averageVector += (Vector2)(collider.transform.position - transform.position);
+        }
+
+        Vector2 direction = averageVector.normalized;
+        Rigidbody.AddForce(direction * 0.1F);
+    }
+
+    public override void RunGraphicsBehavior()
+    {
+        bool enoughNeighbors = ((Vector2)SpriteRenderer.transform.position).GetNeighbors(HydroManager.CloudProperties.NeighborSearchRadius).Length >= HydroManager.CloudProperties.MinimumNeighborCount;
         float amountToFade = HydroManager.CloudProperties.FadeRate * Time.fixedDeltaTime;
         CloudFadePercent += enoughNeighbors ? amountToFade : -amountToFade;
 
-        spriteRenderer.color = Color.Lerp(HydroManager.VaporProperties.Color, HydroManager.CloudProperties.Color, CloudFadePercent);
+        SpriteRenderer.color = Color.Lerp(HydroManager.VaporProperties.Color, HydroManager.CloudProperties.Color, CloudFadePercent);
+    }
+
+    public override void RunTemperatureBehavior()
+    {
+        if (CloudFadePercent > 0.5F)
+            HeatableObject.AddHeat(HydroManager.AmbientTemperatureChange * Time.deltaTime);
     }
 }
