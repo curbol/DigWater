@@ -2,6 +2,9 @@
 
 public class CloudBehavior : HydroStateBehavior
 {
+    private const float clusterFadeThreshold = 0.75F;
+    private const float clusterForce = 0.1F;
+
     private float cloudFadePercent;
     private float CloudFadePercent
     {
@@ -29,7 +32,7 @@ public class CloudBehavior : HydroStateBehavior
     {
         SetCloudLevelGravityScale();
 
-        if (CloudFadePercent < 0.5F)
+        if (CloudFadePercent < clusterFadeThreshold)
             AttractToCloudParticles();
     }
 
@@ -59,11 +62,14 @@ public class CloudBehavior : HydroStateBehavior
         }
 
         Vector2 direction = averageVector.normalized;
-        Rigidbody.AddForce(direction * 0.1F);
+        Rigidbody.AddForce(direction * clusterForce);
     }
 
     public override void RunGraphicsBehavior()
     {
+        if (SpriteRenderer == null)
+            return;
+
         bool enoughNeighbors = ((Vector2)SpriteRenderer.transform.position).GetNeighbors(HydroManager.CloudProperties.NeighborSearchRadius).Length >= HydroManager.CloudProperties.MinimumNeighborCount;
         float amountToFade = HydroManager.CloudProperties.FadeRate * Time.fixedDeltaTime;
         CloudFadePercent += enoughNeighbors ? amountToFade : -amountToFade;
@@ -73,7 +79,7 @@ public class CloudBehavior : HydroStateBehavior
 
     public override void RunTemperatureBehavior()
     {
-        if (CloudFadePercent > 0.5F)
+        if (CloudFadePercent >= clusterFadeThreshold)
             HeatableObject.AddHeat(HydroManager.AmbientTemperatureChange * Time.deltaTime);
     }
 }

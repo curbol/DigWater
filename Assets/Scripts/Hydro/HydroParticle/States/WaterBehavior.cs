@@ -1,7 +1,10 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class WaterBehavior : HydroStateBehavior
 {
+    private float unheatableDuration;
+
     public float PercentToVaporizationPoint
     {
         get
@@ -16,6 +19,9 @@ public class WaterBehavior : HydroStateBehavior
         Rigidbody.gravityScale = 1;
         Rigidbody.angularDrag = 0;
         HeatableObject.HeatPenetration = 0.5F;
+
+        unheatableDuration = 1;
+        StartCoroutine(SetUnheatable());
     }
 
     public override void RunPhysicsBehavior()
@@ -25,11 +31,30 @@ public class WaterBehavior : HydroStateBehavior
 
     public override void RunGraphicsBehavior()
     {
-        SpriteRenderer.color = Color.Lerp(HydroManager.VaporProperties.Color, HydroManager.LiquidProperties.Color, (1 - PercentToVaporizationPoint) + 0.6F);
+        if (SpriteRenderer == null)
+            return;
+
+        SpriteRenderer.color = HydroManager.LiquidProperties.Color;
+
+        if (unheatableDuration > 0)
+        {
+            SpriteRenderer.color = Color.red;
+        }
     }
 
     public override void RunTemperatureBehavior()
     {
         HeatableObject.AddHeat(HydroManager.AmbientTemperatureChange * Time.deltaTime);
+    }
+
+    private IEnumerator SetUnheatable()
+    {
+        while (unheatableDuration > 0)
+        {
+            HeatableObject.Temperature = 0;
+            unheatableDuration -= 0.1F * Time.deltaTime;
+
+            yield return new WaitForEndOfFrame();
+        }
     }
 }

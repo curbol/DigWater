@@ -1,7 +1,12 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class VaporBehavior : HydroStateBehavior
 {
+    private Color previousColor;
+    private float colorFadePercent;
+    private const float colorFadeRate = 0.8F;
+
     public override void InitializeState()
     {
         gameObject.layer = LayerMask.NameToLayer("Vapor");
@@ -9,6 +14,10 @@ public class VaporBehavior : HydroStateBehavior
         Rigidbody.gravityScale = 0;
         Rigidbody.angularDrag = 0;
         HeatableObject.HeatPenetration = 0.95F;
+
+        previousColor = SpriteRenderer.color;
+        colorFadePercent = 0;
+        StartCoroutine(FadeInColor());
     }
 
     public override void RunPhysicsBehavior()
@@ -27,7 +36,7 @@ public class VaporBehavior : HydroStateBehavior
 
     public override void RunGraphicsBehavior()
     {
-        if (SpriteRenderer == null)
+        if (SpriteRenderer == null || colorFadePercent < 1)
             return;
 
         SpriteRenderer.color = HydroManager.VaporProperties.Color;
@@ -36,5 +45,16 @@ public class VaporBehavior : HydroStateBehavior
     public override void RunTemperatureBehavior()
     {
         return;
+    }
+
+    private IEnumerator FadeInColor()
+    {
+        while (colorFadePercent < 1)
+        {
+            SpriteRenderer.color = Color.Lerp(previousColor, HydroManager.VaporProperties.Color, Mathf.Clamp01(colorFadePercent));
+            colorFadePercent += colorFadeRate * Time.deltaTime;
+
+            yield return new WaitForEndOfFrame();
+        }
     }
 }
