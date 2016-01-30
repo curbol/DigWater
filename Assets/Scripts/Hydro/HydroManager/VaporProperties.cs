@@ -33,4 +33,14 @@ public class VaporProperties
             return maximumVelocity;
         }
     }
+
+    [SerializeField]
+    private float heatPenetration;
+    public float HeatPenetration
+    {
+        get
+        {
+            return heatPenetration;
+        }
+    }
 }

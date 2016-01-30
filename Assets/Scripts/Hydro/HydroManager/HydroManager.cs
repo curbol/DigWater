@@ -6,74 +6,12 @@ public class HydroManager : Singleton<HydroManager>
     private bool showGizmos;
 
     [SerializeField]
-    [Range(0, 10)]
-    private float deformability;
-    public static float Deformability
+    private HeatProperties heatProperties;
+    public static HeatProperties HeatProperties
     {
         get
         {
-            return Instance.deformability;
-        }
-    }
-
-    [SerializeField]
-    [Range(-10, 10)]
-    private float ambientTemperatureChange;
-    public static float AmbientTemperatureChange
-    {
-        get
-        {
-            return Instance.ambientTemperatureChange;
-        }
-    }
-
-    [SerializeField]
-    private float maximumTemperature;
-    public static float MaximumTemperature
-    {
-        get
-        {
-            return Instance.maximumTemperature;
-        }
-    }
-
-    [SerializeField]
-    private float vaporizationPoint;
-    public static float VaporizationPoint
-    {
-        get
-        {
-            return Instance.vaporizationPoint;
-        }
-    }
-
-    [SerializeField]
-    private float minimumEnergyLevel;
-    public static float MinimumEnergyLevel
-    {
-        get
-        {
-            return Instance.minimumEnergyLevel;
-        }
-    }
-
-    [SerializeField]
-    private float maximumEnergyLevel;
-    public static float MaximumEnergyLevel
-    {
-        get
-        {
-            return Instance.maximumEnergyLevel;
-        }
-    }
-
-    [SerializeField]
-    private float energyLevelDeviation;
-    public static float EnergyLevelDeviation
-    {
-        get
-        {
-            return Instance.energyLevelDeviation;
+            return Instance.heatProperties;
         }
     }
 
@@ -105,6 +43,11 @@ public class HydroManager : Singleton<HydroManager>
         {
             return Instance.cloudProperties;
         }
+    }
+
+    public void SetHeat(float value)
+    {
+        HeatProperties.AmbientTemperatureChange = value;
     }
 
     private void OnDrawGizmos()

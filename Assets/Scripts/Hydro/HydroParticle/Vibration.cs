@@ -5,34 +5,19 @@ public class Vibration : MonoBehaviour
 {
     private static readonly System.Random random = new System.Random();
     private readonly float vibrationAngle = random.Next(180);
-    private readonly float energyLevelAdjustment = Mathf.Lerp(-HydroManager.EnergyLevelDeviation, HydroManager.EnergyLevelDeviation, (float)random.NextDouble());
-
-    private float PercentToMaximumTemperature
-    {
-        get
-        {
-            return Mathf.Clamp(HeatableObject.Temperature / HydroManager.MaximumTemperature, 0, 1);
-        }
-    }
-
-    private float EnergyLevel
-    {
-        get
-        {
-            return Mathf.Lerp(HydroManager.MinimumEnergyLevel, HydroManager.MaximumEnergyLevel, PercentToMaximumTemperature) + energyLevelAdjustment;
-        }
-    }
 
     [SerializeField]
-    private Heatable heatableObject;
-    private Heatable HeatableObject
+    private float energyLevel;
+    public float EnergyLevel
     {
         get
         {
-            if (heatableObject == null)
-                heatableObject = gameObject.GetSafeComponent<Heatable>();
+            return energyLevel;
+        }
 
-            return heatableObject;
+        set
+        {
+            energyLevel = value;
         }
     }
 

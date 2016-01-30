@@ -3,13 +3,15 @@ using UnityEngine;
 
 public class WaterBehavior : HydroStateBehavior
 {
-    private float unheatableDuration;
+    private const float colorFadeRate = 0.2F;
+
+    private float colorFadePercent;
 
     public float PercentToVaporizationPoint
     {
         get
         {
-            return Mathf.Clamp(HeatableObject.Temperature / HydroManager.VaporizationPoint, 0, 1);
+            return Mathf.Clamp(HeatableObject.Temperature / HydroManager.HeatProperties.VaporizationPoint, 0, 1);
         }
     }
 
@@ -18,10 +20,12 @@ public class WaterBehavior : HydroStateBehavior
         gameObject.layer = LayerMask.NameToLayer("Metaball");
         Rigidbody.gravityScale = 1;
         Rigidbody.angularDrag = 0;
-        HeatableObject.HeatPenetration = 0.5F;
+        HeatableObject.HeatPenetration = HydroManager.LiquidProperties.HeatPenetration;
+        MoleculeVibration.EnergyLevel = HydroManager.HeatProperties.MinimumEnergyLevel;
 
-        unheatableDuration = 1;
+        colorFadePercent = 0;
         StartCoroutine(SetUnheatable());
+        StartCoroutine(FadeInColor());
     }
 
     public override void RunPhysicsBehavior()
@@ -31,30 +35,45 @@ public class WaterBehavior : HydroStateBehavior
 
     public override void RunGraphicsBehavior()
     {
-        if (SpriteRenderer == null)
+        if (SpriteRenderer == null || colorFadePercent < 1)
             return;
 
         SpriteRenderer.color = HydroManager.LiquidProperties.Color;
-
-        if (unheatableDuration > 0)
-        {
-            SpriteRenderer.color = Color.red;
-        }
     }
 
     public override void RunTemperatureBehavior()
     {
-        HeatableObject.AddHeat(HydroManager.AmbientTemperatureChange * Time.deltaTime);
+        HeatableObject.AddHeat(HydroManager.HeatProperties.AmbientTemperatureChange * Time.deltaTime);
     }
 
     private IEnumerator SetUnheatable()
     {
-        while (unheatableDuration > 0)
+        while (colorFadePercent < 1)
         {
             HeatableObject.Temperature = 0;
-            unheatableDuration -= 0.1F * Time.deltaTime;
 
             yield return new WaitForEndOfFrame();
         }
+    }
+
+    private IEnumerator FadeInColor()
+    {
+        int previousLayer = gameObject.layer;
+
+        if (transform.InCloudRegion())
+            gameObject.layer = LayerMask.NameToLayer("Rain");
+
+        Color startingColor = HydroManager.LiquidProperties.Color;
+        startingColor.a = 0.35F;
+
+        while (colorFadePercent < 1)
+        {
+            SpriteRenderer.color = Color.Lerp(startingColor, HydroManager.LiquidProperties.Color, Mathf.Clamp01(colorFadePercent));
+            colorFadePercent += colorFadeRate * Time.deltaTime;
+
+            yield return new WaitForEndOfFrame();
+        }
+
+        gameObject.layer = previousLayer;
     }
 }

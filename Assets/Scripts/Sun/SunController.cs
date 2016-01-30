@@ -14,10 +14,6 @@ public class SunController : MonoBehaviour
     [SerializeField]
     private int endRayAngle = 10;
 
-    [Range(0, 10)]
-    [SerializeField]
-    private float heatRate = 0.4F;
-
     private void Start()
     {
         StartCoroutine(EmitRays());
@@ -42,7 +38,7 @@ public class SunController : MonoBehaviour
                     if (showGizmos)
                         Debug.DrawLine((Vector2)transform.position, raycastHit.point, new Color(0.5F, 0.5F, 0.2F, 0.2F));
 
-                    heatableObject.AddHeat(heatRate * heatPercent * Time.deltaTime);
+                    heatableObject.AddHeat(HydroManager.HeatProperties.SunHeat * heatPercent * Time.deltaTime);
                     heatPercent *= heatableObject.HeatPenetration;
                 }
             }

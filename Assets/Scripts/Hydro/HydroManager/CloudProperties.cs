@@ -148,4 +148,14 @@ public class CloudProperties
             return neighborSearchRadius;
         }
     }
+
+    [SerializeField]
+    private float heatPenetration;
+    public float HeatPenetration
+    {
+        get
+        {
+            return heatPenetration;
+        }
+    }
 }

@@ -45,6 +45,19 @@ public abstract class HydroStateBehavior : MonoBehaviour
         }
     }
 
+    [SerializeField]
+    private Vibration moleculeVibration;
+    public Vibration MoleculeVibration
+    {
+        get
+        {
+            if (moleculeVibration == null)
+                moleculeVibration = gameObject.GetSafeComponent<Vibration>();
+
+            return moleculeVibration;
+        }
+    }
+
     public abstract void InitializeState();
 
     public abstract void RunPhysicsBehavior();

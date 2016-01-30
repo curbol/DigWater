@@ -13,7 +13,8 @@ public class VaporBehavior : HydroStateBehavior
         Rigidbody.velocity = Rigidbody.velocity.SetX(0);
         Rigidbody.gravityScale = 0;
         Rigidbody.angularDrag = 0;
-        HeatableObject.HeatPenetration = 0.95F;
+        HeatableObject.HeatPenetration = HydroManager.VaporProperties.HeatPenetration;
+        MoleculeVibration.EnergyLevel = HydroManager.HeatProperties.MaximumEnergyLevel;
 
         previousColor = SpriteRenderer.color;
         colorFadePercent = 0;

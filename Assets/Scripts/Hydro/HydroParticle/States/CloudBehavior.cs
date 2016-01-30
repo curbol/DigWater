@@ -21,11 +21,27 @@ public class CloudBehavior : HydroStateBehavior
 
     public override void InitializeState()
     {
-        gameObject.layer = LayerMask.NameToLayer("Cloud");
+        gameObject.layer = LayerMask.NameToLayer("Vapor");
         Rigidbody.gravityScale = 0;
-        Rigidbody.angularDrag = HydroManager.CloudProperties.Drag;
-        HeatableObject.HeatPenetration = 0.75F;
         CloudFadePercent = 0;
+
+        InitializeAsVapor();
+    }
+
+    private void InitializeAsVapor()
+    {
+        gameObject.layer = LayerMask.NameToLayer("Vapor");
+        Rigidbody.angularDrag = 0;
+        HeatableObject.HeatPenetration = HydroManager.VaporProperties.HeatPenetration;
+        MoleculeVibration.EnergyLevel = HydroManager.HeatProperties.MaximumEnergyLevel;
+    }
+
+    private void InitializeAsCloud()
+    {
+        gameObject.layer = LayerMask.NameToLayer("Cloud");
+        Rigidbody.angularDrag = HydroManager.CloudProperties.Drag;
+        HeatableObject.HeatPenetration = HydroManager.CloudProperties.HeatPenetration;
+        MoleculeVibration.EnergyLevel = Mathf.Lerp(HydroManager.HeatProperties.MinimumEnergyLevel, HydroManager.HeatProperties.MaximumEnergyLevel, 0.5F);
     }
 
     public override void RunPhysicsBehavior()
@@ -67,12 +83,21 @@ public class CloudBehavior : HydroStateBehavior
 
     public override void RunGraphicsBehavior()
     {
-        if (SpriteRenderer == null)
-            return;
+        if (gameObject.layer != LayerMask.NameToLayer("Cloud") && CloudFadePercent > 0.5F)
+        {
+            InitializeAsCloud();
+        }
+        else if (gameObject.layer != LayerMask.NameToLayer("Vapor") && CloudFadePercent <= 0.5F)
+        {
+            InitializeAsVapor();
+        }
 
         bool enoughNeighbors = ((Vector2)SpriteRenderer.transform.position).GetNeighbors(HydroManager.CloudProperties.NeighborSearchRadius).Length >= HydroManager.CloudProperties.MinimumNeighborCount;
         float amountToFade = HydroManager.CloudProperties.FadeRate * Time.fixedDeltaTime;
         CloudFadePercent += enoughNeighbors ? amountToFade : -amountToFade;
+
+        if (SpriteRenderer == null)
+            return;
 
         SpriteRenderer.color = Color.Lerp(HydroManager.VaporProperties.Color, HydroManager.CloudProperties.Color, CloudFadePercent);
     }
@@ -80,6 +105,6 @@ public class CloudBehavior : HydroStateBehavior
     public override void RunTemperatureBehavior()
     {
         if (CloudFadePercent >= clusterFadeThreshold)
-            HeatableObject.AddHeat(HydroManager.AmbientTemperatureChange * Time.deltaTime);
+            HeatableObject.AddHeat(HydroManager.HeatProperties.AmbientTemperatureChange * Time.deltaTime);
     }
 }

@@ -9,6 +9,21 @@ public class VelocityScale : MonoBehaviour
     [SerializeField]
     private Rigidbody2D rigidBody;
 
+    [SerializeField]
+    private Vector2 baseScale = Vector2.one;
+    public Vector2 BaseScale
+    {
+        get
+        {
+            return baseScale;
+        }
+
+        set
+        {
+            baseScale = value;
+        }
+    }
+
     private void Start()
     {
         StartCoroutine(UpdateVelocityScale());
@@ -30,8 +45,8 @@ public class VelocityScale : MonoBehaviour
                 continue;
             }
 
-            Vector2 scale = Vector2.one;
-            float scaleModifier = Mathf.Min(Mathf.Abs(rigidBody.velocity.y) * (HydroManager.Deformability / 100), 0.5F);
+            Vector2 scale = BaseScale;
+            float scaleModifier = Mathf.Min(Mathf.Abs(rigidBody.velocity.y) * (HydroManager.LiquidProperties.Deformability / 100), 0.5F);
             scale.x -= scaleModifier;
             scale.y += scaleModifier;
 

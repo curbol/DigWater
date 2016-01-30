@@ -5,7 +5,8 @@ using UnityEngine;
 [RequireComponent(typeof(Vibration))]
 public class HydroParticle : MonoBehaviour
 {
-    private static readonly System.Random random = new System.Random();
+    [SerializeField]
+    private bool showGizmos = true;
 
     [SerializeField]
     private WaterBehavior waterBehavior;
@@ -115,6 +116,28 @@ public class HydroParticle : MonoBehaviour
             }
 
             yield return null;
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (!showGizmos)
+            return;
+
+        float medianTemp = HydroManager.HeatProperties.MaximumTemperature / 2;
+
+        if (CurrentBehavior.HeatableObject.Temperature <= medianTemp)
+        {
+            Gizmos.color = Color.Lerp(new Color(0, 1, 0), new Color(1, 1, 0), CurrentBehavior.HeatableObject.Temperature / medianTemp);
+        }
+        else
+        {
+            Gizmos.color = Color.Lerp(new Color(1, 1, 0), new Color(1, 0, 0), (CurrentBehavior.HeatableObject.Temperature - medianTemp) / medianTemp);
+        }
+
+        foreach (RecyclableObject recyclableObject in GetComponentsInChildren<RecyclableObject>())
+        {
+            Gizmos.DrawSphere(recyclableObject.transform.position, 0.5F);
         }
     }
 }
