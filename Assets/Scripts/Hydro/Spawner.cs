@@ -26,10 +26,19 @@ public class Spawner : MonoBehaviour
     [SerializeField]
     private RecyclableObject recyclableObjectPrefab;
 
+    public Transform SpawnedObjects { get; set; }
+
     private void Awake()
     {
-        GameObject waterHolder = new GameObject(objectHolderName);
-        waterHolder.transform.parent = transform;
+        SpawnedObjects = transform.FindChild(objectHolderName) ?? new GameObject(objectHolderName).transform;
+        SpawnedObjects.parent = transform;
+
+        objectCount = GetSpawnedObjectCount();
+    }
+
+    private void Start()
+    {
+        StartCoroutine(SpawnWater());
     }
 
     private IEnumerator SpawnWater()
@@ -43,7 +52,7 @@ public class Spawner : MonoBehaviour
                 Vector2 position = new Vector2(transform.position.x + randomAdjustmentX, transform.position.y + randomAdjustmentY);
 
                 RecyclableObject recyclableObject = Instantiate(recyclableObjectPrefab, position, Quaternion.identity) as RecyclableObject;
-                recyclableObject.transform.parent = transform;
+                recyclableObject.transform.parent = SpawnedObjects;
                 recyclableObject.OnDeath += ObjectDeath;
                 objectCount++;
             }
@@ -52,9 +61,9 @@ public class Spawner : MonoBehaviour
         }
     }
 
-    private void Start()
+    private int GetSpawnedObjectCount()
     {
-        StartCoroutine(SpawnWater());
+        return SpawnedObjects.GetComponentsInChildren<RecyclableObject>().Length;
     }
 
     private void ObjectDeath()

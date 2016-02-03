@@ -91,7 +91,7 @@ public class HydroParticle : MonoBehaviour
         while (true)
         {
             CurrentBehavior.RunTemperatureBehavior();
-            yield return null;
+            yield return new WaitForFixedUpdate();
         }
     }
 

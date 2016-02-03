@@ -84,6 +84,7 @@
     <Compile Include="Assets\Scripts\Hydro\HydroParticle\VelocityRotation.cs" />
     <Compile Include="Assets\Scripts\Hydro\HydroParticle\VelocityScale.cs" />
     <Compile Include="Assets\Scripts\Hydro\HydroParticle\Vibration.cs" />
+    <Compile Include="Assets\Scripts\Hydro\MoveTowardsCenterOfMass.cs" />
     <Compile Include="Assets\Scripts\Hydro\Spawner.cs" />
     <Compile Include="Assets\Scripts\Magnifying Glass\DetectHydroStates.cs" />
     <Compile Include="Assets\Scripts\Magnifying Glass\FollowMouse.cs" />
@@ -103,6 +104,7 @@
     <Compile Include="Assets\Scripts\Map\MeshGeneration\MeshGeneration.cs" />
     <Compile Include="Assets\Scripts\Map\MeshGeneration\MeshVertex.cs" />
     <Compile Include="Assets\Scripts\Sun\SunController.cs" />
+    <Compile Include="Assets\Scripts\UI\HeatSliderController.cs" />
     <Compile Include="Assets\Scripts\UI\StateText.cs" />
     <Compile Include="Assets\Scripts\Utility\Coordinate.cs" />
     <Compile Include="Assets\Scripts\Utility\CoordinateExtenstions.cs" />

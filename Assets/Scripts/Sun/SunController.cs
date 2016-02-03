@@ -43,7 +43,7 @@ public class SunController : MonoBehaviour
                 }
             }
 
-            yield return null;
+            yield return new WaitForFixedUpdate();
         }
     }
 
