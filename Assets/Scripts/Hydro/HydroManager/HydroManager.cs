@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class HydroManager : Singleton<HydroManager>
 {
@@ -52,13 +51,13 @@ public class HydroManager : Singleton<HydroManager>
             return;
 
         HeatProperties.AmbientTemperatureChange = value;
-        PlayerPrefs.SetFloat("HeatLevel", HeatProperties.AmbientTemperatureChange);
-        SceneManager.LoadScene("DigWater");
+        //PlayerPrefs.SetFloat("HeatLevel", HeatProperties.AmbientTemperatureChange);
+        //SceneManager.LoadScene("DigWater");
     }
 
     private void Awake()
     {
-        HeatProperties.AmbientTemperatureChange = PlayerPrefs.GetFloat("HeatLevel", HeatProperties.AmbientTemperatureChange);
+        //HeatProperties.AmbientTemperatureChange = PlayerPrefs.GetFloat("HeatLevel", HeatProperties.AmbientTemperatureChange);
     }
 
     private void OnDrawGizmos()

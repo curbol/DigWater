@@ -84,7 +84,7 @@
     <Compile Include="Assets\Scripts\Hydro\HydroParticle\VelocityRotation.cs" />
     <Compile Include="Assets\Scripts\Hydro\HydroParticle\VelocityScale.cs" />
     <Compile Include="Assets\Scripts\Hydro\HydroParticle\Vibration.cs" />
-    <Compile Include="Assets\Scripts\Hydro\MoveTowardsCenterOfMass.cs" />
+    <Compile Include="Assets\Scripts\Hydro\ResetHydro.cs" />
     <Compile Include="Assets\Scripts\Hydro\Spawner.cs" />
     <Compile Include="Assets\Scripts\Magnifying Glass\DetectHydroStates.cs" />
     <Compile Include="Assets\Scripts\Magnifying Glass\FollowMouse.cs" />
