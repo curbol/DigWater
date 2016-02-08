@@ -9,9 +9,19 @@ public class DetectHydroStates : MonoBehaviour
 
     public List<int> FoundStates { get; private set; }
 
-    private void Awake()
+    public void Reset()
+    {
+        Reset(0);
+    }
+
+    public void Reset(float value)
     {
         FoundStates = new List<int>();
+    }
+
+    private void Awake()
+    {
+        Reset();
     }
 
     private void Start()
