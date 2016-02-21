@@ -15,6 +15,16 @@ public class LiquidProperties
     }
 
     [SerializeField]
+    private float maximumVelocity;
+    public float MaximumVelocity
+    {
+        get
+        {
+            return maximumVelocity;
+        }
+    }
+
+    [SerializeField]
     [Range(0, 10)]
     private float deformability;
     public float Deformability

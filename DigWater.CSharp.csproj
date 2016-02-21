@@ -58,12 +58,6 @@
     <Reference Include="UnityEngine.Networking">
       <HintPath>Library\UnityAssemblies\UnityEngine.Networking.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.Networking">
-      <HintPath>Library\UnityAssemblies\UnityEngine.Networking.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>Library\UnityAssemblies\UnityEngine.UI.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEditor">
       <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
     </Reference>
@@ -93,6 +87,7 @@
     <Compile Include="Assets\Scripts\Hydro\HydroParticle\Vibration.cs" />
     <Compile Include="Assets\Scripts\Hydro\ResetHydro.cs" />
     <Compile Include="Assets\Scripts\Hydro\Spawner.cs" />
+    <Compile Include="Assets\Scripts\Magnifying Glass\ChangeCursor.cs" />
     <Compile Include="Assets\Scripts\Magnifying Glass\DetectHydroStates.cs" />
     <Compile Include="Assets\Scripts\Magnifying Glass\FollowMouse.cs" />
     <Compile Include="Assets\Scripts\Map\MapGeneration\Map.cs" />

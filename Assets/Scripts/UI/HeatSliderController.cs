@@ -18,9 +18,10 @@ public class HeatSliderController : MonoBehaviour
         }
     }
 
-    private void Start()
+    private void Awake()
     {
-        float startingValue = PlayerPrefs.GetFloat("HeatLevel", HydroManager.HeatProperties.AmbientTemperatureChange);
-        Slider.value = startingValue;
+        Slider.minValue = HydroManager.HeatProperties.MinimumAmbientTemperatureChange;
+        Slider.maxValue = HydroManager.HeatProperties.MaximumAmbientTemperatureChange;
+        Slider.value = HydroManager.HeatProperties.CurrentAmbientTemperatureChange;
     }
 }

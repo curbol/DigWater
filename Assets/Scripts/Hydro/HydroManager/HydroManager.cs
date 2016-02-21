@@ -47,10 +47,10 @@ public class HydroManager : Singleton<HydroManager>
 
     public void SetHeat(float value)
     {
-        if (HeatProperties.AmbientTemperatureChange == value)
+        if (HeatProperties.CurrentAmbientTemperatureChange == value)
             return;
 
-        HeatProperties.AmbientTemperatureChange = value;
+        HeatProperties.CurrentAmbientTemperatureChange = value;
         //PlayerPrefs.SetFloat("HeatLevel", HeatProperties.AmbientTemperatureChange);
         //SceneManager.LoadScene("DigWater");
     }

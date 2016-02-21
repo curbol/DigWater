@@ -5,7 +5,6 @@ using UnityEngine;
 public class Spawner : MonoBehaviour
 {
     private static readonly System.Random random = new System.Random();
-    private static readonly string objectHolderName = "Spawned Objects";
 
     private int objectCount;
 
@@ -26,18 +25,17 @@ public class Spawner : MonoBehaviour
     [SerializeField]
     private RecyclableObject recyclableObjectPrefab;
 
-    public Transform SpawnedObjects { get; set; }
-
-    private void Awake()
-    {
-        SpawnedObjects = transform.FindChild(objectHolderName) ?? new GameObject(objectHolderName).transform;
-        SpawnedObjects.parent = transform;
-
-        objectCount = GetSpawnedObjectCount();
-    }
-
     private void Start()
     {
+        RecyclableObject[] recyclableObjects = transform.GetComponentsInChildren<RecyclableObject>();
+        foreach (RecyclableObject recyclableObject in recyclableObjects)
+        {
+            recyclableObject.OnDeath -= ObjectDeath;
+            recyclableObject.OnDeath += ObjectDeath;
+        }
+
+        objectCount = recyclableObjects.Length;
+
         StartCoroutine(SpawnWater());
     }
 
@@ -52,18 +50,13 @@ public class Spawner : MonoBehaviour
                 Vector2 position = new Vector2(transform.position.x + randomAdjustmentX, transform.position.y + randomAdjustmentY);
 
                 RecyclableObject recyclableObject = Instantiate(recyclableObjectPrefab, position, Quaternion.identity) as RecyclableObject;
-                recyclableObject.transform.parent = SpawnedObjects;
+                recyclableObject.transform.parent = transform;
                 recyclableObject.OnDeath += ObjectDeath;
                 objectCount++;
             }
 
             yield return new WaitForSeconds(spawnDelay);
         }
-    }
-
-    private int GetSpawnedObjectCount()
-    {
-        return SpawnedObjects.GetComponentsInChildren<RecyclableObject>().Length;
     }
 
     private void ObjectDeath()

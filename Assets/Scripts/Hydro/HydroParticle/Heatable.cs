@@ -17,6 +17,7 @@ public class Heatable : MonoBehaviour
         }
     }
 
+    [SerializeField]
     private float temperature;
     public float Temperature
     {

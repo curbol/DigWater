@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class SunController : MonoBehaviour
@@ -23,6 +24,7 @@ public class SunController : MonoBehaviour
     {
         while (true)
         {
+            var hitObjects = new List<object>();
             for (int i = startRayAngle; i <= endRayAngle; i++)
             {
                 Vector2 direction = Vector2Extentions.Vector2FromAngle(i);
@@ -32,14 +34,16 @@ public class SunController : MonoBehaviour
                 foreach (RaycastHit2D raycastHit in raycastHits)
                 {
                     Heatable heatableObject = raycastHit.transform.GetComponent<Heatable>() as Heatable;
-                    if (heatableObject == null)
-                        break;
+                    if (heatableObject == null || hitObjects.Contains(heatableObject))
+                        continue;
 
                     if (showGizmos)
                         Debug.DrawLine((Vector2)transform.position, raycastHit.point, new Color(0.5F, 0.5F, 0.2F, 0.2F));
 
                     heatableObject.AddHeat(HydroManager.HeatProperties.SunHeat * heatPercent * Time.deltaTime);
                     heatPercent *= heatableObject.HeatPenetration;
+
+                    hitObjects.Add(heatableObject);
                 }
             }
 

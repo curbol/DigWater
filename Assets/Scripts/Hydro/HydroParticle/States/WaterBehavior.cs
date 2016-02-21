@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class WaterBehavior : HydroStateBehavior
 {
+    private static readonly System.Random random = new System.Random();
+
     private const float colorFadeRate = 0.2F;
 
     private float colorFadePercent;
@@ -20,17 +22,25 @@ public class WaterBehavior : HydroStateBehavior
         gameObject.layer = LayerMask.NameToLayer("Metaball");
         Rigidbody.gravityScale = 1;
         Rigidbody.angularDrag = 0;
+        Rigidbody.mass = 1;
         HeatableObject.HeatPenetration = HydroManager.LiquidProperties.HeatPenetration;
         MoleculeVibration.EnergyLevel = HydroManager.HeatProperties.MinimumEnergyLevel;
 
         colorFadePercent = 0;
-        StartCoroutine(SetUnheatable());
-        StartCoroutine(FadeInColor());
+        StopCoroutine("SetUnheatable");
+        StopCoroutine("FadeInColor");
+
+        StartCoroutine("SetUnheatable");
+        StartCoroutine("FadeInColor");
     }
 
     public override void RunPhysicsBehavior()
     {
-        return;
+        if (Rigidbody == null)
+            return;
+
+        if (Rigidbody.velocity.magnitude > HydroManager.LiquidProperties.MaximumVelocity)
+            Rigidbody.velocity = Rigidbody.velocity.normalized * HydroManager.LiquidProperties.MaximumVelocity;
     }
 
     public override void RunGraphicsBehavior()
@@ -43,14 +53,17 @@ public class WaterBehavior : HydroStateBehavior
 
     public override void RunTemperatureBehavior()
     {
-        HeatableObject.AddHeat(HydroManager.HeatProperties.AmbientTemperatureChange * Time.deltaTime);
+        HeatableObject.AddHeat(HydroManager.HeatProperties.CurrentAmbientTemperatureChange * Time.deltaTime);
     }
 
     private IEnumerator SetUnheatable()
     {
-        while (colorFadePercent < 1)
+        float temperature = HydroManager.HeatProperties.VaporizationPoint;
+        float newTemperature = random.Next((int)(temperature * 0.5F), (int)(temperature * 0.9F)); ;
+
+        while (colorFadePercent < 1 && Rigidbody.velocity.magnitude > 0.01)
         {
-            HeatableObject.Temperature = 0;
+            HeatableObject.Temperature = newTemperature;
 
             yield return new WaitForEndOfFrame();
         }

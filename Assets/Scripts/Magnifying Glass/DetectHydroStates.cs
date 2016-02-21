@@ -1,11 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class DetectHydroStates : MonoBehaviour
 {
     [SerializeField]
+    private bool showGizmos = true;
+
+    [SerializeField]
     private float detectionRadius = 2;
+
+    [SerializeField]
+    private float detectionCountThreshold = 10;
+
+    private Dictionary<int, int> layerDetectionCounts;
 
     public List<int> FoundStates { get; private set; }
 
@@ -16,6 +25,11 @@ public class DetectHydroStates : MonoBehaviour
 
     public void Reset(float value)
     {
+        layerDetectionCounts = new Dictionary<int, int>();
+        layerDetectionCounts[LayerMask.NameToLayer("Vapor")] = 0;
+        layerDetectionCounts[LayerMask.NameToLayer("Cloud")] = 0;
+        layerDetectionCounts[LayerMask.NameToLayer("Rain")] = 0;
+
         FoundStates = new List<int>();
     }
 
@@ -34,20 +48,37 @@ public class DetectHydroStates : MonoBehaviour
         while (true)
         {
             Collider2D[] neighbors = transform.position.GetNeighbors(detectionRadius);
-            foreach (Collider2D neighbor in neighbors)
-            {
-                bool isHydroState = neighbor.gameObject.layer == LayerMask.NameToLayer("Metaball")
-                                 || neighbor.gameObject.layer == LayerMask.NameToLayer("Vapor")
-                                 || neighbor.gameObject.layer == LayerMask.NameToLayer("Cloud")
-                                 || neighbor.gameObject.layer == LayerMask.NameToLayer("Rain");
 
-                if (isHydroState && !FoundStates.Contains(neighbor.gameObject.layer))
+            IEnumerable<int> neighborLayers = neighbors.Select(a => a.gameObject.layer).Distinct().Where(a => layerDetectionCounts.Keys.Contains(a));
+
+            foreach (int keyLayer in layerDetectionCounts.Keys.OfType<int>().ToList())
+            {
+                if (neighborLayers.Contains(keyLayer) && layerDetectionCounts[keyLayer] < detectionCountThreshold)
                 {
-                    FoundStates.Add(neighbor.gameObject.layer);
+                    layerDetectionCounts[keyLayer]++;
+                }
+                else if (layerDetectionCounts[keyLayer] > 0)
+                {
+                    layerDetectionCounts[keyLayer]--;
+                }
+
+                if (!FoundStates.Contains(keyLayer) && layerDetectionCounts[keyLayer] >= detectionCountThreshold)
+                {
+                    Debug.Log("Detected " + LayerMask.LayerToName(keyLayer));
+                    FoundStates.Add(keyLayer);
                 }
             }
 
             yield return null;
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (!showGizmos)
+            return;
+
+        Gizmos.color = new Color(0, 0, 1, 0.5F);
+        Gizmos.DrawSphere(transform.position, detectionRadius);
     }
 }

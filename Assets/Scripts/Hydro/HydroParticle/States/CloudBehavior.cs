@@ -3,7 +3,6 @@
 public class CloudBehavior : HydroStateBehavior
 {
     private const float clusterFadeThreshold = 0.75F;
-    private const float clusterForce = 0.1F;
 
     private float cloudFadePercent;
     private float CloudFadePercent
@@ -21,7 +20,6 @@ public class CloudBehavior : HydroStateBehavior
 
     public override void InitializeState()
     {
-        gameObject.layer = LayerMask.NameToLayer("Vapor");
         Rigidbody.gravityScale = 0;
         CloudFadePercent = 0;
 
@@ -32,6 +30,7 @@ public class CloudBehavior : HydroStateBehavior
     {
         gameObject.layer = LayerMask.NameToLayer("Vapor");
         Rigidbody.angularDrag = 0;
+        Rigidbody.mass = 0.1F;
         HeatableObject.HeatPenetration = HydroManager.VaporProperties.HeatPenetration;
         MoleculeVibration.EnergyLevel = HydroManager.HeatProperties.MaximumEnergyLevel;
     }
@@ -40,6 +39,7 @@ public class CloudBehavior : HydroStateBehavior
     {
         gameObject.layer = LayerMask.NameToLayer("Cloud");
         Rigidbody.angularDrag = HydroManager.CloudProperties.Drag;
+        Rigidbody.mass = 0.3F;
         HeatableObject.HeatPenetration = HydroManager.CloudProperties.HeatPenetration;
         MoleculeVibration.EnergyLevel = Mathf.Lerp(HydroManager.HeatProperties.MinimumEnergyLevel, HydroManager.HeatProperties.MaximumEnergyLevel, 0.5F);
     }
@@ -78,7 +78,7 @@ public class CloudBehavior : HydroStateBehavior
         }
 
         Vector2 direction = averageVector.normalized;
-        Rigidbody.AddForce(direction * clusterForce);
+        Rigidbody.AddForce(direction * HydroManager.CloudProperties.BaseAcceleration);
     }
 
     public override void RunGraphicsBehavior()
@@ -105,6 +105,6 @@ public class CloudBehavior : HydroStateBehavior
     public override void RunTemperatureBehavior()
     {
         if (CloudFadePercent >= clusterFadeThreshold)
-            HeatableObject.AddHeat(HydroManager.HeatProperties.AmbientTemperatureChange * Time.deltaTime);
+            HeatableObject.AddHeat(HydroManager.HeatProperties.CurrentAmbientTemperatureChange * Time.deltaTime);
     }
 }

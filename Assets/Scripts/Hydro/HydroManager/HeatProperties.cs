@@ -6,17 +6,57 @@ public class HeatProperties
 {
     [SerializeField]
     [Range(-10, 10)]
-    private float ambientTemperatureChange;
-    public float AmbientTemperatureChange
+    private float minimumAmbientTemperatureChange;
+    public float MinimumAmbientTemperatureChange
     {
         get
         {
-            return ambientTemperatureChange;
+            return minimumAmbientTemperatureChange;
         }
 
         set
         {
-            ambientTemperatureChange = value;
+            minimumAmbientTemperatureChange = value;
+        }
+    }
+
+    [SerializeField]
+    [Range(-10, 10)]
+    private float maximumAmbientTemperatureChange;
+    public float MaximumAmbientTemperatureChange
+    {
+        get
+        {
+            return maximumAmbientTemperatureChange;
+        }
+
+        set
+        {
+            maximumAmbientTemperatureChange = value;
+        }
+    }
+
+    [SerializeField]
+    [Range(-10, 10)]
+    private float currentAmbientTemperatureChange;
+    public float CurrentAmbientTemperatureChange
+    {
+        get
+        {
+            return currentAmbientTemperatureChange;
+        }
+
+        set
+        {
+            currentAmbientTemperatureChange = value;
+        }
+    }
+
+    public float AmbientTemperatureChangePercentage
+    {
+        get
+        {
+            return (CurrentAmbientTemperatureChange - MinimumAmbientTemperatureChange) / (MaximumAmbientTemperatureChange - MinimumAmbientTemperatureChange);
         }
     }
 

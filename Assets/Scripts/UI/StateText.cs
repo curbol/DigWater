@@ -34,11 +34,8 @@ public class StateText : MonoBehaviour
 
             string stateText = "";
 
-            if (detectHydroStates.FoundStates.Contains(LayerMask.NameToLayer("Metaball")))
-                stateText += "Liquid   ";
-
             if (detectHydroStates.FoundStates.Contains(LayerMask.NameToLayer("Vapor")))
-                stateText += "Vapor   ";
+                stateText += "Evaporation   ";
 
             if (detectHydroStates.FoundStates.Contains(LayerMask.NameToLayer("Cloud")))
                 stateText += "Condensation   ";

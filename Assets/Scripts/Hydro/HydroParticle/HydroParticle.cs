@@ -99,29 +99,68 @@ public class HydroParticle : MonoBehaviour
     {
         while (true)
         {
-            if (!(CurrentBehavior is WaterBehavior) && WaterBehavior.PercentToVaporizationPoint < 1)
-            {
-                CurrentBehavior = WaterBehavior;
-                CurrentBehavior.InitializeState();
-            }
-            else if (!(CurrentBehavior is VaporBehavior) && !InCloudZone && WaterBehavior.PercentToVaporizationPoint >= 1)
-            {
-                CurrentBehavior = VaporBehavior;
-                CurrentBehavior.InitializeState();
-            }
-            else if (!(CurrentBehavior is CloudBehavior) && InCloudZone && WaterBehavior.PercentToVaporizationPoint >= 1)
-            {
-                CurrentBehavior = CloudBehavior;
-                CurrentBehavior.InitializeState();
-            }
+            if (HydroManager.HeatProperties.AmbientTemperatureChangePercentage <= 0.25F)
+                UpdateStateFirstQuarter();
+            else if (HydroManager.HeatProperties.AmbientTemperatureChangePercentage <= 0.50F)
+                UpdateStateSecondQuarter();
+            else if (HydroManager.HeatProperties.AmbientTemperatureChangePercentage <= 0.75F)
+                UpdateStateThirdQuarter();
+            else if (HydroManager.HeatProperties.AmbientTemperatureChangePercentage <= 1)
+                UpdateStateForthQuarter();
 
             yield return null;
         }
     }
 
+    private void UpdateStateFirstQuarter()
+    {
+    }
+
+    private void UpdateStateSecondQuarter()
+    {
+        if (!(CurrentBehavior is WaterBehavior) && WaterBehavior.PercentToVaporizationPoint < 1)
+        {
+            CurrentBehavior = WaterBehavior;
+            CurrentBehavior.InitializeState();
+        }
+        else if (!(CurrentBehavior is VaporBehavior) && !InCloudZone && WaterBehavior.PercentToVaporizationPoint >= 1)
+        {
+            CurrentBehavior = VaporBehavior;
+            CurrentBehavior.InitializeState();
+        }
+        else if (!(CurrentBehavior is CloudBehavior) && InCloudZone && WaterBehavior.PercentToVaporizationPoint >= 1)
+        {
+            CurrentBehavior = CloudBehavior;
+            CurrentBehavior.InitializeState();
+        }
+    }
+
+    private void UpdateStateThirdQuarter()
+    {
+        if (!(CurrentBehavior is VaporBehavior) && !InCloudZone && WaterBehavior.PercentToVaporizationPoint >= 1)
+        {
+            CurrentBehavior = VaporBehavior;
+            CurrentBehavior.InitializeState();
+        }
+        else if (!(CurrentBehavior is CloudBehavior) && InCloudZone && WaterBehavior.PercentToVaporizationPoint >= 1)
+        {
+            CurrentBehavior = CloudBehavior;
+            CurrentBehavior.InitializeState();
+        }
+    }
+
+    private void UpdateStateForthQuarter()
+    {
+        if (!(CurrentBehavior is VaporBehavior) && !InCloudZone && WaterBehavior.PercentToVaporizationPoint >= 1)
+        {
+            CurrentBehavior = VaporBehavior;
+            CurrentBehavior.InitializeState();
+        }
+    }
+
     private void OnDrawGizmos()
     {
-        if (!showGizmos)
+        if (!showGizmos || CurrentBehavior == null || CurrentBehavior.HeatableObject == null)
             return;
 
         float medianTemp = HydroManager.HeatProperties.MaximumTemperature / 2;
