@@ -59,6 +59,6 @@ public static class MapManagementExtensions
 
     public static bool InCloudRegion(this Vector2 position)
     {
-        return position.MapY() >= HydroManager.CloudProperties.CloudLevelLowerBound && position.MapY() <= HydroManager.CloudProperties.CloudLevelUpperBound;
+        return position.MapY() >= HydroManager.Cloud.CloudLevelLowerBound && position.MapY() <= HydroManager.Cloud.CloudLevelUpperBound;
     }
 }

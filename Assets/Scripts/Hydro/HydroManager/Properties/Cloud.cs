@@ -2,8 +2,18 @@
 using UnityEngine;
 
 [Serializable]
-public class CloudProperties
+public class Cloud
 {
+    [SerializeField]
+    private Physics physics;
+    public Physics Physics
+    {
+        get
+        {
+            return physics;
+        }
+    }
+
     [SerializeField]
     private Color color;
     public Color Color
@@ -22,37 +32,6 @@ public class CloudProperties
         get
         {
             return fadeRate;
-        }
-    }
-
-    [SerializeField]
-    private float baseAcceleration;
-    public float BaseAcceleration
-    {
-        get
-        {
-            return baseAcceleration;
-        }
-    }
-
-    [SerializeField]
-    private float maximumVelocity;
-    public float MaximumVelocity
-    {
-        get
-        {
-            return maximumVelocity;
-        }
-    }
-
-    [Range(0, 1)]
-    [SerializeField]
-    private float drag;
-    public float Drag
-    {
-        get
-        {
-            return drag;
         }
     }
 

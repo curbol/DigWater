@@ -2,8 +2,18 @@
 using UnityEngine;
 
 [Serializable]
-public class VaporProperties
+public class Liquid
 {
+    [SerializeField]
+    private Physics physics;
+    public Physics Physics
+    {
+        get
+        {
+            return physics;
+        }
+    }
+
     [SerializeField]
     private Color color;
     public Color Color
@@ -15,22 +25,13 @@ public class VaporProperties
     }
 
     [SerializeField]
-    private float baseAcceleration;
-    public float BaseAcceleration
+    [Range(0, 10)]
+    private float deformability;
+    public float Deformability
     {
         get
         {
-            return baseAcceleration;
-        }
-    }
-
-    [SerializeField]
-    private float maximumVelocity;
-    public float MaximumVelocity
-    {
-        get
-        {
-            return maximumVelocity;
+            return deformability;
         }
     }
 

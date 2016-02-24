@@ -6,8 +6,8 @@ public class HydroManager : Singleton<HydroManager>
     private bool showGizmos;
 
     [SerializeField]
-    private HeatProperties heatProperties;
-    public static HeatProperties HeatProperties
+    private Heat heatProperties;
+    public static Heat Heat
     {
         get
         {
@@ -16,8 +16,8 @@ public class HydroManager : Singleton<HydroManager>
     }
 
     [SerializeField]
-    private LiquidProperties liquidProperties;
-    public static LiquidProperties LiquidProperties
+    private Liquid liquidProperties;
+    public static Liquid Liquid
     {
         get
         {
@@ -26,8 +26,8 @@ public class HydroManager : Singleton<HydroManager>
     }
 
     [SerializeField]
-    private VaporProperties vaporProperties;
-    public static VaporProperties VaporProperties
+    private Vapor vaporProperties;
+    public static Vapor Vapor
     {
         get
         {
@@ -36,8 +36,8 @@ public class HydroManager : Singleton<HydroManager>
     }
 
     [SerializeField]
-    private CloudProperties cloudProperties;
-    public static CloudProperties CloudProperties
+    private Cloud cloudProperties;
+    public static Cloud Cloud
     {
         get
         {
@@ -47,17 +47,10 @@ public class HydroManager : Singleton<HydroManager>
 
     public void SetHeat(float value)
     {
-        if (HeatProperties.CurrentAmbientTemperatureChange == value)
+        if (Heat.CurrentAmbientTemperatureChange == value)
             return;
 
-        HeatProperties.CurrentAmbientTemperatureChange = value;
-        //PlayerPrefs.SetFloat("HeatLevel", HeatProperties.AmbientTemperatureChange);
-        //SceneManager.LoadScene("DigWater");
-    }
-
-    private void Awake()
-    {
-        //HeatProperties.AmbientTemperatureChange = PlayerPrefs.GetFloat("HeatLevel", HeatProperties.AmbientTemperatureChange);
+        Heat.CurrentAmbientTemperatureChange = value;
     }
 
     private void OnDrawGizmos()
@@ -69,11 +62,11 @@ public class HydroManager : Singleton<HydroManager>
         float mapAdjustmentX = MapManager.Map.Width / 2;
 
         Gizmos.color = new Color(0F, 0.2F, 1F, 0.8F);
-        Gizmos.DrawLine(new Vector2(mapAdjustmentX, CloudProperties.CloudLevelUpperBound - mapAdjustmentY), new Vector2(-mapAdjustmentX, CloudProperties.CloudLevelUpperBound - mapAdjustmentY));
-        Gizmos.DrawLine(new Vector2(mapAdjustmentX, CloudProperties.CloudLevelLowerBound - mapAdjustmentY), new Vector2(-mapAdjustmentX, CloudProperties.CloudLevelLowerBound - mapAdjustmentY));
+        Gizmos.DrawLine(new Vector2(mapAdjustmentX, Cloud.CloudLevelUpperBound - mapAdjustmentY), new Vector2(-mapAdjustmentX, Cloud.CloudLevelUpperBound - mapAdjustmentY));
+        Gizmos.DrawLine(new Vector2(mapAdjustmentX, Cloud.CloudLevelLowerBound - mapAdjustmentY), new Vector2(-mapAdjustmentX, Cloud.CloudLevelLowerBound - mapAdjustmentY));
 
         Gizmos.color = new Color(0F, 0.4F, 0.8F, 0.8F);
-        Gizmos.DrawLine(new Vector2(mapAdjustmentX, CloudProperties.EquilibriumZoneUpperBound - mapAdjustmentY), new Vector2(-mapAdjustmentX, CloudProperties.EquilibriumZoneUpperBound - mapAdjustmentY));
-        Gizmos.DrawLine(new Vector2(mapAdjustmentX, CloudProperties.EquilibriumZoneLowerBound - mapAdjustmentY), new Vector2(-mapAdjustmentX, CloudProperties.EquilibriumZoneLowerBound - mapAdjustmentY));
+        Gizmos.DrawLine(new Vector2(mapAdjustmentX, Cloud.EquilibriumZoneUpperBound - mapAdjustmentY), new Vector2(-mapAdjustmentX, Cloud.EquilibriumZoneUpperBound - mapAdjustmentY));
+        Gizmos.DrawLine(new Vector2(mapAdjustmentX, Cloud.EquilibriumZoneLowerBound - mapAdjustmentY), new Vector2(-mapAdjustmentX, Cloud.EquilibriumZoneLowerBound - mapAdjustmentY));
     }
 }

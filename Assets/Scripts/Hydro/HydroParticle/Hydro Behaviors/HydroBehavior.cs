@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
-public abstract class HydroStateBehavior : MonoBehaviour
+public abstract class HydroBehavior : MonoBehaviour
 {
     [SerializeField]
     private Rigidbody2D rigidBody;
@@ -60,9 +61,53 @@ public abstract class HydroStateBehavior : MonoBehaviour
 
     public abstract void InitializeState();
 
-    public abstract void RunPhysicsBehavior();
+    public void StartBehavior()
+    {
+        StartCoroutine("RunPhysicsBehavior");
+        StartCoroutine("RunGraphicsBehavior");
+        StartCoroutine("RunTemperatureBehavior");
+    }
 
-    public abstract void RunGraphicsBehavior();
+    public void StopBehavior()
+    {
+        StopCoroutine("RunPhysicsBehavior");
+        StopCoroutine("RunGraphicsBehavior");
+        StopCoroutine("RunTemperatureBehavior");
+    }
 
-    public abstract void RunTemperatureBehavior();
+    private IEnumerator RunPhysicsBehavior()
+    {
+        while (true)
+        {
+            UpdatePhysicsBehavior();
+
+            yield return new WaitForFixedUpdate();
+        }
+    }
+
+    private IEnumerator RunGraphicsBehavior()
+    {
+        while (true)
+        {
+            UpdateGraphicsBehavior();
+
+            yield return new WaitForEndOfFrame();
+        }
+    }
+
+    private IEnumerator RunTemperatureBehavior()
+    {
+        while (true)
+        {
+            UpdateTemperatureBehavior();
+
+            yield return new WaitForFixedUpdate();
+        }
+    }
+
+    protected abstract void UpdatePhysicsBehavior();
+
+    protected abstract void UpdateGraphicsBehavior();
+
+    protected abstract void UpdateTemperatureBehavior();
 }

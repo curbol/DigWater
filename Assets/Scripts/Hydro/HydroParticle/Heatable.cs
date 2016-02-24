@@ -28,7 +28,7 @@ public class Heatable : MonoBehaviour
 
         set
         {
-            temperature = Mathf.Clamp(value, 0, HydroManager.HeatProperties.MaximumTemperature);
+            temperature = Mathf.Clamp(value, 0, HydroManager.Heat.MaximumTemperature);
         }
     }
 

@@ -2,7 +2,7 @@
 using UnityEngine;
 
 [Serializable]
-public class HeatProperties
+public class Heat
 {
     [SerializeField]
     [Range(-10, 10)]
@@ -88,7 +88,7 @@ public class HeatProperties
 
     [SerializeField]
     private float vaporizationPoint;
-    public float VaporizationPoint
+    public float EvaporationPoint
     {
         get
         {

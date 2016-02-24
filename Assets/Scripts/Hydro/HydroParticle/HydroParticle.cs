@@ -9,152 +9,142 @@ public class HydroParticle : MonoBehaviour
     private bool showGizmos = true;
 
     [SerializeField]
-    private WaterBehavior waterBehavior;
-    private WaterBehavior WaterBehavior
+    private LiquidBehavior liquidBehavior;
+    private LiquidBehavior LiquidBehavior
     {
         get
         {
-            if (waterBehavior == null)
-                waterBehavior = gameObject.GetSafeComponent<WaterBehavior>();
+            if (liquidBehavior == null)
+                liquidBehavior = gameObject.GetSafeComponent<LiquidBehavior>();
 
-            return waterBehavior;
+            return liquidBehavior;
         }
     }
 
     [SerializeField]
-    private VaporBehavior vaporBehavior;
-    private VaporBehavior VaporBehavior
+    private EvaporationBehavior evaporationBehavior;
+    private EvaporationBehavior EvaporationBehavior
     {
         get
         {
-            if (vaporBehavior == null)
-                vaporBehavior = gameObject.GetSafeComponent<VaporBehavior>();
+            if (evaporationBehavior == null)
+                evaporationBehavior = gameObject.GetSafeComponent<EvaporationBehavior>();
 
-            return vaporBehavior;
+            return evaporationBehavior;
         }
     }
 
     [SerializeField]
-    private CloudBehavior cloudBehavior;
-    private CloudBehavior CloudBehavior
+    private CondensationBehavior condensationBehavior;
+    private CondensationBehavior CondensationBehavior
     {
         get
         {
-            if (cloudBehavior == null)
-                cloudBehavior = gameObject.GetSafeComponent<CloudBehavior>();
+            if (condensationBehavior == null)
+                condensationBehavior = gameObject.GetSafeComponent<CondensationBehavior>();
 
-            return cloudBehavior;
+            return condensationBehavior;
         }
     }
 
-    public HydroStateBehavior CurrentBehavior { get; private set; }
+    public bool IsEvaporated
+    {
+        get
+        {
+            if (CurrentBehavior == null || CurrentBehavior.HeatableObject == null)
+                return false;
+
+            return CurrentBehavior.HeatableObject.Temperature >= HydroManager.Heat.EvaporationPoint;
+        }
+    }
 
     public bool InCloudZone
     {
         get
         {
-            return transform.MapY() >= HydroManager.CloudProperties.CloudLevelLowerBound && transform.MapY() <= HydroManager.CloudProperties.CloudLevelUpperBound;
+            return transform.MapY() >= HydroManager.Cloud.CloudLevelLowerBound && transform.MapY() <= HydroManager.Cloud.CloudLevelUpperBound;
+        }
+    }
+
+    public bool TemperatureInFirstQuarter
+    {
+        get
+        {
+            return HydroManager.Heat.AmbientTemperatureChangePercentage <= 0.25F;
+        }
+    }
+
+    public bool TemperatureInSecondQuarter
+    {
+        get
+        {
+            return HydroManager.Heat.AmbientTemperatureChangePercentage > 0.25F && HydroManager.Heat.AmbientTemperatureChangePercentage <= 0.5F;
+        }
+    }
+
+    public bool TemperatureInThirdQuarter
+    {
+        get
+        {
+            return HydroManager.Heat.AmbientTemperatureChangePercentage > 0.5F && HydroManager.Heat.AmbientTemperatureChangePercentage <= 0.75F;
+        }
+    }
+
+    public bool TemperatureInForthQuarter
+    {
+        get
+        {
+            return HydroManager.Heat.AmbientTemperatureChangePercentage > 0.75F;
+        }
+    }
+
+    private HydroBehavior currentBehavior;
+    public HydroBehavior CurrentBehavior
+    {
+        get
+        {
+            return currentBehavior;
+        }
+
+        private set
+        {
+            if (currentBehavior != null)
+                currentBehavior.StopBehavior();
+
+            currentBehavior = value;
+            if (currentBehavior != null)
+            {
+                currentBehavior.InitializeState();
+                currentBehavior.StartBehavior();
+            }
         }
     }
 
     private void Start()
     {
-        CurrentBehavior = WaterBehavior;
-        CurrentBehavior.InitializeState();
+        CurrentBehavior = LiquidBehavior;
 
         StartCoroutine(UpdateState());
-        StartCoroutine(RunPhysicsBehavior());
-        StartCoroutine(RunGraphicsBehavior());
-        StartCoroutine(RunTemperatureBehavior());
-    }
-
-    private IEnumerator RunPhysicsBehavior()
-    {
-        while (true)
-        {
-            CurrentBehavior.RunPhysicsBehavior();
-            yield return new WaitForFixedUpdate();
-        }
-    }
-
-    private IEnumerator RunGraphicsBehavior()
-    {
-        while (true)
-        {
-            CurrentBehavior.RunGraphicsBehavior();
-            yield return new WaitForEndOfFrame();
-        }
-    }
-
-    private IEnumerator RunTemperatureBehavior()
-    {
-        while (true)
-        {
-            CurrentBehavior.RunTemperatureBehavior();
-            yield return new WaitForFixedUpdate();
-        }
     }
 
     private IEnumerator UpdateState()
     {
         while (true)
         {
-            if (HydroManager.HeatProperties.AmbientTemperatureChangePercentage <= 0.25F)
-                UpdateStateFirstQuarter();
-            else if (HydroManager.HeatProperties.AmbientTemperatureChangePercentage <= 0.50F)
-                UpdateStateSecondQuarter();
-            else if (HydroManager.HeatProperties.AmbientTemperatureChangePercentage <= 0.75F)
-                UpdateStateThirdQuarter();
-            else if (HydroManager.HeatProperties.AmbientTemperatureChangePercentage <= 1)
-                UpdateStateForthQuarter();
+            if (!(CurrentBehavior is LiquidBehavior) && TemperatureInSecondQuarter && !IsEvaporated)
+            {
+                CurrentBehavior = LiquidBehavior;
+            }
+            else if (!(CurrentBehavior is EvaporationBehavior) && !TemperatureInFirstQuarter && IsEvaporated && !InCloudZone)
+            {
+                CurrentBehavior = EvaporationBehavior;
+            }
+            else if (!(CurrentBehavior is CondensationBehavior) && !TemperatureInForthQuarter && IsEvaporated && InCloudZone)
+            {
+                CurrentBehavior = CondensationBehavior;
+            }
 
             yield return null;
-        }
-    }
-
-    private void UpdateStateFirstQuarter()
-    {
-    }
-
-    private void UpdateStateSecondQuarter()
-    {
-        if (!(CurrentBehavior is WaterBehavior) && WaterBehavior.PercentToVaporizationPoint < 1)
-        {
-            CurrentBehavior = WaterBehavior;
-            CurrentBehavior.InitializeState();
-        }
-        else if (!(CurrentBehavior is VaporBehavior) && !InCloudZone && WaterBehavior.PercentToVaporizationPoint >= 1)
-        {
-            CurrentBehavior = VaporBehavior;
-            CurrentBehavior.InitializeState();
-        }
-        else if (!(CurrentBehavior is CloudBehavior) && InCloudZone && WaterBehavior.PercentToVaporizationPoint >= 1)
-        {
-            CurrentBehavior = CloudBehavior;
-            CurrentBehavior.InitializeState();
-        }
-    }
-
-    private void UpdateStateThirdQuarter()
-    {
-        if (!(CurrentBehavior is VaporBehavior) && !InCloudZone && WaterBehavior.PercentToVaporizationPoint >= 1)
-        {
-            CurrentBehavior = VaporBehavior;
-            CurrentBehavior.InitializeState();
-        }
-        else if (!(CurrentBehavior is CloudBehavior) && InCloudZone && WaterBehavior.PercentToVaporizationPoint >= 1)
-        {
-            CurrentBehavior = CloudBehavior;
-            CurrentBehavior.InitializeState();
-        }
-    }
-
-    private void UpdateStateForthQuarter()
-    {
-        if (!(CurrentBehavior is VaporBehavior) && !InCloudZone && WaterBehavior.PercentToVaporizationPoint >= 1)
-        {
-            CurrentBehavior = VaporBehavior;
-            CurrentBehavior.InitializeState();
         }
     }
 
@@ -163,7 +153,7 @@ public class HydroParticle : MonoBehaviour
         if (!showGizmos || CurrentBehavior == null || CurrentBehavior.HeatableObject == null)
             return;
 
-        float medianTemp = HydroManager.HeatProperties.MaximumTemperature / 2;
+        float medianTemp = HydroManager.Heat.MaximumTemperature / 2;
 
         if (CurrentBehavior.HeatableObject.Temperature <= medianTemp)
         {
