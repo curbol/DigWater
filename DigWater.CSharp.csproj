@@ -91,14 +91,14 @@
     <Compile Include="Assets\Scripts\Magnifying Glass\ChangeCursor.cs" />
     <Compile Include="Assets\Scripts\Magnifying Glass\DetectHydroStates.cs" />
     <Compile Include="Assets\Scripts\Magnifying Glass\FollowMouse.cs" />
+    <Compile Include="Assets\Scripts\Map\MapGeneration\Extensions\MapCreationExtensions.cs" />
+    <Compile Include="Assets\Scripts\Map\MapGeneration\Extensions\MapExtensions.cs" />
+    <Compile Include="Assets\Scripts\Map\MapGeneration\Extensions\MapManagementExtensions.cs" />
+    <Compile Include="Assets\Scripts\Map\MapGeneration\Extensions\SoilTypeExtensions.cs" />
     <Compile Include="Assets\Scripts\Map\MapGeneration\Map.cs" />
     <Compile Include="Assets\Scripts\Map\MapGeneration\MapController.cs" />
-    <Compile Include="Assets\Scripts\Map\MapGeneration\MapCreationExtensions.cs" />
-    <Compile Include="Assets\Scripts\Map\MapGeneration\MapExtensions.cs" />
     <Compile Include="Assets\Scripts\Map\MapGeneration\MapGenerator.cs" />
-    <Compile Include="Assets\Scripts\Map\MapGeneration\MapManagementExtensions.cs" />
     <Compile Include="Assets\Scripts\Map\MapGeneration\MapManager.cs" />
-    <Compile Include="Assets\Scripts\Map\MapGeneration\SoilTypeExtensions.cs" />
     <Compile Include="Assets\Scripts\Map\MapGeneration\SoilTypeMetadata.cs" />
     <Compile Include="Assets\Scripts\Map\MapGeneration\SoilTypeMetadataManager.cs" />
     <Compile Include="Assets\Scripts\Map\MeshGeneration\ControlMeshVertex.cs" />
@@ -110,18 +110,19 @@
     <Compile Include="Assets\Scripts\UI\HeatSliderController.cs" />
     <Compile Include="Assets\Scripts\UI\StateText.cs" />
     <Compile Include="Assets\Scripts\Utility\Coordinate.cs" />
-    <Compile Include="Assets\Scripts\Utility\CoordinateExtenstions.cs" />
+    <Compile Include="Assets\Scripts\Utility\Extensions\BooleanExtensions.cs" />
+    <Compile Include="Assets\Scripts\Utility\Extensions\CoordinateExtensions.cs" />
+    <Compile Include="Assets\Scripts\Utility\Extensions\GridArrayExtensions.cs" />
+    <Compile Include="Assets\Scripts\Utility\Extensions\TransformExtensions.cs" />
+    <Compile Include="Assets\Scripts\Utility\Extensions\Vector2Extentions.cs" />
     <Compile Include="Assets\Scripts\Utility\FindComponents.cs" />
-    <Compile Include="Assets\Scripts\Utility\GridArrayExtensions.cs" />
     <Compile Include="Assets\Scripts\Utility\Shuffler.cs" />
     <Compile Include="Assets\Scripts\Utility\Singleton.cs" />
-    <Compile Include="Assets\Scripts\Utility\TransformExtensions.cs" />
-    <Compile Include="Assets\Scripts\Utility\Vector2Extentions.cs" />
     <Compile Include="Assets\Scripts\Wind\WindController.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Shaders\CircleMask.shader" />
-    <None Include="Assets\Shaders\Metaball.shader" />
+    <None Include="Assets\Graphics\Shaders\CircleMask.shader" />
+    <None Include="Assets\Graphics\Shaders\Metaball.shader" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>

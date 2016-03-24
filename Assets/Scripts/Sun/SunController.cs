@@ -27,7 +27,7 @@ public class SunController : MonoBehaviour
             var hitObjects = new List<object>();
             for (int i = startRayAngle; i <= endRayAngle; i++)
             {
-                Vector2 direction = Vector2Extentions.Vector2FromAngle(i);
+                Vector2 direction = i.DegreeToVector();
                 RaycastHit2D[] raycastHits = Physics2D.RaycastAll(transform.position, direction, Mathf.Infinity);
                 float heatPercent = 1;
 
@@ -59,7 +59,7 @@ public class SunController : MonoBehaviour
         for (int i = startRayAngle; i <= endRayAngle; i++)
         {
             Gizmos.color = new Color(0.5F, 0.5F, 0.2F, 0.3F);
-            Gizmos.DrawLine((Vector2)transform.position, (Vector2)transform.position + Vector2Extentions.Vector2FromAngle(i) * 10);
+            Gizmos.DrawLine((Vector2)transform.position, (Vector2)transform.position + i.DegreeToVector() * 10);
         }
     }
 }

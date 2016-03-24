@@ -25,47 +25,23 @@ public class MapController : MonoBehaviour
             if (soilType.Material() == null)
                 continue;
 
-            bool redraw = false;
             bool[,] bitMap = MapManager.Map.GetSoilBitMap(soilType);
+            bool redraw = SoilMapHasChanged(soilType, bitMap);
 
-            if (!soilBitMaps.ContainsKey(soilType))
+            if (redraw.IsFalse() && forceRedraw.IsFalse())
+                continue;
+
+            MeshData meshData = bitMap.GetMarchingSquaresMeshData(MapManager.Map.Scale);
+            Mesh mesh = meshData.BuildMesh();
+            GameObject soilMeshHolder = transform.CreateUniqueChildGameObject(soilType.ToString());
+            soilMeshHolder.AddComponent<MeshFilter>().sharedMesh = mesh;
+            soilMeshHolder.AddComponent<MeshRenderer>().materials = new Material[] { soilType.Material() };
+
+            if (soilType.IsCollidable())
             {
-                soilBitMaps.Add(soilType, bitMap);
-                redraw = true;
-            }
-
-            if (!bitMap.Cast<bool>().SequenceEqual(soilBitMaps[soilType].Cast<bool>()))
-            {
-                soilBitMaps[soilType] = bitMap;
-                redraw = true;
-            }
-
-            if (redraw || forceRedraw)
-            {
-                MeshData meshData = bitMap.GetMarchingSquaresMeshData(MapManager.Map.Scale);
-                GameObject meshHolder = GetUniqueChildGameObject(transform, soilType.ToString());
-                meshHolder.AddComponent<MeshFilter>().sharedMesh = meshData.GetMesh();
-                meshHolder.AddComponent<MeshRenderer>().materials = new Material[] { soilType.Material() };
-
-                if (soilType.IsCollidable())
-                {
-                    CreateEdgeColliders(meshHolder.transform, meshData, soilType.PhysicsMaterial());
-                }
+                CreateEdgeColliders(soilMeshHolder.transform, meshData, soilType.PhysicsMaterial());
             }
         }
-    }
-
-    private static GameObject GetUniqueChildGameObject(Transform transform, string gameObjectName)
-    {
-        if (transform.FindChild(gameObjectName))
-        {
-            DestroyImmediate(transform.FindChild(gameObjectName).gameObject);
-        }
-
-        GameObject gameObjectHolder = new GameObject(gameObjectName);
-        gameObjectHolder.transform.parent = transform;
-
-        return gameObjectHolder;
     }
 
     private void Awake()
@@ -73,11 +49,28 @@ public class MapController : MonoBehaviour
         RedrawSoilMesh();
     }
 
+    private bool SoilMapHasChanged(SoilType soilType, bool[,] bitMap)
+    {
+        bool hasChanged = false;
+        if (soilBitMaps.ContainsKey(soilType).IsFalse())
+        {
+            soilBitMaps.Add(soilType, bitMap);
+            hasChanged = true;
+        }
+        else if (bitMap.Cast<bool>().SequenceEqual(soilBitMaps[soilType].Cast<bool>()).IsFalse())
+        {
+            soilBitMaps[soilType] = bitMap;
+            hasChanged = true;
+        }
+
+        return hasChanged;
+    }
+
     private void CreateEdgeColliders(Transform parent, MeshData meshData, PhysicsMaterial2D physicsMaterial = null)
     {
-        GameObject edgeColliderHolder = GetUniqueChildGameObject(parent, "Edge Colliders");
+        GameObject edgeColliderHolder = parent.CreateUniqueChildGameObject("Edge Colliders");
 
-        foreach (Vector2[] edgePoints in meshData.GetMeshEdges())
+        foreach (Vector2[] edgePoints in meshData.BuildMeshEdges())
         {
             EdgeCollider2D edgeCollider = edgeColliderHolder.AddComponent<EdgeCollider2D>();
             edgeCollider.points = edgePoints;

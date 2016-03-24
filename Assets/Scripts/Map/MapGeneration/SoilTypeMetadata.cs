@@ -65,6 +65,21 @@ public class SoilTypeMetadata
     }
 
     [SerializeField]
+    private Physics fluidPhysics;
+    public Physics FluidPhysics
+    {
+        get
+        {
+            return fluidPhysics;
+        }
+
+        set
+        {
+            fluidPhysics = value;
+        }
+    }
+
+    [SerializeField]
     private bool isDiggable;
     public bool IsDiggable
     {

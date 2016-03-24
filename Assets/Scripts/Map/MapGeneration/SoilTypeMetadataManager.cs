@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class SoilTypeMetadataManager : MonoBehaviour
+public class SoilTypeMetadataManager : Singleton<SoilTypeMetadataManager>
 {
     [SerializeField]
     private SoilTypeMetadata[] soilTypeMetadata;
@@ -9,24 +9,6 @@ public class SoilTypeMetadataManager : MonoBehaviour
         get
         {
             return Instance.soilTypeMetadata;
-        }
-    }
-
-    private static SoilTypeMetadataManager instance;
-    private static SoilTypeMetadataManager Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
-                instance = (SoilTypeMetadataManager)FindObjectOfType(typeof(SoilTypeMetadataManager));
-                if (instance == null)
-                {
-                    instance = new GameObject("SoilTypeMetadataManager").AddComponent<SoilTypeMetadataManager>();
-                }
-            }
-
-            return instance;
         }
     }
 }

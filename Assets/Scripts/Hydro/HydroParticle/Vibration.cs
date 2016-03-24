@@ -37,7 +37,7 @@ public class Vibration : MonoBehaviour
     {
         while (true)
         {
-            Vector2 vibrationDirection = Vector2Extentions.Vector2FromAngle(vibrationAngle);
+            Vector2 vibrationDirection = vibrationAngle.DegreeToVector();
             Vector2 minPoint = (Vector2)transformToManipulate.parent.position - vibrationDirection * vibrationTravelDistance;
             Vector2 maxPoint = (Vector2)transformToManipulate.parent.position + vibrationDirection * vibrationTravelDistance;
             transformToManipulate.position = Vector2.Lerp(minPoint, maxPoint, (Mathf.Sin(Time.time * EnergyLevel) + 1) / 2);

@@ -27,21 +27,17 @@ public static class FindComponents
         return component;
     }
 
-    public static List<I> FindObjectsOfInterface<I>() where I : class
+    public static IEnumerator<I> FindObjectsOfInterface<I>() where I : class
     {
-        MonoBehaviour[] monoBehaviours = MonoBehaviour.FindObjectsOfType<MonoBehaviour>();
-        List<I> list = new List<I>();
-
+        MonoBehaviour[] monoBehaviours = Object.FindObjectsOfType<MonoBehaviour>();
         foreach (MonoBehaviour behaviour in monoBehaviours)
         {
             I component = behaviour.GetComponent(typeof(I)) as I;
 
             if (component != null)
             {
-                list.Add(component);
+                yield return component;
             }
         }
-
-        return list;
     }
 }

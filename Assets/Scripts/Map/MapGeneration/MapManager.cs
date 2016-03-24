@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class MapManager : Singleton<MapManager>
 {
@@ -19,15 +20,6 @@ public class MapManager : Singleton<MapManager>
         }
     }
 
-    public static bool MouseIsInsideMap
-    {
-        get
-        {
-            Vector2 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            return mouseWorldPosition.y > -Map.Height / 2 && mouseWorldPosition.y < Map.Height / 2 && mouseWorldPosition.x > -Map.Width / 2 && mouseWorldPosition.x < Map.Width / 2;
-        }
-    }
-
     private void OnDrawGizmos()
     {
         if (!showGizmos)
@@ -37,38 +29,13 @@ public class MapManager : Singleton<MapManager>
         {
             for (int y = 0; y < Map.SizeY; y++)
             {
-                switch (Map[x, y])
-                {
-                    case (SoilType.Bark):
-                        Gizmos.color = Color.cyan;
-                        break;
+                int hash = Enum.GetName(typeof(SoilType), Map[x, y]).GetHashCode();
+                float red = hash * 257 % 256 / 255F;
+                float blue = hash * 313 % 256 / 255F;
+                float green = hash * 379 % 256 / 255F;
 
-                    case (SoilType.Dirt):
-                        Gizmos.color = Color.blue;
-                        break;
-
-                    case (SoilType.Grass):
-                        Gizmos.color = Color.red;
-                        break;
-
-                    case (SoilType.Leaves):
-                        Gizmos.color = Color.magenta;
-                        break;
-
-                    case (SoilType.Rock):
-                        Gizmos.color = Color.black;
-                        break;
-
-                    case (SoilType.Sand):
-                        Gizmos.color = Color.green;
-                        break;
-
-                    default:
-                        Gizmos.color = Color.gray;
-                        break;
-                }
-
-                Gizmos.DrawCube(Map.GetPositionFromCoordinate(x, y), Vector2.one * 0.2F);
+                Gizmos.color = new Color(red, blue, green, 1F);
+                Gizmos.DrawCube(Map.GetPositionFromCoordinate(x, y), Vector2.one * 0.8F);
             }
         }
     }
