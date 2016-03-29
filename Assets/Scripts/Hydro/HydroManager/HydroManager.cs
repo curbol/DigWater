@@ -5,6 +5,25 @@ public class HydroManager : Singleton<HydroManager>
     [SerializeField]
     private bool showGizmos;
 
+	[SerializeField]
+	private List<HydroProperties> HydroProperties;
+
+	public static T GetProperties<T>() where T : HydroProperties
+	{
+		if (HydroProperties == null)
+			HydroProperties = new List<HydroProperties>();
+
+		T properties = HydroProperties.FirstOrDefault(a => a is T);
+
+		if (properties == null) 
+		{
+			properties = new T();
+			HydroProperties.Add(properties);
+		}
+
+		return properties;
+	}
+
     [SerializeField]
     private Heat heatProperties;
     public static Heat Heat
@@ -52,6 +71,11 @@ public class HydroManager : Singleton<HydroManager>
 
         Heat.CurrentAmbientTemperatureChange = value;
     }
+
+	private void Awake()
+	{
+		HydroProperties = new List<HydroProperties>();
+	}
 
     private void OnDrawGizmos()
     {

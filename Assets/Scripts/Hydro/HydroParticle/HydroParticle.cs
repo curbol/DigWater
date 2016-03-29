@@ -2,7 +2,6 @@
 using UnityEngine;
 
 [DisallowMultipleComponent]
-[RequireComponent(typeof(Vibration))]
 public class HydroParticle : MonoBehaviour
 {
     [SerializeField]
