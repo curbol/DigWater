@@ -11,11 +11,11 @@ public class EvaporationBehavior : HydroBehavior
     {
         gameObject.layer = LayerMask.NameToLayer("Vapor");
         Rigidbody.velocity = Rigidbody.velocity.SetX(0);
-        Rigidbody.gravityScale = HydroManager.Vapor.Physics.GravityScale;
-        Rigidbody.angularDrag = HydroManager.Vapor.Physics.AngularDrag;
-        Rigidbody.mass = HydroManager.Vapor.Physics.Mass;
-        HeatableObject.HeatPenetration = HydroManager.Vapor.HeatPenetration;
-        MoleculeVibration.EnergyLevel = HydroManager.Heat.MaximumEnergyLevel;
+        Rigidbody.gravityScale = HydroManager.GetProperties<EvaporationProperties>().Physics.GravityScale;
+        Rigidbody.angularDrag = HydroManager.GetProperties<EvaporationProperties>().Physics.AngularDrag;
+        Rigidbody.mass = HydroManager.GetProperties<EvaporationProperties>().Physics.Mass;
+        HeatableObject.HeatPenetration = HydroManager.GetProperties<EvaporationProperties>().HeatPenetration;
+        MoleculeVibration.EnergyLevel = HydroManager.GetProperties<HeatProperties>().MaximumEnergyLevel;
 
         previousColor = SpriteRenderer.color;
         colorFadePercent = 0;
@@ -29,23 +29,23 @@ public class EvaporationBehavior : HydroBehavior
         if (Rigidbody == null)
             return;
 
-        if (Rigidbody.transform.MapY() < HydroManager.Cloud.CloudLevelLowerBound)
+        if (Rigidbody.transform.MapY() < HydroManager.GetProperties<CondensationProperties>().CloudLevelLowerBound)
         {
-            float percentToCloudLevel = Mathf.Clamp(Rigidbody.transform.MapY() / HydroManager.Cloud.CloudLevel, 0, 1);
-            float minSpeedY = HydroManager.Vapor.Physics.MaximumVelocity;
-            float maxSpeedY = HydroManager.Cloud.Physics.MaximumVelocity;
+            float percentToCloudLevel = Mathf.Clamp(Rigidbody.transform.MapY() / HydroManager.GetProperties<CondensationProperties>().CloudLevel, 0, 1);
+            float minSpeedY = HydroManager.GetProperties<EvaporationProperties>().Physics.HorizontalMaxVelocity;
+            float maxSpeedY = HydroManager.GetProperties<CondensationProperties>().Physics.HorizontalMaxVelocity;
             float currentSpeedY = Mathf.Lerp(minSpeedY, maxSpeedY, percentToCloudLevel);
-            float directionY = Rigidbody.transform.MapY() < HydroManager.Cloud.CloudLevel ? 1 : -1;
+            float directionY = Rigidbody.transform.MapY() < HydroManager.GetProperties<CondensationProperties>().CloudLevel ? 1 : -1;
 
             Rigidbody.velocity = new Vector2(Rigidbody.velocity.x, directionY * currentSpeedY);
         }
-        if (Rigidbody.transform.MapY() < HydroManager.Cloud.EquilibriumZoneLowerBound)
+        if (Rigidbody.transform.MapY() < HydroManager.GetProperties<CondensationProperties>().EquilibriumZoneLowerBound)
         {
-            Rigidbody.gravityScale = Rigidbody.velocity.y < HydroManager.Cloud.Physics.MaximumVelocity ? -HydroManager.Cloud.Physics.GravityScale : 0;
+            Rigidbody.gravityScale = Rigidbody.velocity.y < HydroManager.GetProperties<CondensationProperties>().Physics.HorizontalMaxVelocity ? -HydroManager.GetProperties<CondensationProperties>().Physics.GravityScale : 0;
         }
-        else if (Rigidbody.transform.MapY() > HydroManager.Cloud.EquilibriumZoneUpperBound)
+        else if (Rigidbody.transform.MapY() > HydroManager.GetProperties<CondensationProperties>().EquilibriumZoneUpperBound)
         {
-            Rigidbody.gravityScale = Rigidbody.velocity.y > -HydroManager.Cloud.Physics.MaximumVelocity ? HydroManager.Cloud.Physics.GravityScale : 0;
+            Rigidbody.gravityScale = Rigidbody.velocity.y > -HydroManager.GetProperties<CondensationProperties>().Physics.HorizontalMaxVelocity ? HydroManager.GetProperties<CondensationProperties>().Physics.GravityScale : 0;
         }
         else
         {
@@ -58,7 +58,7 @@ public class EvaporationBehavior : HydroBehavior
         if (SpriteRenderer == null || colorFadePercent < 1)
             return;
 
-        SpriteRenderer.color = HydroManager.Vapor.Color;
+        SpriteRenderer.color = HydroManager.GetProperties<EvaporationProperties>().Color;
     }
 
     protected override void UpdateTemperatureBehavior()
@@ -70,7 +70,7 @@ public class EvaporationBehavior : HydroBehavior
     {
         while (colorFadePercent < 1)
         {
-            SpriteRenderer.color = Color.Lerp(previousColor, HydroManager.Vapor.Color, Mathf.Clamp01(colorFadePercent));
+            SpriteRenderer.color = Color.Lerp(previousColor, HydroManager.GetProperties<EvaporationProperties>().Color, Mathf.Clamp01(colorFadePercent));
             colorFadePercent += colorFadeRate * Time.deltaTime;
 
             yield return new WaitForEndOfFrame();

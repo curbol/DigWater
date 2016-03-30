@@ -4,7 +4,7 @@ public static class Vector2Extentions
 {
     public static Vector2 DegreeToVector(this int degrees)
     {
-        return degrees.DegreeToVector();
+        return ((float)degrees).DegreeToVector();
     }
 
     public static Vector2 DegreeToVector(this float degrees)

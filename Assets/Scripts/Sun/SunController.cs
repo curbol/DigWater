@@ -40,7 +40,7 @@ public class SunController : MonoBehaviour
                     if (showGizmos)
                         Debug.DrawLine((Vector2)transform.position, raycastHit.point, new Color(0.5F, 0.5F, 0.2F, 0.2F));
 
-                    heatableObject.AddHeat(HydroManager.Heat.SunHeat * heatPercent * Time.deltaTime);
+                    heatableObject.AddHeat(HydroManager.GetProperties<HeatProperties>().SunHeat * heatPercent * Time.deltaTime);
                     heatPercent *= heatableObject.HeatPenetration;
 
                     hitObjects.Add(heatableObject);

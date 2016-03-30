@@ -25,7 +25,7 @@ public static class MeshGeneration
         return meshData;
     }
 
-    public static Mesh GetMesh(this MeshData meshData)
+    public static Mesh BuildMesh(this MeshData meshData)
     {
         Mesh mesh = new Mesh();
         mesh.vertices = meshData.GetVertices();
@@ -37,18 +37,11 @@ public static class MeshGeneration
         return mesh;
     }
 
-    public static IEnumerable<Vector2[]> GetMeshEdges(this MeshData meshData)
+    public static IEnumerable<Vector2[]> BuildMeshEdges(this MeshData meshData)
     {
-        foreach (List<int> outline in meshData.GetOutlines().Select(o => o.ToList()))
+        foreach (IEnumerable<int> outline in meshData.GetOutlines())
         {
-            Vector2[] edgePoints = new Vector2[outline.Count];
-
-            for (int i = 0; i < outline.Count; i++)
-            {
-                edgePoints[i] = meshData.Vertices[outline[i]];
-            }
-
-            yield return edgePoints;
+            yield return outline.Select(a => (Vector2)meshData.Vertices[a]).ToArray();
         }
     }
 

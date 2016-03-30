@@ -29,19 +29,19 @@ public class CondensationBehavior : HydroBehavior
     private void InitializeAsVapor()
     {
         gameObject.layer = LayerMask.NameToLayer("Vapor");
-        Rigidbody.angularDrag = HydroManager.Vapor.Physics.AngularDrag;
-        Rigidbody.mass = HydroManager.Vapor.Physics.Mass;
-        HeatableObject.HeatPenetration = HydroManager.Vapor.HeatPenetration;
-        MoleculeVibration.EnergyLevel = HydroManager.Heat.MaximumEnergyLevel;
+        Rigidbody.angularDrag = HydroManager.GetProperties<EvaporationProperties>().Physics.AngularDrag;
+        Rigidbody.mass = HydroManager.GetProperties<EvaporationProperties>().Physics.Mass;
+        HeatableObject.HeatPenetration = HydroManager.GetProperties<EvaporationProperties>().HeatPenetration;
+        MoleculeVibration.EnergyLevel = HydroManager.GetProperties<HeatProperties>().MaximumEnergyLevel;
     }
 
     private void InitializeAsCloud()
     {
         gameObject.layer = LayerMask.NameToLayer("Cloud");
-        Rigidbody.angularDrag = HydroManager.Cloud.Physics.AngularDrag;
-        Rigidbody.mass = HydroManager.Cloud.Physics.Mass;
-        HeatableObject.HeatPenetration = HydroManager.Cloud.HeatPenetration;
-        MoleculeVibration.EnergyLevel = Mathf.Lerp(HydroManager.Heat.MinimumEnergyLevel, HydroManager.Heat.MaximumEnergyLevel, 0.5F);
+        Rigidbody.angularDrag = HydroManager.GetProperties<CondensationProperties>().Physics.AngularDrag;
+        Rigidbody.mass = HydroManager.GetProperties<CondensationProperties>().Physics.Mass;
+        HeatableObject.HeatPenetration = HydroManager.GetProperties<CondensationProperties>().HeatPenetration;
+        MoleculeVibration.EnergyLevel = Mathf.Lerp(HydroManager.GetProperties<HeatProperties>().MinimumEnergyLevel, HydroManager.GetProperties<HeatProperties>().MaximumEnergyLevel, 0.5F);
     }
 
     protected override void UpdatePhysicsBehavior()
@@ -54,13 +54,13 @@ public class CondensationBehavior : HydroBehavior
 
     private void SetCloudLevelGravityScale()
     {
-        if (Rigidbody.transform.MapY() < HydroManager.Cloud.EquilibriumZoneLowerBound)
+        if (Rigidbody.transform.MapY() < HydroManager.GetProperties<CondensationProperties>().EquilibriumZoneLowerBound)
         {
-            Rigidbody.gravityScale = Rigidbody.velocity.y < HydroManager.Cloud.Physics.MaximumVelocity ? -HydroManager.Cloud.Physics.GravityScale : 0;
+            Rigidbody.gravityScale = Rigidbody.velocity.y < HydroManager.GetProperties<CondensationProperties>().Physics.HorizontalMaxVelocity ? -HydroManager.GetProperties<CondensationProperties>().Physics.GravityScale : 0;
         }
-        else if (Rigidbody.transform.MapY() > HydroManager.Cloud.EquilibriumZoneUpperBound)
+        else if (Rigidbody.transform.MapY() > HydroManager.GetProperties<CondensationProperties>().EquilibriumZoneUpperBound)
         {
-            Rigidbody.gravityScale = Rigidbody.velocity.y > -HydroManager.Cloud.Physics.MaximumVelocity ? HydroManager.Cloud.Physics.GravityScale : 0;
+            Rigidbody.gravityScale = Rigidbody.velocity.y > -HydroManager.GetProperties<CondensationProperties>().Physics.HorizontalMaxVelocity ? HydroManager.GetProperties<CondensationProperties>().Physics.GravityScale : 0;
         }
         else
         {
@@ -71,14 +71,14 @@ public class CondensationBehavior : HydroBehavior
     private void AttractToCloudParticles()
     {
         Vector2 averageVector = Vector2.zero;
-        Collider2D[] colliders = ((Vector2)SpriteRenderer.transform.position).GetNeighbors(HydroManager.Cloud.NeighborSearchRadius);
+        Collider2D[] colliders = ((Vector2)SpriteRenderer.transform.position).GetNeighbors(HydroManager.GetProperties<CondensationProperties>().NeighborSearchRadius);
         foreach (Collider2D collider in colliders)
         {
             averageVector += (Vector2)(collider.transform.position - transform.position);
         }
 
         Vector2 direction = averageVector.normalized;
-        Rigidbody.AddForce(direction * HydroManager.Cloud.Physics.GravityScale);
+        Rigidbody.AddForce(direction * HydroManager.GetProperties<CondensationProperties>().Physics.GravityScale);
     }
 
     protected override void UpdateGraphicsBehavior()
@@ -92,19 +92,19 @@ public class CondensationBehavior : HydroBehavior
             InitializeAsVapor();
         }
 
-        bool enoughNeighbors = ((Vector2)SpriteRenderer.transform.position).GetNeighbors(HydroManager.Cloud.NeighborSearchRadius).Length >= HydroManager.Cloud.MinimumNeighborCount;
-        float amountToFade = HydroManager.Cloud.FadeRate * Time.fixedDeltaTime;
+        bool enoughNeighbors = ((Vector2)SpriteRenderer.transform.position).GetNeighbors(HydroManager.GetProperties<CondensationProperties>().NeighborSearchRadius).Length >= HydroManager.GetProperties<CondensationProperties>().MinimumNeighborCount;
+        float amountToFade = HydroManager.GetProperties<CondensationProperties>().FadeRate * Time.fixedDeltaTime;
         CloudFadePercent += enoughNeighbors ? amountToFade : -amountToFade;
 
         if (SpriteRenderer == null)
             return;
 
-        SpriteRenderer.color = Color.Lerp(HydroManager.Vapor.Color, HydroManager.Cloud.Color, CloudFadePercent);
+        SpriteRenderer.color = Color.Lerp(HydroManager.GetProperties<EvaporationProperties>().Color, HydroManager.GetProperties<CondensationProperties>().Color, CloudFadePercent);
     }
 
     protected override void UpdateTemperatureBehavior()
     {
         if (CloudFadePercent >= clusterFadeThreshold)
-            HeatableObject.AddHeat(HydroManager.Heat.CurrentAmbientTemperatureChange * Time.deltaTime);
+            HeatableObject.AddHeat(HydroManager.GetProperties<HeatProperties>().CurrentAmbientTemperatureChange * Time.deltaTime);
     }
 }

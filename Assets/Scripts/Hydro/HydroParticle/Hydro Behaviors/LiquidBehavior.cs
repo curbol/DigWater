@@ -12,11 +12,11 @@ public class LiquidBehavior : HydroBehavior
     public override void InitializeState()
     {
         gameObject.layer = LayerMask.NameToLayer("Metaball");
-        Rigidbody.gravityScale = HydroManager.Liquid.Physics.GravityScale;
-        Rigidbody.angularDrag = HydroManager.Liquid.Physics.AngularDrag;
-        Rigidbody.mass = HydroManager.Liquid.Physics.Mass;
-        HeatableObject.HeatPenetration = HydroManager.Liquid.HeatPenetration;
-        MoleculeVibration.EnergyLevel = HydroManager.Heat.MinimumEnergyLevel;
+        Rigidbody.gravityScale = HydroManager.GetProperties<LiquidProperties>().Physics.GravityScale;
+        Rigidbody.angularDrag = HydroManager.GetProperties<LiquidProperties>().Physics.AngularDrag;
+        Rigidbody.mass = HydroManager.GetProperties<LiquidProperties>().Physics.Mass;
+        HeatableObject.HeatPenetration = 0.5F;
+        MoleculeVibration.EnergyLevel = HydroManager.GetProperties<HeatProperties>().MinimumEnergyLevel;
 
         colorFadePercent = 0;
         StopCoroutine("SetUnheatable");
@@ -31,8 +31,8 @@ public class LiquidBehavior : HydroBehavior
         if (Rigidbody == null)
             return;
 
-        if (Rigidbody.velocity.magnitude > HydroManager.Liquid.Physics.MaximumVelocity)
-            Rigidbody.velocity = Rigidbody.velocity.normalized * HydroManager.Liquid.Physics.MaximumVelocity;
+        if (Rigidbody.velocity.magnitude > HydroManager.GetProperties<LiquidProperties>().Physics.HorizontalMaxVelocity)
+            Rigidbody.velocity = Rigidbody.velocity.normalized * HydroManager.GetProperties<LiquidProperties>().Physics.HorizontalMaxVelocity;
     }
 
     protected override void UpdateGraphicsBehavior()
@@ -40,17 +40,17 @@ public class LiquidBehavior : HydroBehavior
         if (SpriteRenderer == null || colorFadePercent < 1)
             return;
 
-        SpriteRenderer.color = HydroManager.Liquid.Color;
+        SpriteRenderer.color = HydroManager.GetProperties<LiquidProperties>().Color;
     }
 
     protected override void UpdateTemperatureBehavior()
     {
-        HeatableObject.AddHeat(HydroManager.Heat.CurrentAmbientTemperatureChange * Time.deltaTime);
+        HeatableObject.AddHeat(HydroManager.GetProperties<HeatProperties>().CurrentAmbientTemperatureChange * Time.deltaTime);
     }
 
     private IEnumerator SetUnheatable()
     {
-        float temperature = HydroManager.Heat.EvaporationPoint;
+        float temperature = HydroManager.GetProperties<HeatProperties>().EvaporationPoint;
         float newTemperature = random.Next((int)(temperature * 0.5F), (int)(temperature * 0.9F)); ;
 
         while (colorFadePercent < 1 && Rigidbody.velocity.magnitude > 0.01)
@@ -65,15 +65,15 @@ public class LiquidBehavior : HydroBehavior
     {
         int previousLayer = gameObject.layer;
 
-        if (transform.InCloudRegion())
+        if (transform.InCloudZone())
             gameObject.layer = LayerMask.NameToLayer("Rain");
 
-        Color startingColor = HydroManager.Liquid.Color;
+        Color startingColor = HydroManager.GetProperties<LiquidProperties>().Color;
         startingColor.a = 0.35F;
 
         while (colorFadePercent < 1)
         {
-            SpriteRenderer.color = Color.Lerp(startingColor, HydroManager.Liquid.Color, Mathf.Clamp01(colorFadePercent));
+            SpriteRenderer.color = Color.Lerp(startingColor, HydroManager.GetProperties<LiquidProperties>().Color, Mathf.Clamp01(colorFadePercent));
             colorFadePercent += colorFadeRate * Time.deltaTime;
 
             yield return new WaitForEndOfFrame();

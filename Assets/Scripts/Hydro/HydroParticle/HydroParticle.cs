@@ -53,7 +53,7 @@ public class HydroParticle : MonoBehaviour
             if (CurrentBehavior == null || CurrentBehavior.HeatableObject == null)
                 return false;
 
-            return CurrentBehavior.HeatableObject.Temperature >= HydroManager.Heat.EvaporationPoint;
+            return CurrentBehavior.HeatableObject.Temperature >= HydroManager.GetProperties<HeatProperties>().EvaporationPoint;
         }
     }
 
@@ -61,7 +61,7 @@ public class HydroParticle : MonoBehaviour
     {
         get
         {
-            return transform.MapY() >= HydroManager.Cloud.CloudLevelLowerBound && transform.MapY() <= HydroManager.Cloud.CloudLevelUpperBound;
+            return transform.MapY() >= HydroManager.GetProperties<CondensationProperties>().CloudLevelLowerBound && transform.MapY() <= HydroManager.GetProperties<CondensationProperties>().CloudLevelUpperBound;
         }
     }
 
@@ -69,7 +69,7 @@ public class HydroParticle : MonoBehaviour
     {
         get
         {
-            return HydroManager.Heat.AmbientTemperatureChangePercentage <= 0.25F;
+            return HydroManager.GetProperties<HeatProperties>().AmbientTemperatureChangePercentage <= 0.25F;
         }
     }
 
@@ -77,7 +77,7 @@ public class HydroParticle : MonoBehaviour
     {
         get
         {
-            return HydroManager.Heat.AmbientTemperatureChangePercentage > 0.25F && HydroManager.Heat.AmbientTemperatureChangePercentage <= 0.5F;
+            return HydroManager.GetProperties<HeatProperties>().AmbientTemperatureChangePercentage > 0.25F && HydroManager.GetProperties<HeatProperties>().AmbientTemperatureChangePercentage <= 0.5F;
         }
     }
 
@@ -85,7 +85,7 @@ public class HydroParticle : MonoBehaviour
     {
         get
         {
-            return HydroManager.Heat.AmbientTemperatureChangePercentage > 0.5F && HydroManager.Heat.AmbientTemperatureChangePercentage <= 0.75F;
+            return HydroManager.GetProperties<HeatProperties>().AmbientTemperatureChangePercentage > 0.5F && HydroManager.GetProperties<HeatProperties>().AmbientTemperatureChangePercentage <= 0.75F;
         }
     }
 
@@ -93,7 +93,7 @@ public class HydroParticle : MonoBehaviour
     {
         get
         {
-            return HydroManager.Heat.AmbientTemperatureChangePercentage > 0.75F;
+            return HydroManager.GetProperties<HeatProperties>().AmbientTemperatureChangePercentage > 0.75F;
         }
     }
 
@@ -152,7 +152,7 @@ public class HydroParticle : MonoBehaviour
         if (!showGizmos || CurrentBehavior == null || CurrentBehavior.HeatableObject == null)
             return;
 
-        float medianTemp = HydroManager.Heat.MaximumTemperature / 2;
+        float medianTemp = HydroManager.GetProperties<HeatProperties>().MaximumTemperature / 2;
 
         if (CurrentBehavior.HeatableObject.Temperature <= medianTemp)
         {

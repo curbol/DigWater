@@ -1,96 +1,52 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 public class HydroManager : Singleton<HydroManager>
 {
     [SerializeField]
     private bool showGizmos;
 
-	[SerializeField]
-	private List<HydroProperties> HydroProperties;
-
-	public static T GetProperties<T>() where T : HydroProperties
-	{
-		if (HydroProperties == null)
-			HydroProperties = new List<HydroProperties>();
-
-		T properties = HydroProperties.FirstOrDefault(a => a is T);
-
-		if (properties == null) 
-		{
-			properties = new T();
-			HydroProperties.Add(properties);
-		}
-
-		return properties;
-	}
-
     [SerializeField]
-    private Heat heatProperties;
-    public static Heat Heat
-    {
-        get
-        {
-            return Instance.heatProperties;
-        }
-    }
+    private List<IHydroProperties> hydroProperties;
 
-    [SerializeField]
-    private Liquid liquidProperties;
-    public static Liquid Liquid
+    public static T GetProperties<T>() where T : IHydroProperties
     {
-        get
-        {
-            return Instance.liquidProperties;
-        }
-    }
+        if (Instance.hydroProperties == null)
+            Instance.hydroProperties = new List<IHydroProperties>();
 
-    [SerializeField]
-    private Vapor vaporProperties;
-    public static Vapor Vapor
-    {
-        get
-        {
-            return Instance.vaporProperties;
-        }
-    }
+        T properties = Instance.hydroProperties.OfType<T>().FirstOrDefault();
 
-    [SerializeField]
-    private Cloud cloudProperties;
-    public static Cloud Cloud
-    {
-        get
-        {
-            return Instance.cloudProperties;
-        }
+        return properties;
     }
 
     public void SetHeat(float value)
     {
-        if (Heat.CurrentAmbientTemperatureChange == value)
+        HeatProperties heatProperties = GetProperties<HeatProperties>();
+        if (heatProperties == null || heatProperties.CurrentAmbientTemperatureChange == value)
             return;
 
-        Heat.CurrentAmbientTemperatureChange = value;
+        heatProperties.CurrentAmbientTemperatureChange = value;
     }
-
-	private void Awake()
-	{
-		HydroProperties = new List<HydroProperties>();
-	}
 
     private void OnDrawGizmos()
     {
         if (!showGizmos)
             return;
 
+        CondensationProperties condensationProperties = GetProperties<CondensationProperties>();
+        if (condensationProperties == null)
+            return;
+
         float mapAdjustmentY = MapManager.Map.Height / 2;
         float mapAdjustmentX = MapManager.Map.Width / 2;
 
         Gizmos.color = new Color(0F, 0.2F, 1F, 0.8F);
-        Gizmos.DrawLine(new Vector2(mapAdjustmentX, Cloud.CloudLevelUpperBound - mapAdjustmentY), new Vector2(-mapAdjustmentX, Cloud.CloudLevelUpperBound - mapAdjustmentY));
-        Gizmos.DrawLine(new Vector2(mapAdjustmentX, Cloud.CloudLevelLowerBound - mapAdjustmentY), new Vector2(-mapAdjustmentX, Cloud.CloudLevelLowerBound - mapAdjustmentY));
+        Gizmos.DrawLine(new Vector2(mapAdjustmentX, condensationProperties.CloudLevelUpperBound - mapAdjustmentY), new Vector2(-mapAdjustmentX, condensationProperties.CloudLevelUpperBound - mapAdjustmentY));
+        Gizmos.DrawLine(new Vector2(mapAdjustmentX, condensationProperties.CloudLevelLowerBound - mapAdjustmentY), new Vector2(-mapAdjustmentX, condensationProperties.CloudLevelLowerBound - mapAdjustmentY));
 
         Gizmos.color = new Color(0F, 0.4F, 0.8F, 0.8F);
-        Gizmos.DrawLine(new Vector2(mapAdjustmentX, Cloud.EquilibriumZoneUpperBound - mapAdjustmentY), new Vector2(-mapAdjustmentX, Cloud.EquilibriumZoneUpperBound - mapAdjustmentY));
-        Gizmos.DrawLine(new Vector2(mapAdjustmentX, Cloud.EquilibriumZoneLowerBound - mapAdjustmentY), new Vector2(-mapAdjustmentX, Cloud.EquilibriumZoneLowerBound - mapAdjustmentY));
+        Gizmos.DrawLine(new Vector2(mapAdjustmentX, condensationProperties.EquilibriumZoneUpperBound - mapAdjustmentY), new Vector2(-mapAdjustmentX, condensationProperties.EquilibriumZoneUpperBound - mapAdjustmentY));
+        Gizmos.DrawLine(new Vector2(mapAdjustmentX, condensationProperties.EquilibriumZoneLowerBound - mapAdjustmentY), new Vector2(-mapAdjustmentX, condensationProperties.EquilibriumZoneLowerBound - mapAdjustmentY));
     }
 }

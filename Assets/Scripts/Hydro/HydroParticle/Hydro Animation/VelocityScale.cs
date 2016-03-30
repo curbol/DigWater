@@ -46,7 +46,7 @@ public class VelocityScale : MonoBehaviour
             }
 
             Vector2 scale = BaseScale;
-            float scaleModifier = Mathf.Min(Mathf.Abs(rigidBody.velocity.y) * (HydroManager.Liquid.Deformability / 100), 0.5F);
+            float scaleModifier = Mathf.Min(Mathf.Abs(rigidBody.velocity.y) * (HydroManager.GetProperties<LiquidProperties>().Deformability / 100), 0.5F);
             scale.x -= scaleModifier;
             scale.y += scaleModifier;
 
