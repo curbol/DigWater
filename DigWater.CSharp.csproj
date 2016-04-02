@@ -58,12 +58,6 @@
     <Reference Include="UnityEngine.Networking">
       <HintPath>Library\UnityAssemblies\UnityEngine.Networking.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.Networking">
-      <HintPath>Library\UnityAssemblies\UnityEngine.Networking.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>Library\UnityAssemblies\UnityEngine.UI.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEditor">
       <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
     </Reference>
@@ -73,14 +67,12 @@
     <Compile Include="Assets\Scripts\Enums\MouseButton.cs" />
     <Compile Include="Assets\Scripts\Enums\SoilType.cs" />
     <Compile Include="Assets\Scripts\Enums\SquareVertex.cs" />
-    <Compile Include="Assets\Scripts\Hydro\HydroManager\HydroManager.cs" />
-    <Compile Include="Assets\Scripts\Hydro\HydroManager\Properties\CondensationProperties.cs" />
-    <Compile Include="Assets\Scripts\Hydro\HydroManager\Properties\EvaporationProperties.cs" />
-    <Compile Include="Assets\Scripts\Hydro\HydroManager\Properties\HeatProperties.cs" />
-    <Compile Include="Assets\Scripts\Hydro\HydroManager\Properties\IHydroProperties.cs" />
-    <Compile Include="Assets\Scripts\Hydro\HydroManager\Properties\LiquidProperties.cs" />
-    <Compile Include="Assets\Scripts\Hydro\HydroManager\Properties\PhysicsProperties.cs" />
-    <Compile Include="Assets\Scripts\Hydro\HydroParticle\AtmosphereExtensions.cs" />
+    <Compile Include="Assets\Scripts\Hydro\HydroManagers\CondensationManager.cs" />
+    <Compile Include="Assets\Scripts\Hydro\HydroManagers\EvaporationManager.cs" />
+    <Compile Include="Assets\Scripts\Hydro\HydroManagers\HeatManager.cs" />
+    <Compile Include="Assets\Scripts\Hydro\HydroManagers\LiquidManager.cs" />
+    <Compile Include="Assets\Scripts\Hydro\HydroManagers\Properties\PhysicsProperties.cs" />
+    <Compile Include="Assets\Scripts\Hydro\HydroParticle\Extensions\AtmosphereExtensions.cs" />
     <Compile Include="Assets\Scripts\Hydro\HydroParticle\Heatable.cs" />
     <Compile Include="Assets\Scripts\Hydro\HydroParticle\Hydro Animation\Molecules\RandomRotation.cs" />
     <Compile Include="Assets\Scripts\Hydro\HydroParticle\Hydro Animation\Molecules\Vibration.cs" />
@@ -95,7 +87,6 @@
     <Compile Include="Assets\Scripts\Hydro\HydroParticle\Hydro Controllers\WellController.cs" />
     <Compile Include="Assets\Scripts\Hydro\HydroParticle\Hydro Death\OutOfBoundsDestroy.cs" />
     <Compile Include="Assets\Scripts\Hydro\HydroParticle\Hydro Death\RecyclableObject.cs" />
-    <Compile Include="Assets\Scripts\Hydro\HydroParticle\HydroParticle.cs" />
     <Compile Include="Assets\Scripts\Hydro\ResetHydro.cs" />
     <Compile Include="Assets\Scripts\Hydro\Spawner.cs" />
     <Compile Include="Assets\Scripts\Magnifying Glass\ChangeCursor.cs" />

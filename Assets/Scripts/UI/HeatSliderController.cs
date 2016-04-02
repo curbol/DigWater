@@ -20,8 +20,8 @@ public class HeatSliderController : MonoBehaviour
 
     private void Awake()
     {
-        Slider.minValue = HydroManager.GetProperties<HeatProperties>().MinimumAmbientTemperatureChange;
-        Slider.maxValue = HydroManager.GetProperties<HeatProperties>().MaximumAmbientTemperatureChange;
-        Slider.value = HydroManager.GetProperties<HeatProperties>().CurrentAmbientTemperatureChange;
+        Slider.minValue = -1;
+        Slider.maxValue = 0;
+        Slider.value = HeatManager.AmbientHeatRate;
     }
 }

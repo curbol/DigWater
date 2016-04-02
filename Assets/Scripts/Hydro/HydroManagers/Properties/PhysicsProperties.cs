@@ -2,7 +2,7 @@
 using UnityEngine;
 
 [Serializable]
-public class PhysicsProperties : IHydroProperties
+public class PhysicsProperties
 {
     [SerializeField]
     private float mass;

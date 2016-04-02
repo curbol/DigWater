@@ -2,36 +2,36 @@
 using UnityEngine;
 
 [Serializable]
-public class LiquidProperties : IHydroProperties
+public class LiquidManager : Singleton<LiquidManager>
 {
     [SerializeField]
     private PhysicsProperties physicsProperties;
-    public PhysicsProperties Physics
+    public static PhysicsProperties Physics
     {
         get
         {
-            return physicsProperties;
+            return Instance.physicsProperties;
         }
     }
 
     [SerializeField]
     private Color color;
-    public Color Color
+    public static Color Color
     {
         get
         {
-            return color;
+            return Instance.color;
         }
     }
 
     [SerializeField]
     [Range(0, 10)]
     private float deformability;
-    public float Deformability
+    public static float Deformability
     {
         get
         {
-            return deformability;
+            return Instance.deformability;
         }
     }
 }

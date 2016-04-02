@@ -53,7 +53,7 @@ public class AtmosphereController : MonoBehaviour
             if (CurrentBehavior == null || CurrentBehavior.HeatableObject == null)
                 return false;
 
-            return CurrentBehavior.HeatableObject.Temperature >= HydroManager.GetProperties<HeatProperties>().EvaporationPoint;
+            return CurrentBehavior.HeatableObject.Temperature >= HeatManager.EvaporationPoint;
         }
     }
 
@@ -61,7 +61,7 @@ public class AtmosphereController : MonoBehaviour
     {
         get
         {
-            return HydroManager.GetProperties<HeatProperties>().AmbientTemperatureChangePercentage <= 0.25F;
+            return Mathf.Abs(HeatManager.AmbientHeatRate) <= 0.25F;
         }
     }
 
@@ -69,7 +69,7 @@ public class AtmosphereController : MonoBehaviour
     {
         get
         {
-            return HydroManager.GetProperties<HeatProperties>().AmbientTemperatureChangePercentage > 0.25F && HydroManager.GetProperties<HeatProperties>().AmbientTemperatureChangePercentage <= 0.5F;
+            return Mathf.Abs(HeatManager.AmbientHeatRate) > 0.25F && Mathf.Abs(HeatManager.AmbientHeatRate) <= 0.5F;
         }
     }
 
@@ -77,7 +77,7 @@ public class AtmosphereController : MonoBehaviour
     {
         get
         {
-            return HydroManager.GetProperties<HeatProperties>().AmbientTemperatureChangePercentage > 0.5F && HydroManager.GetProperties<HeatProperties>().AmbientTemperatureChangePercentage <= 0.75F;
+            return Mathf.Abs(HeatManager.AmbientHeatRate) > 0.5F && Mathf.Abs(HeatManager.AmbientHeatRate) <= 0.75F;
         }
     }
 
@@ -85,7 +85,7 @@ public class AtmosphereController : MonoBehaviour
     {
         get
         {
-            return HydroManager.GetProperties<HeatProperties>().AmbientTemperatureChangePercentage > 0.75F;
+            return Mathf.Abs(HeatManager.AmbientHeatRate) > 0.75F;
         }
     }
 
@@ -144,7 +144,7 @@ public class AtmosphereController : MonoBehaviour
         if (!showGizmos || CurrentBehavior == null || CurrentBehavior.HeatableObject == null)
             return;
 
-        float medianTemp = HydroManager.GetProperties<HeatProperties>().MaximumTemperature / 2;
+        float medianTemp = HeatManager.MaximumTemperature / 2;
 
         if (CurrentBehavior.HeatableObject.Temperature <= medianTemp)
         {

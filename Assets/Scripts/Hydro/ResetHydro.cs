@@ -58,7 +58,7 @@ public class ResetHydro : MonoBehaviour
     {
         foreach (Heatable heatableObject in heatableObjects)
         {
-            float temperature = HydroManager.GetProperties<HeatProperties>().EvaporationPoint;
+            float temperature = HeatManager.EvaporationPoint;
             heatableObject.Temperature = random.Next((int)(temperature * 0.5F), (int)(temperature * 0.9F));
         }
     }
