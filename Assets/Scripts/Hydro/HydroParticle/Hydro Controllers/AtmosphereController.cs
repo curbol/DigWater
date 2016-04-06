@@ -7,6 +7,19 @@ public class AtmosphereController : MonoBehaviour
     [SerializeField]
     private bool showGizmos = true;
 
+	[SerializeField]
+	private Heatable heatable;
+	private Heatable Heatable
+	{
+		get
+		{
+			if (heatable == null)
+				heatable = gameObject.GetSafeComponent<Heatable>();
+
+			return heatable;
+		}
+	}
+
     [SerializeField]
     private LiquidBehavior liquidBehavior;
     private LiquidBehavior LiquidBehavior
@@ -50,10 +63,10 @@ public class AtmosphereController : MonoBehaviour
     {
         get
         {
-            if (CurrentBehavior == null || CurrentBehavior.HeatableObject == null)
+			if (Heatable == null)
                 return false;
 
-            return CurrentBehavior.HeatableObject.Temperature >= HeatManager.EvaporationPoint;
+			return Heatable.Temperature >= HeatManager.EvaporationPoint;
         }
     }
 
@@ -141,23 +154,20 @@ public class AtmosphereController : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (!showGizmos || CurrentBehavior == null || CurrentBehavior.HeatableObject == null)
+		if (!showGizmos || Heatable == null)
             return;
 
         float medianTemp = HeatManager.MaximumTemperature / 2;
 
-        if (CurrentBehavior.HeatableObject.Temperature <= medianTemp)
+		if (Heatable.Temperature <= medianTemp)
         {
-            Gizmos.color = Color.Lerp(new Color(0, 1, 0), new Color(1, 1, 0), CurrentBehavior.HeatableObject.Temperature / medianTemp);
+			Gizmos.color = Color.Lerp(new Color(0, 1, 0), new Color(1, 1, 0), Heatable.Temperature / medianTemp);
         }
         else
         {
-            Gizmos.color = Color.Lerp(new Color(1, 1, 0), new Color(1, 0, 0), (CurrentBehavior.HeatableObject.Temperature - medianTemp) / medianTemp);
+			Gizmos.color = Color.Lerp(new Color(1, 1, 0), new Color(1, 0, 0), (Heatable.Temperature - medianTemp) / medianTemp);
         }
 
-        foreach (RecyclableObject recyclableObject in GetComponentsInChildren<RecyclableObject>())
-        {
-            Gizmos.DrawSphere(recyclableObject.transform.position, 0.5F);
-        }
+		Gizmos.DrawSphere(Heatable.transform.position, 0.5F);
     }
 }

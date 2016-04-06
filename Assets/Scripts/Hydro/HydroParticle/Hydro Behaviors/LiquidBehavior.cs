@@ -15,7 +15,7 @@ public class LiquidBehavior : HydroBehavior
         Rigidbody.gravityScale = LiquidManager.Physics.GravityScale;
         Rigidbody.angularDrag = LiquidManager.Physics.AngularDrag;
         Rigidbody.mass = LiquidManager.Physics.Mass;
-        HeatableObject.HeatPenetration = 0.5F;
+        HeatableObject.HeatPenetration = 0.9F;
         MoleculeVibration.EnergyLevel = 0;
 
         colorFadePercent = 0;
