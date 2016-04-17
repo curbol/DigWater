@@ -33,7 +33,7 @@ public class ChangeCursor : MonoBehaviour
                 screenPosition.y >= minShowCursorPosition.y;
 
             Cursor.visible = inShowCursorRegion || alwaysShowCursor;
-            bool showGameObject = alwaysShowCursor || !Cursor.visible;
+            bool showGameObject = !inShowCursorRegion;
             transform.GetChild(0).gameObject.SetActive(showGameObject);
 
             yield return new WaitForEndOfFrame();

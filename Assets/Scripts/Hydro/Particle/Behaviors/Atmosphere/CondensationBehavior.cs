@@ -1,8 +1,22 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class CondensationBehavior : HydroBehavior
 {
     private const float clusterFadeThreshold = 0.75F;
+
+    [SerializeField]
+    private Heatable heatableObject;
+    public Heatable HeatableObject
+    {
+        get
+        {
+            if (heatableObject == null)
+                heatableObject = gameObject.GetSafeComponent<Heatable>();
+
+            return heatableObject;
+        }
+    }
 
     private float cloudFadePercent;
     private float CloudFadePercent
@@ -20,28 +34,20 @@ public class CondensationBehavior : HydroBehavior
 
     public override void InitializeState()
     {
-        Rigidbody.gravityScale = 0;
+        gameObject.layer = LayerMask.NameToLayer("Cloud");
+        SpriteRenderer.color = EvaporationManager.Color;
+        Physics = CondensationManager.Physics;
         CloudFadePercent = 0;
 
-        InitializeAsVapor();
-    }
+        OnStartBehavior += () =>
+        {
+            StartCoroutine("RunTemperatureBehavior");
+        };
 
-    private void InitializeAsVapor()
-    {
-        gameObject.layer = LayerMask.NameToLayer("Vapor");
-        Rigidbody.angularDrag = EvaporationManager.Physics.AngularDrag;
-        Rigidbody.mass = EvaporationManager.Physics.Mass;
-        HeatableObject.HeatPenetration = EvaporationManager.HeatPenetration;
-        MoleculeVibration.EnergyLevel = 1;
-    }
-
-    private void InitializeAsCloud()
-    {
-        gameObject.layer = LayerMask.NameToLayer("Cloud");
-        Rigidbody.angularDrag = CondensationManager.Physics.AngularDrag;
-        Rigidbody.mass = CondensationManager.Physics.Mass;
-        HeatableObject.HeatPenetration = CondensationManager.HeatPenetration;
-        MoleculeVibration.EnergyLevel = 0.5F;
+        OnStopBehavior += () =>
+        {
+            StopCoroutine("RunTemperatureBehavior");
+        };
     }
 
     protected override void UpdatePhysicsBehavior()
@@ -56,11 +62,11 @@ public class CondensationBehavior : HydroBehavior
     {
         if (Rigidbody.transform.MapY() < CondensationManager.EquilibriumZoneLowerBound)
         {
-            Rigidbody.gravityScale = Rigidbody.velocity.y < CondensationManager.Physics.HorizontalMaxVelocity ? -CondensationManager.Physics.GravityScale : 0;
+            Rigidbody.gravityScale = -CondensationManager.Physics.GravityScale;
         }
         else if (Rigidbody.transform.MapY() > CondensationManager.EquilibriumZoneUpperBound)
         {
-            Rigidbody.gravityScale = Rigidbody.velocity.y > -CondensationManager.Physics.HorizontalMaxVelocity ? CondensationManager.Physics.GravityScale : 0;
+            Rigidbody.gravityScale = CondensationManager.Physics.GravityScale;
         }
         else
         {
@@ -83,15 +89,6 @@ public class CondensationBehavior : HydroBehavior
 
     protected override void UpdateGraphicsBehavior()
     {
-        if (gameObject.layer != LayerMask.NameToLayer("Cloud") && CloudFadePercent > 0.5F)
-        {
-            InitializeAsCloud();
-        }
-        else if (gameObject.layer != LayerMask.NameToLayer("Vapor") && CloudFadePercent <= 0.5F)
-        {
-            InitializeAsVapor();
-        }
-
         bool enoughNeighbors = ((Vector2)SpriteRenderer.transform.position).GetNeighbors(CondensationManager.NeighborSearchRadius).Length >= CondensationManager.MinimumNeighborCount;
         float amountToFade = CondensationManager.FadeRate * Time.fixedDeltaTime;
         CloudFadePercent += enoughNeighbors ? amountToFade : -amountToFade;
@@ -102,9 +99,14 @@ public class CondensationBehavior : HydroBehavior
         SpriteRenderer.color = Color.Lerp(EvaporationManager.Color, CondensationManager.Color, CloudFadePercent);
     }
 
-    protected override void UpdateTemperatureBehavior()
+    private IEnumerator RunTemperatureBehavior()
     {
-        if (CloudFadePercent >= clusterFadeThreshold)
-            HeatableObject.AddHeat(HeatManager.AmbientHeatRate * Time.deltaTime);
+        while (true)
+        {
+            if (CloudFadePercent >= clusterFadeThreshold)
+                HeatableObject.AddHeat(HeatManager.AmbientHeatRate * Time.deltaTime);
+
+            yield return new WaitForFixedUpdate();
+        }
     }
 }

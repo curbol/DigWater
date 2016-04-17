@@ -22,9 +22,11 @@ public class SunController : MonoBehaviour
 
     private IEnumerator EmitRays()
     {
+        var hitObjects = new List<object>();
+
         while (true)
         {
-            var hitObjects = new List<object>();
+            hitObjects.Clear();
             for (int i = startRayAngle; i <= endRayAngle; i++)
             {
                 Vector2 direction = i.DegreeToVector();
@@ -34,14 +36,14 @@ public class SunController : MonoBehaviour
                 foreach (RaycastHit2D raycastHit in raycastHits)
                 {
                     Heatable heatableObject = raycastHit.transform.GetComponent<Heatable>() as Heatable;
-                    if (heatableObject == null || hitObjects.Contains(heatableObject))
+                    if (heatableObject == null || hitObjects.Contains(heatableObject) || heatPercent < 0.1)
                         continue;
 
                     if (showGizmos)
                         Debug.DrawLine((Vector2)transform.position, raycastHit.point, new Color(0.5F, 0.5F, 0.2F, 0.2F));
 
                     heatableObject.AddHeat(HeatManager.SunHeat * heatPercent * Time.deltaTime);
-                    heatPercent *= heatableObject.HeatPenetration;
+                    heatPercent *= HeatManager.SunHeatPenetration;
 
                     hitObjects.Add(heatableObject);
                 }

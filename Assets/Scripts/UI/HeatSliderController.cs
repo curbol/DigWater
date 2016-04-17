@@ -20,8 +20,8 @@ public class HeatSliderController : MonoBehaviour
 
     private void Awake()
     {
-        Slider.minValue = -1;
-        Slider.maxValue = 0;
-        Slider.value = HeatManager.AmbientHeatRate;
+        Slider.minValue = 0;
+        Slider.maxValue = 1;
+        Slider.value = HeatManager.HeatSlider;
     }
 }

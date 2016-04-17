@@ -39,8 +39,8 @@ public class CondensationManager : Singleton<CondensationManager>
     }
 
     [SerializeField]
-    private float cloudLevel;
-    public static float CloudLevel
+    private int cloudLevel;
+    public static int CloudLevel
     {
         get
         {
@@ -49,8 +49,8 @@ public class CondensationManager : Singleton<CondensationManager>
     }
 
     [SerializeField]
-    private float cloudLevelThickness;
-    public static float CloudLevelThickness
+    private int cloudLevelThickness;
+    public static int CloudLevelThickness
     {
         get
         {
@@ -111,33 +111,23 @@ public class CondensationManager : Singleton<CondensationManager>
 
     [Range(0, 10)]
     [SerializeField]
-    private float minimumNeighborCount;
+    private float minimumNeighborCountForCluster;
     public static float MinimumNeighborCount
     {
         get
         {
-            return Instance.minimumNeighborCount;
+            return Instance.minimumNeighborCountForCluster;
         }
     }
 
     [Range(0, 10)]
     [SerializeField]
-    private float neighborSearchRadius;
+    private float neighborSearchRadiusForCluster;
     public static float NeighborSearchRadius
     {
         get
         {
-            return Instance.neighborSearchRadius;
-        }
-    }
-
-    [SerializeField]
-    private float heatPenetration;
-    public static float HeatPenetration
-    {
-        get
-        {
-            return Instance.heatPenetration;
+            return Instance.neighborSearchRadiusForCluster;
         }
     }
 

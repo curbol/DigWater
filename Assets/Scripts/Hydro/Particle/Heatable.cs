@@ -2,20 +2,7 @@
 
 public class Heatable : MonoBehaviour
 {
-    [SerializeField]
-    private float heatPenetration;
-    public float HeatPenetration
-    {
-        get
-        {
-            return heatPenetration;
-        }
-
-        set
-        {
-            heatPenetration = value;
-        }
-    }
+    private static readonly System.Random random = new System.Random();
 
     [SerializeField]
     private float temperature;
@@ -35,5 +22,10 @@ public class Heatable : MonoBehaviour
     public void AddHeat(float value)
     {
         Temperature += value;
+    }
+
+    public void SetRandomTemperature(float min, float max)
+    {
+        Temperature = Mathf.Lerp(min, max, (float)random.NextDouble());
     }
 }

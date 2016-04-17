@@ -23,14 +23,4 @@ public class EvaporationManager : Singleton<EvaporationManager>
             return Instance.color;
         }
     }
-
-    [SerializeField]
-    private float heatPenetration;
-    public static float HeatPenetration
-    {
-        get
-        {
-            return Instance.heatPenetration;
-        }
-    }
 }
