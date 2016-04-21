@@ -95,8 +95,20 @@ public class AtmosphereController : MonoBehaviour
     private void Start()
     {
         CurrentBehavior = LiquidBehavior;
+        Heatable.SetRandomTemperature(HeatManager.EvaporationPoint * 0.1F, HeatManager.EvaporationPoint * 0.5F);
 
         StartCoroutine(UpdateState());
+    }
+
+    private void FixedUpdate()
+    {
+        Heatable.AddHeat(HeatManager.AmbientHeatRate * Time.fixedDeltaTime);
+
+        // Percipitation cannot be heated so that it hits the ground before evaporating again
+        if (gameObject.layer == LayerMask.NameToLayer("Percipitation"))
+            Heatable.SetToMinimumTemperature();
+        else if (gameObject.layer == LayerMask.NameToLayer("Evaporation"))
+            Heatable.SetToMaximumTemperature();
     }
 
     private IEnumerator UpdateState()

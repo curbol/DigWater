@@ -1,20 +1,19 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class CondensationBehavior : HydroBehavior
 {
     private const float clusterFadeThreshold = 0.75F;
 
     [SerializeField]
-    private Heatable heatableObject;
-    public Heatable HeatableObject
+    private Heatable heatable;
+    private Heatable Heatable
     {
         get
         {
-            if (heatableObject == null)
-                heatableObject = gameObject.GetSafeComponent<Heatable>();
+            if (heatable == null)
+                heatable = gameObject.GetSafeComponent<Heatable>();
 
-            return heatableObject;
+            return heatable;
         }
     }
 
@@ -29,25 +28,17 @@ public class CondensationBehavior : HydroBehavior
         set
         {
             cloudFadePercent = Mathf.Clamp(value, 0, 1);
+
+            Heatable.IsHeatable = cloudFadePercent >= clusterFadeThreshold;
         }
     }
 
     public override void InitializeState()
     {
-        gameObject.layer = LayerMask.NameToLayer("Cloud");
+        gameObject.layer = LayerMask.NameToLayer("Condensation");
         SpriteRenderer.color = EvaporationManager.Color;
         Physics = CondensationManager.Physics;
         CloudFadePercent = 0;
-
-        OnStartBehavior += () =>
-        {
-            StartCoroutine("RunTemperatureBehavior");
-        };
-
-        OnStopBehavior += () =>
-        {
-            StopCoroutine("RunTemperatureBehavior");
-        };
     }
 
     protected override void UpdatePhysicsBehavior()
@@ -97,16 +88,5 @@ public class CondensationBehavior : HydroBehavior
             return;
 
         SpriteRenderer.color = Color.Lerp(EvaporationManager.Color, CondensationManager.Color, CloudFadePercent);
-    }
-
-    private IEnumerator RunTemperatureBehavior()
-    {
-        while (true)
-        {
-            if (CloudFadePercent >= clusterFadeThreshold)
-                HeatableObject.AddHeat(HeatManager.AmbientHeatRate * Time.deltaTime);
-
-            yield return new WaitForFixedUpdate();
-        }
     }
 }

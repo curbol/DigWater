@@ -36,13 +36,13 @@ public class SunController : MonoBehaviour
                 foreach (RaycastHit2D raycastHit in raycastHits)
                 {
                     Heatable heatableObject = raycastHit.transform.GetComponent<Heatable>() as Heatable;
-                    if (heatableObject == null || hitObjects.Contains(heatableObject) || heatPercent < 0.1)
+                    if (heatableObject == null || hitObjects.Contains(heatableObject) || heatPercent < 0.1 || !heatableObject.IsHeatable)
                         continue;
 
                     if (showGizmos)
                         Debug.DrawLine((Vector2)transform.position, raycastHit.point, new Color(0.5F, 0.5F, 0.2F, 0.2F));
 
-                    heatableObject.AddHeat(HeatManager.SunHeat * heatPercent * Time.deltaTime);
+                    heatableObject.AddHeat(HeatManager.SunHeat * heatPercent * Time.fixedDeltaTime);
                     heatPercent *= HeatManager.SunHeatPenetration;
 
                     hitObjects.Add(heatableObject);

@@ -69,11 +69,10 @@ public abstract class HydroBehavior : MonoBehaviour
 
     public void StopBehavior()
     {
-        StopCoroutine("RunPhysicsBehavior");
-        StopCoroutine("RunGraphicsBehavior");
-
         if (OnStopBehavior != null)
             OnStopBehavior();
+
+        StopAllCoroutines();
     }
 
     private static void EnforceMaximumVelocities(Rigidbody2D rigidBody, PhysicsProperties physics)

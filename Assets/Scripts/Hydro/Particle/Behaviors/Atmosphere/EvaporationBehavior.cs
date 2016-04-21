@@ -5,12 +5,26 @@ public class EvaporationBehavior : HydroBehavior
 {
     private bool fadeInColorRunning;
 
+    [SerializeField]
+    private Heatable heatable;
+    private Heatable Heatable
+    {
+        get
+        {
+            if (heatable == null)
+                heatable = gameObject.GetSafeComponent<Heatable>();
+
+            return heatable;
+        }
+    }
+
     public override void InitializeState()
     {
-        gameObject.layer = LayerMask.NameToLayer("Vapor");
+        gameObject.layer = LayerMask.NameToLayer("Evaporation");
         SpriteRenderer.color = EvaporationManager.Color;
         Physics = EvaporationManager.Physics;
         Rigidbody.velocity = Rigidbody.velocity.SetX(0);
+        Heatable.IsHeatable = false;
 
         OnStartBehavior += () =>
         {
@@ -19,7 +33,7 @@ public class EvaporationBehavior : HydroBehavior
 
         OnStopBehavior += () =>
         {
-            StopCoroutine("FadeInColor");
+            StopAllCoroutines();
         };
     }
 

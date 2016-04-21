@@ -26,9 +26,9 @@ public class DetectHydroStates : MonoBehaviour
     public void Reset(float value)
     {
         layerDetectionCounts = new Dictionary<int, int>();
-        layerDetectionCounts[LayerMask.NameToLayer("Vapor")] = 0;
-        layerDetectionCounts[LayerMask.NameToLayer("Cloud")] = 0;
-        layerDetectionCounts[LayerMask.NameToLayer("Rain")] = 0;
+        layerDetectionCounts[LayerMask.NameToLayer("Evaporation")] = 0;
+        layerDetectionCounts[LayerMask.NameToLayer("Condensation")] = 0;
+        layerDetectionCounts[LayerMask.NameToLayer("Percipitation")] = 0;
 
         FoundStates = new List<int>();
     }

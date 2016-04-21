@@ -34,13 +34,13 @@ public class StateText : MonoBehaviour
 
             string stateText = "";
 
-            if (detectHydroStates.FoundStates.Contains(LayerMask.NameToLayer("Vapor")))
+            if (detectHydroStates.FoundStates.Contains(LayerMask.NameToLayer("Evaporation")))
                 stateText += "Evaporation   ";
 
-            if (detectHydroStates.FoundStates.Contains(LayerMask.NameToLayer("Cloud")))
+            if (detectHydroStates.FoundStates.Contains(LayerMask.NameToLayer("Condensation")))
                 stateText += "Condensation   ";
 
-            if (detectHydroStates.FoundStates.Contains(LayerMask.NameToLayer("Rain")))
+            if (detectHydroStates.FoundStates.Contains(LayerMask.NameToLayer("Percipitation")))
                 stateText += "Precipitation";
 
             Text.text = stateText;
