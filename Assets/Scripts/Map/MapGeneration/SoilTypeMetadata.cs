@@ -65,8 +65,8 @@ public class SoilTypeMetadata
     }
 
     [SerializeField]
-    private Physics fluidPhysics;
-    public Physics FluidPhysics
+    private PhysicsProperties fluidPhysics;
+    public PhysicsProperties FluidPhysics
     {
         get
         {

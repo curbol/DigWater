@@ -24,15 +24,18 @@ public class OasisLiquidBehavior : HydroBehavior
 
     protected override void UpdatePhysicsBehavior()
     {
-        return;
+        Coordinate coordinate = MapManager.Map.GetCoordinateFromPosition(transform.position);
+        SoilType soilType = MapManager.Map[coordinate.X, coordinate.Y];
+
+        if (soilType == SoilType.None)
+            Physics = LiquidManager.Physics;
+        else
+            Physics = soilType.SoilTypeMetadata().FluidPhysics;
     }
 
     protected override void UpdateGraphicsBehavior()
     {
-        if (SpriteRenderer == null || fadeInColorRunning)
-            return;
-
-        SpriteRenderer.color = LiquidManager.Color;
+        return;
     }
 
     private IEnumerator FadeInColor(float fadeTime)
@@ -51,7 +54,6 @@ public class OasisLiquidBehavior : HydroBehavior
             yield return new WaitForEndOfFrame();
         }
 
-        gameObject.layer = LayerMask.NameToLayer("Liquid");
         fadeInColorRunning = false;
     }
 }

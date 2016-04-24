@@ -5,7 +5,7 @@ using UnityEngine;
 public class PhysicsProperties
 {
     [SerializeField]
-    private float mass;
+    private float mass = 1;
     public float Mass
     {
         get
@@ -35,7 +35,7 @@ public class PhysicsProperties
     }
 
     [SerializeField]
-    private float gravityScale;
+    private float gravityScale = 1;
     public float GravityScale
     {
         get
@@ -45,8 +45,8 @@ public class PhysicsProperties
     }
 
     [SerializeField]
-    private float horizontalMaxVelocity;
-    public float HorizontalMaxVelocity
+    private float horizontalMaxVelocity = 15;
+    public float MaxVelocityX
     {
         get
         {
@@ -55,8 +55,8 @@ public class PhysicsProperties
     }
 
     [SerializeField]
-    private float verticalMaxVelocity;
-    public float VerticalMaxVelocity
+    private float verticalMaxVelocity = 15;
+    public float MaxVelocityY
     {
         get
         {

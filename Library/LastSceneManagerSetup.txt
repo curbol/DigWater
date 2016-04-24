@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Scenes/DigWater.unity
+- path: Assets/Scenes/Oasis.unity
   isLoaded: 1
   isActive: 1

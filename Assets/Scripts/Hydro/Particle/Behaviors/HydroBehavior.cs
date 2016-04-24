@@ -80,11 +80,19 @@ public abstract class HydroBehavior : MonoBehaviour
         if (rigidBody == null || physics == null)
             return;
 
-        if (rigidBody.velocity.x > physics.HorizontalMaxVelocity || rigidBody.velocity.y > physics.VerticalMaxVelocity)
+        float currentVelocityX = Mathf.Abs(rigidBody.velocity.x);
+        float currentVelocityY = Mathf.Abs(rigidBody.velocity.y);
+
+        if (currentVelocityX > physics.MaxVelocityX)
         {
-            float velocityX = Mathf.Min(rigidBody.velocity.x, physics.HorizontalMaxVelocity);
-            float velocityY = Mathf.Min(rigidBody.velocity.y, physics.VerticalMaxVelocity);
-            rigidBody.velocity = new Vector2(velocityX, velocityY);
+            float signX = Mathf.Sign(rigidBody.velocity.x);
+            rigidBody.velocity = new Vector2(signX * physics.MaxVelocityX, rigidBody.velocity.y);
+        }
+
+        if (currentVelocityY > physics.MaxVelocityY)
+        {
+            float signY = Mathf.Sign(rigidBody.velocity.y);
+            rigidBody.velocity = new Vector2(rigidBody.velocity.x, signY * physics.MaxVelocityY);
         }
     }
 

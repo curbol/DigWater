@@ -45,8 +45,8 @@ public class EvaporationBehavior : HydroBehavior
         if (Rigidbody.transform.MapY() < CondensationManager.CloudLevelLowerBound)
         {
             float percentToCloudLevel = Mathf.Clamp(Rigidbody.transform.MapY() / CondensationManager.CloudLevel, 0, 1);
-            float minSpeedY = Mathf.Min(EvaporationManager.Physics.VerticalMaxVelocity, CondensationManager.Physics.VerticalMaxVelocity);
-            float maxSpeedY = Mathf.Max(EvaporationManager.Physics.VerticalMaxVelocity, CondensationManager.Physics.VerticalMaxVelocity);
+            float minSpeedY = Mathf.Min(EvaporationManager.Physics.MaxVelocityY, CondensationManager.Physics.MaxVelocityY);
+            float maxSpeedY = Mathf.Max(EvaporationManager.Physics.MaxVelocityY, CondensationManager.Physics.MaxVelocityY);
             float currentSpeedY = Mathf.Lerp(minSpeedY, maxSpeedY, percentToCloudLevel);
             float directionY = Rigidbody.transform.MapY() < CondensationManager.CloudLevel ? 1 : -1;
 
