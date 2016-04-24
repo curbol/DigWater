@@ -1,17 +1,16 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 [DisallowMultipleComponent]
 public class OasisController : MonoBehaviour
 {
     [SerializeField]
-    private LiquidBehavior liquidBehavior;
-    private LiquidBehavior LiquidBehavior
+    private OasisLiquidBehavior liquidBehavior;
+    private OasisLiquidBehavior LiquidBehavior
     {
         get
         {
             if (liquidBehavior == null)
-                liquidBehavior = gameObject.GetSafeComponent<LiquidBehavior>();
+                liquidBehavior = gameObject.GetSafeComponent<OasisLiquidBehavior>();
 
             return liquidBehavior;
         }

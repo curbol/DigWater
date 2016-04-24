@@ -45,8 +45,8 @@ public class EvaporationBehavior : HydroBehavior
         if (Rigidbody.transform.MapY() < CondensationManager.CloudLevelLowerBound)
         {
             float percentToCloudLevel = Mathf.Clamp(Rigidbody.transform.MapY() / CondensationManager.CloudLevel, 0, 1);
-            float minSpeedY = EvaporationManager.Physics.VerticalMaxVelocity;
-            float maxSpeedY = CondensationManager.Physics.VerticalMaxVelocity;
+            float minSpeedY = Mathf.Min(EvaporationManager.Physics.VerticalMaxVelocity, CondensationManager.Physics.VerticalMaxVelocity);
+            float maxSpeedY = Mathf.Max(EvaporationManager.Physics.VerticalMaxVelocity, CondensationManager.Physics.VerticalMaxVelocity);
             float currentSpeedY = Mathf.Lerp(minSpeedY, maxSpeedY, percentToCloudLevel);
             float directionY = Rigidbody.transform.MapY() < CondensationManager.CloudLevel ? 1 : -1;
 
@@ -54,11 +54,11 @@ public class EvaporationBehavior : HydroBehavior
         }
         else if (Rigidbody.transform.MapY() < CondensationManager.EquilibriumZoneLowerBound)
         {
-            Rigidbody.gravityScale = -CondensationManager.Physics.GravityScale;
+            Rigidbody.gravityScale = -EvaporationManager.Physics.GravityScale;
         }
-        else if (Rigidbody.transform.MapY() > CondensationManager.CloudLevelUpperBound)
+        else if (Rigidbody.transform.MapY() > CondensationManager.EquilibriumZoneUpperBound)
         {
-            Rigidbody.gravityScale = CondensationManager.Physics.GravityScale;
+            Rigidbody.gravityScale = EvaporationManager.Physics.GravityScale;
         }
         else
         {

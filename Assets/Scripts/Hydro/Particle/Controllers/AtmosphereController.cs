@@ -21,13 +21,13 @@ public class AtmosphereController : MonoBehaviour
     }
 
     [SerializeField]
-    private LiquidBehavior liquidBehavior;
-    private LiquidBehavior LiquidBehavior
+    private AtmosphereLiquidBehavior liquidBehavior;
+    private AtmosphereLiquidBehavior LiquidBehavior
     {
         get
         {
             if (liquidBehavior == null)
-                liquidBehavior = gameObject.GetSafeComponent<LiquidBehavior>();
+                liquidBehavior = gameObject.GetSafeComponent<AtmosphereLiquidBehavior>();
 
             return liquidBehavior;
         }
@@ -115,7 +115,7 @@ public class AtmosphereController : MonoBehaviour
     {
         while (true)
         {
-            if (!(CurrentBehavior is LiquidBehavior) && HeatManager.SliderQuadrant == Quandrant.Second && !IsEvaporated)
+            if (!(CurrentBehavior is AtmosphereLiquidBehavior) && HeatManager.SliderQuadrant == Quandrant.Second && !IsEvaporated)
             {
                 CurrentBehavior = LiquidBehavior;
             }

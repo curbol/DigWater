@@ -77,10 +77,11 @@
     <Compile Include="Assets\Scripts\Hydro\Particle\Animation\Molecules\Vibration.cs" />
     <Compile Include="Assets\Scripts\Hydro\Particle\Animation\VelocityRotation.cs" />
     <Compile Include="Assets\Scripts\Hydro\Particle\Animation\VelocityScale.cs" />
+    <Compile Include="Assets\Scripts\Hydro\Particle\Behaviors\Atmosphere\AtmosphereLiquidBehavior.cs" />
     <Compile Include="Assets\Scripts\Hydro\Particle\Behaviors\Atmosphere\CondensationBehavior.cs" />
     <Compile Include="Assets\Scripts\Hydro\Particle\Behaviors\Atmosphere\EvaporationBehavior.cs" />
-    <Compile Include="Assets\Scripts\Hydro\Particle\Behaviors\Atmosphere\LiquidBehavior.cs" />
     <Compile Include="Assets\Scripts\Hydro\Particle\Behaviors\HydroBehavior.cs" />
+    <Compile Include="Assets\Scripts\Hydro\Particle\Behaviors\Oasis\OasisLiquidBehavior.cs" />
     <Compile Include="Assets\Scripts\Hydro\Particle\Controllers\AtmosphereController.cs" />
     <Compile Include="Assets\Scripts\Hydro\Particle\Controllers\OasisController.cs" />
     <Compile Include="Assets\Scripts\Hydro\Particle\Controllers\WellController.cs" />

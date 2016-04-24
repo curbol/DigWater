@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class LiquidBehavior : HydroBehavior
+public class OasisLiquidBehavior : HydroBehavior
 {
     private bool fadeInColorRunning;
 
@@ -42,9 +42,6 @@ public class LiquidBehavior : HydroBehavior
 
         Color previousColor = LiquidManager.Color;
         previousColor.a = 0.35F;
-
-        if (transform.InCloudZone())
-            gameObject.layer = LayerMask.NameToLayer("Percipitation");
 
         while (timer < fadeTime)
         {
