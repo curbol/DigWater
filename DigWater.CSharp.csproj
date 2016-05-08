@@ -110,8 +110,10 @@
     <Compile Include="Assets\Scripts\Map\MeshGeneration\MeshGeneration.cs" />
     <Compile Include="Assets\Scripts\Map\MeshGeneration\MeshVertex.cs" />
     <Compile Include="Assets\Scripts\Sun\SunController.cs" />
-    <Compile Include="Assets\Scripts\UI\HeatSliderController.cs" />
-    <Compile Include="Assets\Scripts\UI\StateText.cs" />
+    <Compile Include="Assets\Scripts\UI\Atmosphere\HeatSliderController.cs" />
+    <Compile Include="Assets\Scripts\UI\Atmosphere\StateText.cs" />
+    <Compile Include="Assets\Scripts\UI\Soil Triangle\DragListener.cs" />
+    <Compile Include="Assets\Scripts\UI\Soil Triangle\SoilMixController.cs" />
     <Compile Include="Assets\Scripts\Utility\Coordinate.cs" />
     <Compile Include="Assets\Scripts\Utility\Extensions\BooleanExtensions.cs" />
     <Compile Include="Assets\Scripts\Utility\Extensions\CoordinateExtensions.cs" />
