@@ -3,8 +3,6 @@ using UnityEngine;
 
 public class AtmosphereLiquidBehavior : HydroBehavior
 {
-    private bool fadeInColorRunning;
-
     public override void InitializeState()
     {
         gameObject.layer = LayerMask.NameToLayer("Liquid");
@@ -29,15 +27,11 @@ public class AtmosphereLiquidBehavior : HydroBehavior
 
     protected override void UpdateGraphicsBehavior()
     {
-        if (SpriteRenderer == null || fadeInColorRunning)
-            return;
-
-        SpriteRenderer.color = LiquidManager.Color;
+        return;
     }
 
     private IEnumerator FadeInColor(float fadeTime)
     {
-        fadeInColorRunning = true;
         float timer = 0;
 
         Color previousColor = LiquidManager.Color;
@@ -55,6 +49,5 @@ public class AtmosphereLiquidBehavior : HydroBehavior
         }
 
         gameObject.layer = LayerMask.NameToLayer("Liquid");
-        fadeInColorRunning = false;
     }
 }

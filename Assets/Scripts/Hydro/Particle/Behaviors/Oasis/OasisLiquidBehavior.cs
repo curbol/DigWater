@@ -3,8 +3,6 @@ using UnityEngine;
 
 public class OasisLiquidBehavior : HydroBehavior
 {
-    private bool fadeInColorRunning;
-
     public override void InitializeState()
     {
         gameObject.layer = LayerMask.NameToLayer("Liquid");
@@ -40,7 +38,6 @@ public class OasisLiquidBehavior : HydroBehavior
 
     private IEnumerator FadeInColor(float fadeTime)
     {
-        fadeInColorRunning = true;
         float timer = 0;
 
         Color previousColor = LiquidManager.Color;
@@ -53,7 +50,5 @@ public class OasisLiquidBehavior : HydroBehavior
             timer += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
-
-        fadeInColorRunning = false;
     }
 }

@@ -13,7 +13,10 @@ public class SoilMixController : MonoBehaviour
     private RawImage soilMixImage;
 
     [SerializeField]
-    private Transform ratioPositionLocator;
+    private Transform ratioLocator;
+
+    [SerializeField]
+    private Vector2 ratioLocatorReachableArea;
 
     private readonly Dictionary<float, string> soilMixes = new Dictionary<float, string>
     {
@@ -64,23 +67,60 @@ public class SoilMixController : MonoBehaviour
     {
         Vector2 previousPosition = Vector2.zero;
 
+        Vector2 bottomLeft = new Vector2(transform.position.x - ratioLocatorReachableArea.x / 2, transform.position.y - ratioLocatorReachableArea.y / 2);
+        Vector2 topCenter = bottomLeft + new Vector2(ratioLocatorReachableArea.x / 2, ratioLocatorReachableArea.y);
+        Vector2 bottomRight = bottomLeft + new Vector2(ratioLocatorReachableArea.x, 0);
+
         while (true)
         {
             yield return new WaitForEndOfFrame();
 
-            Vector2 relativeWorldPosition = ratioPositionLocator.position - soilMixImage.transform.position;
+            Vector2 relativeWorldPosition = ratioLocator.position - soilMixImage.transform.position;
             if (relativeWorldPosition == previousPosition)
                 continue;
+            else
+                previousPosition = relativeWorldPosition;
 
-            previousPosition = relativeWorldPosition;
             Vector2 relativePercent = new Vector2(Mathf.Clamp01(relativeWorldPosition.x / SoilMixImageWorldDimensions.x + 0.5F), Mathf.Clamp01(relativeWorldPosition.y / SoilMixImageWorldDimensions.y + 0.5F));
             Vector2 imagePixelPosition = new Vector2((int)(SoilMixImageTexture.width * relativePercent.x), (int)(SoilMixImageTexture.height * relativePercent.y));
             Color pixelColor = SoilMixImageTexture.GetPixel((int)imagePixelPosition.x, (int)imagePixelPosition.y);
             var soilMix = soilMixes.FirstOrDefault(a => pixelColor.r < a.Key);
 
-            Debug.Log(soilMix);
+            float distanceFromSand = Vector2.Distance(bottomLeft, ratioLocator.position);
+            float distanceFromClay = Vector2.Distance(topCenter, ratioLocator.position);
+            float distanceFromSilt = Vector2.Distance(bottomRight, ratioLocator.position);
+            float quantitySand = -distanceFromSand + distanceFromClay + distanceFromSilt;
+            float quantityClay = distanceFromSand - distanceFromClay + distanceFromSilt;
+            float quantitySilt = distanceFromSand + distanceFromClay - distanceFromSilt;
+            float quantityTotal = quantitySand + quantityClay + quantitySilt;
+            int percentSand = Mathf.RoundToInt(quantitySand * 100 / quantityTotal);
+            int percentClay = Mathf.RoundToInt(quantityClay * 100 / quantityTotal);
+            int percentSilt = 100 - percentSand - percentClay;
 
-            soilMixText.text = soilMix.Value;
+            //Debug.Log(soilMix + "Sand:" + percentSand + " Clay:" + percentClay + " Silt:" + percentSilt);
+
+            soilMixText.text = soilMix.Value
+                + "\n%Sand: " + percentSand
+                + "\n%Clay: " + percentClay
+                + "\n%Silt: " + percentSilt;
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+
+        Vector2 bottomLeft = new Vector2(transform.position.x - ratioLocatorReachableArea.x / 2, transform.position.y - ratioLocatorReachableArea.y / 2);
+        Vector2 topCenter = bottomLeft + new Vector2(ratioLocatorReachableArea.x / 2, ratioLocatorReachableArea.y);
+        Vector2 bottomRight = bottomLeft + new Vector2(ratioLocatorReachableArea.x, 0);
+        Vector2 topLeft = bottomLeft + new Vector2(0, ratioLocatorReachableArea.y);
+        Vector2 topRight = bottomLeft + ratioLocatorReachableArea;
+
+        Gizmos.DrawLine(bottomLeft, topLeft);
+        Gizmos.DrawLine(topLeft, topRight);
+        Gizmos.DrawLine(topRight, bottomRight);
+        Gizmos.DrawLine(bottomRight, bottomLeft);
+        Gizmos.DrawLine(bottomLeft, topCenter);
+        Gizmos.DrawLine(bottomRight, topCenter);
     }
 }
