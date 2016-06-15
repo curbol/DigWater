@@ -61,6 +61,9 @@
     <Reference Include="UnityEditor">
       <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
     </Reference>
+    <Reference Include="LitJson">
+      <HintPath>Assets\Plugins\LitJson.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Digging\DigController.cs" />
@@ -114,6 +117,12 @@
     <Compile Include="Assets\Scripts\UI\Atmosphere\StateText.cs" />
     <Compile Include="Assets\Scripts\UI\Soil Triangle\DragListener.cs" />
     <Compile Include="Assets\Scripts\UI\Soil Triangle\SoilMixController.cs" />
+    <Compile Include="Assets\Scripts\UI\Store\Inventory.cs" />
+    <Compile Include="Assets\Scripts\UI\Store\InventoryItem.cs" />
+    <Compile Include="Assets\Scripts\UI\Store\ItemDescriptor.cs" />
+    <Compile Include="Assets\Scripts\UI\Store\ItemManager.cs" />
+    <Compile Include="Assets\Scripts\UI\Store\ItemSlot.cs" />
+    <Compile Include="Assets\Scripts\UI\Store\Transaction.cs" />
     <Compile Include="Assets\Scripts\Utility\Coordinate.cs" />
     <Compile Include="Assets\Scripts\Utility\Extensions\BooleanExtensions.cs" />
     <Compile Include="Assets\Scripts\Utility\Extensions\CoordinateExtensions.cs" />
@@ -127,8 +136,8 @@
     <Compile Include="Assets\Scripts\Wind\WindController.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Graphics\Shaders\CircleMask.shader" />
-    <None Include="Assets\Graphics\Shaders\Metaball.shader" />
+    <None Include="Assets\Resources\Shaders\CircleMask.shader" />
+    <None Include="Assets\Resources\Shaders\Metaball.shader" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>
