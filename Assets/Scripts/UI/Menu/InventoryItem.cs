@@ -5,6 +5,7 @@ public class InventoryItem
     private const string SpritePath = "Sprites/UI/Store/Items/";
 
     public int Id { get; set; }
+    public string Group { get; set; }
     public int Value { get; set; }
     public string Name { get; set; }
     public string Description { get; set; }

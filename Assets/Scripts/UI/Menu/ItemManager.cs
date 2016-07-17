@@ -76,6 +76,7 @@ public class ItemManager : Singleton<ItemManager>
             loadedItems.Add(new InventoryItem
             {
                 Id = (int)itemsData[i]["id"],
+                Group = (string)itemsData[i]["group"],
                 Value = (int)itemsData[i]["value"],
                 Name = (string)itemsData[i]["name"],
                 Description = (string)itemsData[i]["description"],

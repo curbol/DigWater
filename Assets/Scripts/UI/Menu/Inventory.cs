@@ -7,28 +7,40 @@ public class Inventory : MonoBehaviour
 {
     [SerializeField]
     private ItemDescriptor itemDescriptor;
+    private ItemDescriptor ItemDescriptor
+    {
+        get
+        {
+            if (itemDescriptor == null)
+                itemDescriptor = FindObjectOfType<ItemDescriptor>();
+
+            return itemDescriptor;
+        }
+    }
 
     [SerializeField]
     private int inventoryID;
 
     [SerializeField]
-    private Transform slotPanel;
-    private Transform SlotPanel
-    {
-        get
-        {
-            if (slotPanel == null)
-                slotPanel = transform.FindChild("Slot Panel");
-
-            return slotPanel;
-        }
-    }
-
-    [SerializeField]
     private ItemSlot itemSlotPrefab;
 
     [SerializeField]
-    private int slotCount = 36;
+    private ItemGroup itemGroupPrefab;
+
+    [SerializeField]
+    private Transform itemGroupsPanel;
+    private Transform ItemGroupsPanel
+    {
+        get
+        {
+            if (itemGroupsPanel == null)
+                itemGroupsPanel = transform.FindChild("Item Groups");
+
+            return itemGroupsPanel;
+        }
+    }
+
+    private Dictionary<string, ItemGroup> ItemGroups { get; set; }
 
     private List<ItemSlot> ItemSlots { get; set; }
 
@@ -44,8 +56,8 @@ public class Inventory : MonoBehaviour
         {
             selectedItemSlot = value;
 
-            if (selectedItemSlot != null && itemDescriptor != null)
-                itemDescriptor.Item = selectedItemSlot.Item;
+            if (selectedItemSlot != null && ItemDescriptor != null)
+                ItemDescriptor.Item = selectedItemSlot.Item;
         }
     }
 
@@ -86,51 +98,77 @@ public class Inventory : MonoBehaviour
 
     public bool AddItem(InventoryItem item)
     {
-        ItemSlot emptyItemSlot = ItemSlots.FirstOrDefault(a => a.Item == null);
-        if (emptyItemSlot == null)
+        if (item == null)
             return false;
 
-        emptyItemSlot.Item = item;
+        if (!ItemGroups.ContainsKey(item.Group))
+            ItemGroups[item.Group] = BuildNewItemGroup(ItemGroupsPanel, item.Group);
+
+        ItemSlot itemSlot = BuildNewItemSlot(ItemGroups[item.Group].ItemSlotContainer, item);
+        ItemSlots.Add(itemSlot);
+
         return true;
+    }
+
+    public bool RemoveItem(int itemId)
+    {
+        return RemoveItem(ItemManager.GetItem(itemId));
+    }
+
+    public bool RemoveItem(InventoryItem item)
+    {
+        ItemSlot itemSlot = ItemSlots.FirstOrDefault(a => a.Item.Id == item.Id);
+        if (itemSlot == null)
+            return false;
+
+        ItemSlots.Remove(itemSlot);
+        Destroy(itemSlot);
+
+        if (!ItemSlots.Any(a => a.Item.Group == item.Group))
+        {
+            ItemGroup itemGroupToRemove = ItemGroups[item.Group];
+            ItemGroups.Remove(item.Group);
+            Destroy(itemGroupToRemove);
+        }
+
+        return true;
+    }
+
+    private void Awake()
+    {
+        ItemGroups = new Dictionary<string, ItemGroup>();
+        ItemSlots = new List<ItemSlot>();
     }
 
     private void Start()
     {
-        ItemSlots = BuildInventorySlots(SlotPanel, itemSlotPrefab, slotCount);
-        IEnumerable<InventoryItem> items = ItemManager.GetInventoryItems(inventoryID);
+        foreach (InventoryItem item in ItemManager.GetInventoryItems(inventoryID))
+            AddItem(item);
 
-        AddItemsToSlots(ItemSlots, items);
         SelectedItemSlot = ItemSlots.FirstOrDefault();
     }
 
-    private List<ItemSlot> BuildInventorySlots(Transform slotPanel, ItemSlot itemSlotPrefab, int slotCount)
+    private ItemGroup BuildNewItemGroup(Transform parent, string title)
     {
-        List<ItemSlot> itemSlots = new List<ItemSlot>();
+        ItemGroup itemGroup = parent.InstantiateChild(itemGroupPrefab);
+        itemGroup.Title = title;
 
-        for (int i = 0; i < slotCount; i++)
-        {
-            ItemSlot itemSlot = (ItemSlot)Instantiate(itemSlotPrefab, slotPanel.position, slotPanel.rotation);
-            itemSlot.transform.SetParent(slotPanel);
-            itemSlot.transform.localScale = Vector3.one;
-            itemSlot.GetComponent<Button>().onClick.AddListener(() => SelectedItemSlot = itemSlot);
-
-            itemSlots.Add(itemSlot);
-        }
-
-        return itemSlots;
+        return itemGroup;
     }
 
-    private static void AddItemsToSlots(IEnumerable<ItemSlot> itemSlots, IEnumerable<InventoryItem> items)
+    private ItemSlot BuildNewItemSlot(Transform parent)
     {
-        int i = 0;
-        foreach (ItemSlot itemSlot in itemSlots)
-        {
-            InventoryItem item = items.ElementAtOrDefault(i);
-            if (item == null)
-                break;
+        ItemSlot itemSlot = parent.InstantiateChild(itemSlotPrefab);
+        itemSlot.GetComponent<Button>().onClick.AddListener(() => SelectedItemSlot = itemSlot);
 
-            itemSlot.Item = item;
-            i++;
-        }
+        return itemSlot;
+    }
+
+    private ItemSlot BuildNewItemSlot(Transform parent, InventoryItem item)
+    {
+        ItemSlot itemSlot = BuildNewItemSlot(parent);
+        itemSlot.Item = item;
+
+        return itemSlot;
     }
 }

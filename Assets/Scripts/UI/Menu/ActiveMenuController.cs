@@ -1,14 +1,15 @@
-﻿using System.Linq;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class ActiveMenuController : MonoBehaviour
 {
     [SerializeField]
-    private NamedMenuScreen[] menuScreens;
+    private CanvasRenderer[] menuScreenPrefabs;
+
+    private CanvasRenderer[] menuScreens;
 
     public void SetCurrentMenuScreen(int index)
     {
-        NamedMenuScreen menuScreen = null;
+        CanvasRenderer menuScreen = null;
 
         if (index <= menuScreens.Length - 1)
             menuScreen = menuScreens[index];
@@ -16,31 +17,30 @@ public class ActiveMenuController : MonoBehaviour
         SetCurrentMenuScreen(menuScreen);
     }
 
-    public void SetCurrentMenuScreen(string title)
-    {
-        SetCurrentMenuScreen(menuScreens.FirstOrDefault(a => a.Title == title));
-    }
-
-    private void SetCurrentMenuScreen(NamedMenuScreen namedMenuScreen)
+    private void SetCurrentMenuScreen(CanvasRenderer menuScreen)
     {
         HideAllMenus();
-        SetNamedMenuScreenActive(namedMenuScreen, true);
+        SetMenuScreenActive(menuScreen, true);
     }
 
     private void HideAllMenus()
     {
-        foreach (NamedMenuScreen menuScreen in menuScreens)
-            SetNamedMenuScreenActive(menuScreen, false);
+        foreach (CanvasRenderer menuScreen in menuScreens)
+            SetMenuScreenActive(menuScreen, false);
     }
 
-    private static void SetNamedMenuScreenActive(NamedMenuScreen namedMenuScreen, bool isActive)
+    private static void SetMenuScreenActive(CanvasRenderer menuScreen, bool isActive)
     {
-        if (namedMenuScreen != null && namedMenuScreen.MenuScreen != null)
-            namedMenuScreen.MenuScreen.gameObject.SetActive(isActive);
+        if (menuScreen != null)
+            menuScreen.gameObject.SetActive(isActive);
     }
 
     private void Awake()
     {
+        menuScreens = new CanvasRenderer[menuScreenPrefabs.Length];
+        for (int i = 0; i < menuScreens.Length; i++)
+            menuScreens[i] = transform.InstantiateChild(menuScreenPrefabs[i]);
+
         SetCurrentMenuScreen(0);
     }
 }

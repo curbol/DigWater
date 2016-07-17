@@ -3,6 +3,7 @@ using UnityEngine.UI;
 
 public class ItemSlot : MonoBehaviour
 {
+    [SerializeField]
     private Sprite defaultSprite;
 
     [SerializeField]

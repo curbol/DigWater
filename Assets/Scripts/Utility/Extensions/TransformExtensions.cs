@@ -29,4 +29,13 @@ public static class TransformExtensions
 
         return gameObjectHolder;
     }
+
+    public static T InstantiateChild<T>(this Transform parent, T prefab) where T : Component
+    {
+        T newChildObject = (T)GameObject.Instantiate(prefab, parent.position, parent.rotation);
+        newChildObject.transform.SetParent(parent);
+        newChildObject.transform.localScale = Vector3.one;
+
+        return newChildObject;
+    }
 }
