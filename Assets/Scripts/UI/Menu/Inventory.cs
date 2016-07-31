@@ -40,7 +40,7 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    private Dictionary<string, ItemGroup> ItemGroups { get; set; }
+    private Dictionary<int, ItemGroup> ItemGroups { get; set; }
 
     private List<ItemSlot> ItemSlots { get; set; }
 
@@ -91,10 +91,15 @@ public class Inventory : MonoBehaviour
         return true;
     }
 
-    public bool AddItem(int itemId)
+    public void AddItem(int itemId)
     {
-        return AddItem(ItemManager.GetItem(itemId));
+        AddItem(ItemManager.GetItem(itemId));
     }
+
+    //public bool AddItem(int itemId)
+    //{
+    //    return AddItem(ItemManager.GetItem(itemId));
+    //}
 
     public bool AddItem(InventoryItem item)
     {
@@ -102,7 +107,10 @@ public class Inventory : MonoBehaviour
             return false;
 
         if (!ItemGroups.ContainsKey(item.Group))
-            ItemGroups[item.Group] = BuildNewItemGroup(ItemGroupsPanel, item.Group);
+        {
+            string groupTitle = ItemManager.GetGroupTitle(item.Group);
+            ItemGroups[item.Group] = BuildNewItemGroup(ItemGroupsPanel, groupTitle);
+        }
 
         ItemSlot itemSlot = BuildNewItemSlot(ItemGroups[item.Group].ItemSlotContainer, item);
         ItemSlots.Add(itemSlot);
@@ -136,7 +144,7 @@ public class Inventory : MonoBehaviour
 
     private void Awake()
     {
-        ItemGroups = new Dictionary<string, ItemGroup>();
+        ItemGroups = new Dictionary<int, ItemGroup>();
         ItemSlots = new List<ItemSlot>();
     }
 
@@ -146,6 +154,8 @@ public class Inventory : MonoBehaviour
             AddItem(item);
 
         SelectedItemSlot = ItemSlots.FirstOrDefault();
+
+        ItemDescriptor.OnPurchase += () => AddItem(ItemDescriptor.Item);
     }
 
     private ItemGroup BuildNewItemGroup(Transform parent, string title)

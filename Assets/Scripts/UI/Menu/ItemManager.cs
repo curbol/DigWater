@@ -30,6 +30,23 @@ public class ItemManager : Singleton<ItemManager>
         }
     }
 
+    private Dictionary<int, string> groups;
+    public static Dictionary<int, string> Groups
+    {
+        get
+        {
+            if (Instance.groups == null)
+                Instance.groups = LoadGroups();
+
+            return Instance.groups;
+        }
+    }
+
+    public static string GetGroupTitle(int groupId)
+    {
+        return Groups.FirstOrDefault(a => a.Key == groupId).Value;
+    }
+
     public static InventoryItem GetItem(int itemId)
     {
         return Items.FirstOrDefault(a => a.Id == itemId);
@@ -50,6 +67,10 @@ public class ItemManager : Singleton<ItemManager>
         }
     }
 
+    public void BuyItem()
+    {
+    }
+
     private static Dictionary<int, IEnumerable<int>> LoadInventories()
     {
         Dictionary<int, IEnumerable<int>> loadedInventories = new Dictionary<int, IEnumerable<int>>();
@@ -66,6 +87,22 @@ public class ItemManager : Singleton<ItemManager>
         return loadedInventories;
     }
 
+    private static Dictionary<int, string> LoadGroups()
+    {
+        Dictionary<int, string> loadedGroups = new Dictionary<int, string>();
+
+        JsonData groupsData = JsonMapper.ToObject(File.ReadAllText(Application.dataPath + "/StreamingAssets/Groups.json"));
+        for (int i = 0; i < groupsData.Count; i++)
+        {
+            int groupId = (int)groupsData[i]["groupId"];
+            string title = (string)groupsData[i]["title"];
+
+            loadedGroups[groupId] = title;
+        }
+
+        return loadedGroups;
+    }
+
     private static IEnumerable<InventoryItem> LoadItems()
     {
         List<InventoryItem> loadedItems = new List<InventoryItem>();
@@ -76,7 +113,7 @@ public class ItemManager : Singleton<ItemManager>
             loadedItems.Add(new InventoryItem
             {
                 Id = (int)itemsData[i]["id"],
-                Group = (string)itemsData[i]["group"],
+                Group = (int)itemsData[i]["group"],
                 Value = (int)itemsData[i]["value"],
                 Name = (string)itemsData[i]["name"],
                 Description = (string)itemsData[i]["description"],

@@ -1,8 +1,11 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class ItemDescriptor : MonoBehaviour
 {
+    public Action OnPurchase { get; set; }
+
     [SerializeField]
     private Text titleText;
 
@@ -30,6 +33,19 @@ public class ItemDescriptor : MonoBehaviour
         }
     }
 
+    [SerializeField]
+    private Button purchaseButton;
+    private Button PurchaseButton
+    {
+        get
+        {
+            if (purchaseButton == null)
+                purchaseButton = FindObjectOfType<Button>();
+
+            return purchaseButton;
+        }
+    }
+
     private InventoryItem item;
     public InventoryItem Item
     {
@@ -50,8 +66,19 @@ public class ItemDescriptor : MonoBehaviour
         }
     }
 
-    public void Awake()
+    private void Awake()
     {
         Item = null;
+    }
+
+    private void Start()
+    {
+        PurchaseButton.onClick.AddListener(() => Purchase());
+    }
+
+    public void Purchase()
+    {
+        if (OnPurchase != null)
+            OnPurchase();
     }
 }
