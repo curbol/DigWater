@@ -18,6 +18,19 @@ public class Inventory : MonoBehaviour
         }
     }
 
+    //[SerializeField]
+    //private InventoryDescriptor inventoryDescriptor;
+    //private InventoryDescriptor InventoryDescriptor
+    //{
+    //    get
+    //    {
+    //        if (inventoryDescriptor == null)
+    //            inventoryDescriptor = FindObjectOfType<InventoryDescriptor>();
+
+    //        return inventoryDescriptor;
+    //    }
+    //}
+
     [SerializeField]
     private int inventoryID;
 
@@ -61,45 +74,30 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    private float availableCurrency;
+    private InventoryData inventoryData;
+    public InventoryData InventoryData
+    {
+        get
+        {
+            if (inventoryData == null)
+                inventoryData = ItemManager.GetInventory(inventoryID) ?? new InventoryData();
+
+            return inventoryData;
+        }
+    }
+
     public float AvailableCurrency
     {
         get
         {
-            return availableCurrency;
-        }
-
-        set
-        {
-            availableCurrency = Mathf.Max(value, 0);
+            return InventoryData.AvailableCurrency;
         }
     }
 
-    public bool CanBuyItem(InventoryItem item)
+    public bool AddItem(int itemId)
     {
-        return item.Value <= AvailableCurrency;
+        return AddItem(ItemManager.GetItem(itemId));
     }
-
-    public bool BuyItem(InventoryItem item)
-    {
-        if (!CanBuyItem(item))
-            return false;
-
-        AvailableCurrency -= item.Value;
-        AddItem(item);
-
-        return true;
-    }
-
-    public void AddItem(int itemId)
-    {
-        AddItem(ItemManager.GetItem(itemId));
-    }
-
-    //public bool AddItem(int itemId)
-    //{
-    //    return AddItem(ItemManager.GetItem(itemId));
-    //}
 
     public bool AddItem(InventoryItem item)
     {
@@ -146,6 +144,11 @@ public class Inventory : MonoBehaviour
     {
         ItemGroups = new Dictionary<int, ItemGroup>();
         ItemSlots = new List<ItemSlot>();
+
+        if (inventoryID == ItemManager.PlayerInventoryId)
+            ItemManager.OnPurchaseItem += OnPurchaseItemHandler;
+
+        ItemManager.OnAddItemToInventory += OnAddItemToInventoryHandler;
     }
 
     private void Start()
@@ -154,8 +157,19 @@ public class Inventory : MonoBehaviour
             AddItem(item);
 
         SelectedItemSlot = ItemSlots.FirstOrDefault();
+    }
 
-        ItemDescriptor.OnPurchase += () => AddItem(ItemDescriptor.Item);
+    private void OnPurchaseItemHandler(InventoryItem item)
+    {
+        AddItem(item);
+
+        // update InventoryDescriptor (mainly available currency)
+    }
+
+    private void OnAddItemToInventoryHandler(AddItemToInventoryResponse addItemToInventoryResponse)
+    {
+        if (addItemToInventoryResponse.InventoryId == inventoryID)
+            AddItem(addItemToInventoryResponse.ItemId);
     }
 
     private ItemGroup BuildNewItemGroup(Transform parent, string title)

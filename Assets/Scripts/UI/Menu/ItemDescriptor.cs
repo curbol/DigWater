@@ -1,11 +1,8 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class ItemDescriptor : MonoBehaviour
 {
-    public Action OnPurchase { get; set; }
-
     [SerializeField]
     private Text titleText;
 
@@ -40,7 +37,11 @@ public class ItemDescriptor : MonoBehaviour
         get
         {
             if (purchaseButton == null)
-                purchaseButton = FindObjectOfType<Button>();
+            {
+                Transform purchaseButtonTransform = transform.FindChild("Purchase Button");
+                if (purchaseButtonTransform != null)
+                    purchaseButton = purchaseButtonTransform.GetComponent<Button>();
+            }
 
             return purchaseButton;
         }
@@ -73,12 +74,6 @@ public class ItemDescriptor : MonoBehaviour
 
     private void Start()
     {
-        PurchaseButton.onClick.AddListener(() => Purchase());
-    }
-
-    public void Purchase()
-    {
-        if (OnPurchase != null)
-            OnPurchase();
+        PurchaseButton.onClick.AddListener(() => ItemManager.PurchaseItem(Item.Id));
     }
 }
