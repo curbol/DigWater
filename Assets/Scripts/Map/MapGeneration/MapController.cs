@@ -26,16 +26,17 @@ public class MapController : MonoBehaviour
                 continue;
 
             bool[,] bitMap = MapManager.Map.GetSoilBitMap(soilType);
+            int[,] intMap = MapManager.Map.GetIntMap();
             bool redraw = SoilMapHasChanged(soilType, bitMap);
 
             if (redraw.IsFalse() && forceRedraw.IsFalse())
                 continue;
 
-            MeshData meshData = bitMap.GetMarchingSquaresMeshData(MapManager.Map.Scale);
+            MeshData meshData = bitMap.GetMarchingSquaresMeshData(intMap, MapManager.Map.Scale);
             Mesh mesh = meshData.BuildMesh();
             GameObject soilMeshHolder = transform.CreateUniqueChildGameObject(soilType.ToString());
             soilMeshHolder.AddComponent<MeshFilter>().sharedMesh = mesh;
-            soilMeshHolder.AddComponent<MeshRenderer>().materials = new Material[] { soilType.Material() };
+            soilMeshHolder.AddComponent<MeshRenderer>().materials = new[] { soilType.Material() };
 
             if (soilType.IsCollidable())
             {

@@ -98,6 +98,7 @@ public class ItemManager : Singleton<ItemManager>
         if (CanPurchaseItem(PlayerInventoryId, itemId) && Items.ContainsKey(itemId) && Inventories.ContainsKey(PlayerInventoryId))
         {
             Inventories[PlayerInventoryId].ItemIds.Add(itemId);
+            Inventories[PlayerInventoryId].AvailableCurrency -= Items[itemId].Value;
 
             if (OnAddItemToInventory != null)
             {

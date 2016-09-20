@@ -124,6 +124,7 @@
     <Compile Include="Assets\Scripts\UI\Menu\ItemGroup.cs" />
     <Compile Include="Assets\Scripts\UI\Menu\ItemManager.cs" />
     <Compile Include="Assets\Scripts\UI\Menu\ItemSlot.cs" />
+    <Compile Include="Assets\Scripts\UI\Menu\PlayerAvailableCurrencyTextUpdater.cs" />
     <Compile Include="Assets\Scripts\UI\Soil Triangle\DragListener.cs" />
     <Compile Include="Assets\Scripts\UI\Soil Triangle\SoilMixController.cs" />
     <Compile Include="Assets\Scripts\Utility\Coordinate.cs" />

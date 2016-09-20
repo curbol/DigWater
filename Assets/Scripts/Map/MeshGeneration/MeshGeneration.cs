@@ -1,28 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public static class MeshGeneration
 {
-    public static MarchingSquare[,] marchingSquares { get; set; }
+    private enum Corner { TopLeft, TopRight, BottomRight, BottomLeft };
 
     public static MeshData GetMarchingSquaresMeshData(this bool[,] map, float scale)
     {
-        MeshData meshData = new MeshData();
-        marchingSquares = map.CreateMarchingSquareGrid(scale);
+        MarchingSquare[,] marchingSquares = map.CreateMarchingSquareGrid(scale);
+        return GetMeshData(marchingSquares);
+    }
 
-        if (marchingSquares != null)
-        {
-            for (int x = 0; x < marchingSquares.GetLength(0); x++)
-            {
-                for (int y = 0; y < marchingSquares.GetLength(1); y++)
-                {
-                    meshData.AddMarchingSquare(marchingSquares[x, y]);
-                }
-            }
-        }
-
-        return meshData;
+    public static MeshData GetMarchingSquaresMeshData(this bool[,] subMap, int[,] intMap, float scale)
+    {
+        MarchingSquare[,] marchingSquares = subMap.CreateMarchingSquareGrid(intMap, scale);
+        return GetMeshData(marchingSquares);
     }
 
     public static Mesh BuildMesh(this MeshData meshData)
@@ -111,7 +105,6 @@ public static class MeshGeneration
                         controlMeshVertices[x, y] = new ControlMeshVertex(position, map[x, y]);
 
                         if (x > 0 && y > 0)
-
                         {
                             ControlMeshVertex topLeft = controlMeshVertices[x - 1, y];
                             ControlMeshVertex topRight = controlMeshVertices[x, y];
@@ -125,5 +118,83 @@ public static class MeshGeneration
         }
 
         return squares;
+    }
+
+    private static MarchingSquare[,] CreateMarchingSquareGrid(this bool[,] subMap, int[,] fullMap, float scale)
+    {
+        MarchingSquare[,] squares = null;
+
+        if (subMap != null)
+        {
+            int sizeX = subMap.GetLength(0);
+            int sizeY = subMap.GetLength(1);
+
+            if (sizeX > 0 && sizeY > 0)
+            {
+                squares = new MarchingSquare[sizeX - 1, sizeY - 1];
+
+                ControlMeshVertex[,] controlMeshVertices = new ControlMeshVertex[sizeX, sizeY];
+                for (int x = 0; x < sizeX; x++)
+                {
+                    for (int y = 0; y < sizeY; y++)
+                    {
+                        // Create new control mesh vertex for coordinate (x,y)
+                        Vector2 position = new Vector2(-sizeX / 2F + x + 0.5F, -sizeY / 2F + y + 0.5F) * scale;
+                        controlMeshVertices[x, y] = new ControlMeshVertex(position, subMap[x, y]);
+
+                        // Create new marching square for coordinate (x-1, y-1)
+                        if (x > 0 && y > 0)
+                        {
+                            ControlMeshVertex topLeft = controlMeshVertices[x - 1, y];
+                            ControlMeshVertex topRight = controlMeshVertices[x, y];
+                            ControlMeshVertex bottomRight = controlMeshVertices[x, y - 1];
+                            ControlMeshVertex bottomLeft = controlMeshVertices[x - 1, y - 1];
+
+                            squares[x - 1, y - 1] = new MarchingSquare(topLeft, topRight, bottomRight, bottomLeft);
+
+                            // Check for special cases of different meshes touching (to prevent void spaces)
+                            bool[] activeVertices = new[] { topLeft.IsActive, topRight.IsActive, bottomRight.IsActive, bottomLeft.IsActive };
+                            int[] fullMapTypeIds = new[] { fullMap[x - 1, y], fullMap[x, y], fullMap[x, y - 1], fullMap[x - 1, y - 1] };
+                            bool[] fullMapTangentInequality = new[]
+                            {
+                                fullMapTypeIds[(int)Corner.TopRight] != fullMapTypeIds[(int)Corner.BottomLeft],
+                                fullMapTypeIds[(int)Corner.TopLeft] != fullMapTypeIds[(int)Corner.BottomRight],
+                                fullMapTypeIds[(int)Corner.TopRight] != fullMapTypeIds[(int)Corner.BottomLeft],
+                                fullMapTypeIds[(int)Corner.TopLeft] != fullMapTypeIds[(int)Corner.BottomRight],
+                            };
+
+                            if (activeVertices.Count(a => a) == 1)
+                            {
+                                int activeIndex = Array.IndexOf(activeVertices, true);
+                                if (fullMapTangentInequality[activeIndex])
+                                {
+                                    squares[x - 1, y - 1].Configuration = 16 + activeIndex;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return squares;
+    }
+
+    private static MeshData GetMeshData(MarchingSquare[,] marchingSquares)
+    {
+        MeshData meshData = new MeshData();
+
+        if (marchingSquares != null)
+        {
+            for (int x = 0; x < marchingSquares.GetLength(0); x++)
+            {
+                for (int y = 0; y < marchingSquares.GetLength(1); y++)
+                {
+                    meshData.AddMarchingSquare(marchingSquares[x, y]);
+                }
+            }
+        }
+
+        return meshData;
     }
 }

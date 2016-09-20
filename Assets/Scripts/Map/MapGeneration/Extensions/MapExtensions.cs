@@ -52,4 +52,24 @@ public static class MapExtensions
 
         return bitMap;
     }
+
+    public static int[,] GetIntMap(this Map map)
+    {
+        int[,] intMap = null;
+
+        if (map != null)
+        {
+            intMap = new int[map.SizeX, map.SizeY];
+            for (int x = 0; x < map.SizeX; x++)
+            {
+                for (int y = 0; y < map.SizeY; y++)
+                {
+                    if (map[x, y] != SoilType.None)
+                        intMap[x, y] = (int)map[x, y];
+                }
+            }
+        }
+
+        return intMap;
+    }
 }

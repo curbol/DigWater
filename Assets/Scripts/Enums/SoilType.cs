@@ -6,5 +6,8 @@
     Rock,
     Sand,
     Bark,
-    Leaves
+    Leaves,
+    Gravel,
+    CobbleStone,
+    DarkCobbleStone,
 }

@@ -1,14 +1,17 @@
-﻿public class MarchingSquare
+﻿using UnityEngine;
+
+public class MarchingSquare
 {
-    public ControlMeshVertex BottomLeft { get; set; }
-    public ControlMeshVertex BottomRight { get; set; }
-    public MeshVertex CenterBottom { get; set; }
-    public MeshVertex CenterLeft { get; set; }
-    public MeshVertex CenterRight { get; set; }
-    public MeshVertex CenterTop { get; set; }
-    public int Configuration { get; set; }
     public ControlMeshVertex TopLeft { get; set; }
     public ControlMeshVertex TopRight { get; set; }
+    public ControlMeshVertex BottomRight { get; set; }
+    public ControlMeshVertex BottomLeft { get; set; }
+    public MeshVertex CenterTop { get; set; }
+    public MeshVertex CenterRight { get; set; }
+    public MeshVertex CenterBottom { get; set; }
+    public MeshVertex CenterLeft { get; set; }
+    public MeshVertex CenterCenter { get; set; }
+    public int Configuration { get; set; }
 
     public MarchingSquare(ControlMeshVertex topLeft, ControlMeshVertex topRight, ControlMeshVertex bottomRight, ControlMeshVertex bottomLeft)
     {
@@ -21,6 +24,7 @@
         CenterRight = bottomRight.UpVertex;
         CenterBottom = bottomLeft.RightVertex;
         CenterLeft = bottomLeft.UpVertex;
+        CenterCenter = new MeshVertex((Vector2)bottomLeft.UpVertex.Position + (Vector2.right * MapManager.Map.Scale / 2));
 
         SetConfiguration(topLeft.IsActive, topRight.IsActive, bottomRight.IsActive, bottomLeft.IsActive);
     }
@@ -74,8 +78,19 @@
             case 15:
                 return new MeshVertex[] { TopLeft, TopRight, BottomRight, BottomLeft };
 
-            default:
-                break;
+            // Additional cases to merge different marching squre meshes (prevent void spaces)
+            // Top left sub-square
+            case 16:
+                return new MeshVertex[] { TopLeft, CenterTop, CenterCenter, CenterLeft };
+            // Top right sub-square
+            case 17:
+                return new MeshVertex[] { CenterTop, TopRight, CenterRight, CenterCenter };
+            // Bottom right sub-square
+            case 18:
+                return new MeshVertex[] { CenterCenter, CenterRight, BottomRight, CenterBottom };
+            // Bottom left sub-square
+            case 19:
+                return new MeshVertex[] { CenterLeft, CenterCenter, CenterBottom, BottomLeft };
         }
 
         return null;
