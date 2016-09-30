@@ -10,4 +10,8 @@
     Gravel,
     CobbleStone,
     DarkCobbleStone,
+    UpPump,
+    DownPump,
+    Pipe,
+    Clay,
 }
