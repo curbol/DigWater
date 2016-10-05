@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Scenes/Fountain.unity
+- path: Assets/Scenes/Bunker.unity
   isLoaded: 1
   isActive: 1

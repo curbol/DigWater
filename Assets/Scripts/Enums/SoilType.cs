@@ -14,4 +14,5 @@
     DownPump,
     Pipe,
     Clay,
+    DarkSand,
 }
