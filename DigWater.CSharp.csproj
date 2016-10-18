@@ -66,6 +66,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Bunker\TaskCompletionHandler.cs" />
     <Compile Include="Assets\Scripts\Debris\DestroyOnClick.cs" />
     <Compile Include="Assets\Scripts\Digging\DigController.cs" />
     <Compile Include="Assets\Scripts\Enums\MouseButton.cs" />
@@ -128,6 +129,7 @@
     <Compile Include="Assets\Scripts\UI\Menu\PlayerAvailableCurrencyTextUpdater.cs" />
     <Compile Include="Assets\Scripts\UI\Soil Triangle\DragListener.cs" />
     <Compile Include="Assets\Scripts\UI\Soil Triangle\SoilMixController.cs" />
+    <Compile Include="Assets\Scripts\UI\UniqueActiveObjectController.cs" />
     <Compile Include="Assets\Scripts\Utility\Coordinate.cs" />
     <Compile Include="Assets\Scripts\Utility\Extensions\BooleanExtensions.cs" />
     <Compile Include="Assets\Scripts\Utility\Extensions\CoordinateExtensions.cs" />

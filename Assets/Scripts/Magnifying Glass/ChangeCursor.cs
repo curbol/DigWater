@@ -15,9 +15,14 @@ public class ChangeCursor : MonoBehaviour
     [SerializeField]
     private Vector2 minShowCursorPosition;
 
-    private void Start()
+    private void OnEnable()
     {
-        StartCoroutine(UpdateCursor());
+        StartCoroutine("UpdateCursor");
+    }
+
+    private void OnDisable()
+    {
+        StopCoroutine("UpdateCursor");
     }
 
     private IEnumerator UpdateCursor()
