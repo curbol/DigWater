@@ -3,9 +3,14 @@ using UnityEngine;
 
 public class FollowMouse : MonoBehaviour
 {
-    private void Start()
+    private void OnEnable()
     {
-        StartCoroutine(Follow());
+        StartCoroutine("Follow");
+    }
+
+    private void OnDisable()
+    {
+        StopCoroutine("Follow");
     }
 
     private IEnumerator Follow()

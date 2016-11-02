@@ -17,6 +17,12 @@ public static class MapExtensions
         return new Vector2((x + 0.5F) * soilMap.Scale - soilMap.Width / 2, (y + 0.5F) * soilMap.Scale - soilMap.Height / 2);
     }
 
+    public static SoilType GetSoilTypeFromPosition(this Map soilMap, Vector2 position)
+    {
+        Coordinate mapCoordinate = soilMap.GetCoordinateFromPosition(position);
+        return soilMap[mapCoordinate.X, mapCoordinate.Y];
+    }
+
     public static void Draw(this Map soilMap, Coordinate drawCoordinate, SoilType soilType)
     {
         Draw(soilMap, drawCoordinate, soilType, 0.5F);

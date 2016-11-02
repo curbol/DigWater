@@ -96,9 +96,6 @@
     <Compile Include="Assets\Scripts\Hydro\Particle\Heatable.cs" />
     <Compile Include="Assets\Scripts\Hydro\Spawner\ResetHydro.cs" />
     <Compile Include="Assets\Scripts\Hydro\Spawner\Spawner.cs" />
-    <Compile Include="Assets\Scripts\Magnifying Glass\ChangeCursor.cs" />
-    <Compile Include="Assets\Scripts\Magnifying Glass\DetectHydroStates.cs" />
-    <Compile Include="Assets\Scripts\Magnifying Glass\FollowMouse.cs" />
     <Compile Include="Assets\Scripts\Map\MapGeneration\Extensions\MapCreationExtensions.cs" />
     <Compile Include="Assets\Scripts\Map\MapGeneration\Extensions\MapExtensions.cs" />
     <Compile Include="Assets\Scripts\Map\MapGeneration\Extensions\MapManagementExtensions.cs" />
@@ -117,6 +114,7 @@
     <Compile Include="Assets\Scripts\Sun\SunController.cs" />
     <Compile Include="Assets\Scripts\UI\Atmosphere\HeatSliderController.cs" />
     <Compile Include="Assets\Scripts\UI\Atmosphere\StateText.cs" />
+    <Compile Include="Assets\Scripts\UI\LocationObjective2D.cs" />
     <Compile Include="Assets\Scripts\UI\Menu\ActiveMenuController.cs" />
     <Compile Include="Assets\Scripts\UI\Menu\AddItemToInventoryResponse.cs" />
     <Compile Include="Assets\Scripts\UI\Menu\Inventory.cs" />
@@ -129,6 +127,11 @@
     <Compile Include="Assets\Scripts\UI\Menu\PlayerAvailableCurrencyTextUpdater.cs" />
     <Compile Include="Assets\Scripts\UI\Soil Triangle\DragListener.cs" />
     <Compile Include="Assets\Scripts\UI\Soil Triangle\SoilMixController.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\ChangeCursor.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\DepthMeasurer.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\DetectHydroStates.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\FollowMouse.cs" />
+    <Compile Include="Assets\Scripts\UI\Tools\SoilAnalyzer.cs" />
     <Compile Include="Assets\Scripts\UI\UniqueActiveObjectController.cs" />
     <Compile Include="Assets\Scripts\Utility\Coordinate.cs" />
     <Compile Include="Assets\Scripts\Utility\Extensions\BooleanExtensions.cs" />
@@ -137,6 +140,7 @@
     <Compile Include="Assets\Scripts\Utility\Extensions\TransformExtensions.cs" />
     <Compile Include="Assets\Scripts\Utility\Extensions\Vector2Extentions.cs" />
     <Compile Include="Assets\Scripts\Utility\FindComponents.cs" />
+    <Compile Include="Assets\Scripts\Utility\Location2D.cs" />
     <Compile Include="Assets\Scripts\Utility\Shuffler.cs" />
     <Compile Include="Assets\Scripts\Utility\Singleton.cs" />
     <Compile Include="Assets\Scripts\Wind\Pushable.cs" />
